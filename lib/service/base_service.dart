@@ -1,4 +1,3 @@
-import 'package:sprintf/sprintf.dart';
 import 'package:np_mobile/datamodel/np_module.dart';
 import 'package:np_mobile/datamodel/np_folder.dart';
 
@@ -13,24 +12,9 @@ class BaseService {
     return url;
   }
 
-  String getEntryEndPoint({moduleId = NPModule.UNASSIGNED, folderId = NPFolder.ROOT, ownerId = 0}) {
-    String url;
-
-    switch (moduleId) {
-      case NPModule.CONTACT:
-        break;
-      case NPModule.CALENDAR:
-        break;
-      case NPModule.DOC:
-        break;
-      case NPModule.BOOKMARK:
-        break;
-      case NPModule.PHOTO:
-        break;
-      case NPModule.UPLOAD:
-        break;
-    }
-    return url;
+  String getEntryEndPoint({moduleId = NPModule.UNASSIGNED, entryId = '', ownerId = 0}) {
+    String url = _setEntry(moduleId);
+    return url + '/' + entryId;
   }
 
   String _setModule(int moduleId) {
@@ -65,6 +49,24 @@ class BaseService {
         return '/photos';
       case NPModule.UPLOAD:
         return '/uploads';
+    }
+    return "";
+  }
+
+    String _setEntry(int moduleId) {
+    switch (moduleId) {
+      case NPModule.CONTACT:
+        return '/contact';
+      case NPModule.CALENDAR:
+        return '/event';
+      case NPModule.DOC:
+        return '/doc';
+      case NPModule.BOOKMARK:
+        return '/bookmark';
+      case NPModule.PHOTO:
+        return '/photo';
+      case NPModule.UPLOAD:
+        return '/upload';
     }
     return "";
   }
