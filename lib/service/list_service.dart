@@ -6,16 +6,9 @@ import 'package:np_mobile/service/base_service.dart';
 import 'package:np_mobile/service/rest_client.dart';
 
 class ListService extends BaseService {
-  static final Map<String, ListService> _listServiceMap =
-      <String, ListService>{};
+  static final Map<String, ListService> _listServiceMap = <String, ListService>{};
 
-  factory ListService(
-      {moduleId,
-      folderId,
-      ownerId = 0,
-      startDate = '',
-      endDate = '',
-      keyword = ''}) {
+  factory ListService({moduleId, folderId, ownerId = 0, startDate = '', endDate = '', keyword = ''}) {
     String k = _key(moduleId, folderId, ownerId, keyword);
     if (_listServiceMap.containsKey(k)) {
       return _listServiceMap[k];
@@ -44,32 +37,49 @@ class ListService extends BaseService {
   int _folderId;
   int _ownerId;
   String _keyword;
-  EntryList _currentList;
+  EntryList _entryList;
 
-  ListService._internal(
-      {moduleId,
-      folderId,
-      ownerId = 0,
-      startDate = '',
-      endDate = '',
-      keyword = ''}) {
-    this._moduleId = moduleId;
-    this._folderId = folderId;
-    this._ownerId = ownerId;
-    this._keyword = keyword;
+  EntryList get entryList => _entryList ?? EntryList();
+
+  ListService._internal({moduleId, folderId, ownerId = 0, startDate = '', endDate = '', keyword = ''}) {
+    _moduleId = moduleId;
+    _folderId = folderId;
+    _ownerId = ownerId;
+    _keyword = keyword;
   }
 
   Future<dynamic> get(ListSetting listQuery) {
     var completer = new Completer();
 
+    if (_entryList != null) { // todo: need to check if the entryList covers the query
+      completer.complete(_entryList);
+    } else {
+      print("make api call");
+      RestClient _client = new RestClient();
+      _client.get(getListEndPoint(moduleId: _moduleId)).then((dynamic result) {
+        _entryList = new EntryList.fromJson(result['entryList']);
+        completer.complete(_entryList);
+      }).catchError((error) {
+        completer.completeError(error);
+      });
+    }
+
+    return completer.future;
+  }
+
+  Future<dynamic> getNextPage() {
+    var completer = new Completer();
     RestClient _client = new RestClient();
-    _client.get("http://localhost:8080/api/bookmarks?folder_id=0&page=1").then((dynamic result) {
-      EntryList theList = new EntryList.fromJson(result['entryList']);
-      completer.complete(theList);
+    _client.get(getListEndPoint(moduleId: _moduleId)).then((dynamic result) {
+      _entryList = new EntryList.fromJson(result['entryList']);
+      completer.complete(_entryList);
     }).catchError((error) {
       completer.completeError(error);
     });
-
     return completer.future;
+  }
+
+  bool hasMorePage() {
+    return false;
   }
 }

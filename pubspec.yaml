@@ -16,7 +16,10 @@ dependencies:
   flutter:
     sdk: flutter
   http:
+  rxdart:
   sprintf:
+  shared_preferences:
+  device_id:
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.

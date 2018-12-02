@@ -5,6 +5,7 @@ class NPEntry {
   String _title;
   int moduleId;
   NPFolder _folder;
+  String _colorCode;
 
   NPEntry();
   NPEntry.fromJson(Map<String, dynamic> data)
@@ -15,4 +16,5 @@ class NPEntry {
   String get entryId => _entryId;
   String get title => _title;
   NPFolder get folder => _folder;
+  String get colorCode => _colorCode;
 }

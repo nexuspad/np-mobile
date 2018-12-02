@@ -11,6 +11,7 @@ class RestClient {
   final JsonDecoder _decoder = new JsonDecoder();
 
   Future<dynamic> get(String url) {
+    print('url ' + url);
     return http.get(url, headers: _headers()).then((http.Response response) {
       final String res = response.body;
       final int statusCode = response.statusCode;
@@ -22,15 +23,20 @@ class RestClient {
     });
   }
 
-  Future<dynamic> post(String url, {Map headers, body, encoding}) {
+  Future<dynamic> post(String url, body, sessionId, uuid) {
+    print(body);
     return http
-        .post(url, body: body, headers: headers, encoding: encoding)
+        .post(url,
+            body: body,
+            headers: {'Content-type':'application/json', 'utoken':sessionId},
+            encoding: Encoding.getByName("utf-8"))
         .then((http.Response response) {
       final String res = response.body;
       final int statusCode = response.statusCode;
 
+      print(res);
       if (statusCode < 200 || statusCode > 400 || json == null) {
-        throw new Exception("Error while fetching data");
+        throw new Exception("Error while posting data");
       }
       return _decoder.convert(res);
     });
@@ -38,7 +44,8 @@ class RestClient {
 
   Map<String, String> _headers() {
     Map<String, String> h = new Map();
-    h['utoken'] = 'nptest';
+    h['utoken'] = '16dbd4363d3db1b1c3da34d5fd78566578b36a93';
+    h['uuid'] = '0f67542d6b9a79d63ae04a13e451aa26';
     return h;
   }
 }

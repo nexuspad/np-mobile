@@ -1,20 +1,26 @@
+import 'package:np_mobile/app_config.dart';
 import 'package:np_mobile/datamodel/np_module.dart';
 import 'package:np_mobile/datamodel/np_folder.dart';
 
 class BaseService {
   String getFolderServiceEndPoint(int moduleId, int folderId, int ownerId) {
-    String url = _setModule(moduleId) + '/folder/all';
+    String url = AppConfig().serviceHost + _setModule(moduleId) + '/folders';
     return url;
   }
 
-  String getListEndPoint({moduleId = NPModule.UNASSIGNED, folderId = NPFolder.ROOT, ownerId = 0}) {
-    String url = _setList(moduleId);
+  String getListEndPoint({moduleId, folderId = NPFolder.ROOT, ownerId = 0}) {
+//    String url = AppConfig().serviceHost + _setList(moduleId);
+    String url = "https://lab.nexuspad.com/api" + _setList(moduleId);
     return url;
   }
 
   String getEntryEndPoint({moduleId = NPModule.UNASSIGNED, entryId = '', ownerId = 0}) {
     String url = _setEntry(moduleId);
-    return url + '/' + entryId;
+    return AppConfig().serviceHost + url + '/' + entryId;
+  }
+
+  String getAccountServiceEndPoint(String action) {
+    return AppConfig().serviceHost + '/user/' + action;
   }
 
   String _setModule(int moduleId) {
@@ -53,7 +59,7 @@ class BaseService {
     return "";
   }
 
-    String _setEntry(int moduleId) {
+  String _setEntry(int moduleId) {
     switch (moduleId) {
       case NPModule.CONTACT:
         return '/contact';

@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:np_mobile/service/base_service.dart';
 import 'package:np_mobile/service/rest_client.dart';
+import 'package:np_mobile/service/base_service.dart';
 import 'package:np_mobile/datamodel/np_folder.dart';
 import 'package:np_mobile/datamodel/folder_tree.dart';
 
@@ -31,6 +31,7 @@ class FolderService extends BaseService {
   }
 
   int _moduleId;
+  int _folderId;
   int _ownerId;
   List<NPFolder> _folders;
 
@@ -38,7 +39,7 @@ class FolderService extends BaseService {
     var completer = new Completer();
 
     RestClient _client = new RestClient();
-    _client.get("http://localhost:8080/api/doc/folder/all").then((dynamic result) {
+    _client.get(getFolderServiceEndPoint(_moduleId, _folderId, _ownerId)).then((dynamic result) {
       for (var f in result['folders']) {
         _folders.add(NPFolder.fromJson(f));
       }

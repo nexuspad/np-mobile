@@ -1,12 +1,16 @@
 import "dart:async";
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 import 'package:np_mobile/service/rest_client.dart';
 import 'package:np_mobile/service/list_service.dart';
 import 'package:np_mobile/service/folder_service.dart';
+import 'package:np_mobile/service/account_service.dart';
 import 'package:np_mobile/datamodel/np_module.dart';
 import 'package:np_mobile/datamodel/entry_list.dart';
 import 'package:np_mobile/datamodel/folder_tree.dart';
+import 'package:np_mobile/datamodel/account.dart';
 
 void main() {
   test('test rest api', () {
@@ -19,7 +23,7 @@ void main() {
     expect(future, completes);
   });
   test('test list service', () async {
-    ListService listService = new ListService(moduleId: 0, folderId: 0);
+    ListService listService = new ListService(moduleId: 3, folderId: 0);
     await listService.get(null).then((dynamic result) {
       EntryList entryList = result;
       entryList.entries.forEach((e) => print(e.title));
@@ -35,5 +39,21 @@ void main() {
     }).catchError((error) {
       print(error);
     });
+  });
+  test('test account service', () async {
+    SharedPreferences.setMockInitialValues({});
+    AccountService accountService = new AccountService();
+    await accountService.login("nptest", "nptest").then((dynamic result) {
+      Account account = result;
+      print(account.sessionId);
+    }).catchError((error) {
+      print(error);
+    });
+//    await accountService.hello().then((dynamic result) {
+//      Account account = result;
+//      print(account.userId);
+//    }).catchError((error) {
+//      print(error);
+//    });
   });
 }
