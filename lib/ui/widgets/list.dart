@@ -2,9 +2,13 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:np_mobile/datamodel/entry_list.dart';
 import 'package:np_mobile/datamodel/np_entry.dart';
+import 'package:np_mobile/datamodel/np_folder.dart';
 import 'package:np_mobile/service/list_service.dart';
 
 class ListWidget extends StatefulWidget {
+  final NPFolder _folder;
+  ListWidget(NPFolder forFolder) : _folder = NPFolder.copy(forFolder);
+
   @override
   State<StatefulWidget> createState() {
     return _ListState();
@@ -20,7 +24,7 @@ class _ListState extends State<ListWidget> {
   void initState() {
     super.initState();
 
-    print('calling list service');
+    print('calling list service for folder ' + widget._folder.folderName);
     _loading = true;
     _listService = new ListService(moduleId: 3, folderId: 0);
     _listService.get(null).then((dynamic result) {

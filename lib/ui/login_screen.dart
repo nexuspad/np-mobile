@@ -5,7 +5,7 @@ import 'blocs/application_state_provider.dart';
 class LoginScreen extends StatelessWidget {
   @override
   Widget build(context) {
-    final loginBloc = ApplicationStateProvider.forLogin(context); //Get access to the bloc in the Provider
+    final loginBloc = ApplicationStateProvider.forLogin(context);
     return Scaffold(
       appBar: AppBar(
         title: Text('Login screen'),
