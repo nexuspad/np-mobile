@@ -4,6 +4,7 @@ import 'package:np_mobile/datamodel/entry_list.dart';
 import 'package:np_mobile/datamodel/np_entry.dart';
 import 'package:np_mobile/datamodel/np_folder.dart';
 import 'package:np_mobile/service/list_service.dart';
+import 'package:np_mobile/ui/widgets/entry_tile.dart';
 
 class ListWidget extends StatefulWidget {
   final NPFolder _folder;
@@ -62,7 +63,7 @@ class _ListState extends State<ListWidget> {
             return _buildProgressIndicator();
           } else {
             NPEntry e = _listService.entryList.entries[index];
-            return ListTile(title: new Text(e.title));
+            return EntryTile(e);
           }
         },
         controller: _scrollController,

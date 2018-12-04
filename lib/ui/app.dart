@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:np_mobile/ui/folder_selector_screen.dart';
 import 'landing_screen.dart';
 import 'login_screen.dart';
 import 'organizer_screen.dart';
@@ -14,6 +15,7 @@ class App extends StatelessWidget {
           '/': (context) => LandingScreen(),
           'login': (context) => LoginScreen(),
           'bookmarks': (context) => OrganizerScreen(),
+          'folders': (context) => FolderSelectorScreen(),
         },
       ),
     );

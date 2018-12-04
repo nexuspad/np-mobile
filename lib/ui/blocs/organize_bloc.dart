@@ -1,26 +1,31 @@
-import 'package:np_mobile/datamodel/np_folder.dart';
+import 'package:np_mobile/datamodel/list_setting.dart';
 import 'package:np_mobile/datamodel/np_module.dart';
 import 'package:rxdart/rxdart.dart';
 
 class OrganizeBloc {
-  final _organizeSubject = BehaviorSubject<Map>();
-  Map _org;
+  static final List<int> modules = [NPModule.CONTACT, NPModule.CALENDAR, NPModule.DOC, NPModule.BOOKMARK, NPModule.PHOTO];
 
-  Stream<Map> get stateStream => _organizeSubject.stream;
+  final _organizeSubject = BehaviorSubject<ListSetting>();
+  ListSetting _currentListSetting;
+
+  Stream<ListSetting> get stateStream => _organizeSubject.stream;
 
   OrganizeBloc() {
-    Map _org = new Map();
-    _org['module'] = NPModule.BOOKMARK;
-    _org['folder'] = new NPFolder(NPModule.BOOKMARK);
-    _organizeSubject.sink.add(_org);
+    _currentListSetting = new ListSetting(NPModule.BOOKMARK);
+    _organizeSubject.sink.add(_currentListSetting);
   }
 
-  changeModule(int moduleId) {
-    _org['module'] = moduleId;
+  int getModule() {
+    return _currentListSetting.moduleId;
   }
 
-  changeFolder(NPFolder folder) {
-    _org['folder'] = NPFolder.copy(folder);
+  int getNavigationIndex() {
+    return modules.indexOf(_currentListSetting.moduleId);
+  }
+
+  changeModule(moduleId) {
+    _currentListSetting.moduleId = moduleId;
+    _organizeSubject.sink.add(_currentListSetting);
   }
 
   dispose() {

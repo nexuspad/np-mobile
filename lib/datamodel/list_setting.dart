@@ -12,6 +12,10 @@ class ListSetting {
   int _totalCount;
   List<int> _pages;
 
+  ListSetting(int moduleId) {
+    _moduleId = moduleId;
+  }
+
   ListSetting.fromJson(Map<String, dynamic> data) {
     _moduleId = data['moduleId'];
     _folderId = data['folderId'];
@@ -28,4 +32,5 @@ class ListSetting {
   }
 
   int get moduleId => _moduleId;
+  set moduleId(value) => _moduleId = value;
 }
