@@ -3,20 +3,54 @@ import 'package:np_mobile/datamodel/np_folder.dart';
 import 'package:np_mobile/datamodel/np_module.dart';
 import 'package:np_mobile/ui/blocs/application_state_provider.dart';
 import 'package:np_mobile/ui/blocs/organize_bloc.dart';
+import 'package:np_mobile/ui/widgets/grid.dart';
 import 'package:np_mobile/ui/widgets/list.dart';
-import 'package:np_mobile/ui/widgets/list_bloc.dart';
+import 'package:np_mobile/ui/widgets/np_search_delegate.dart';
+
+enum AccountMenu { account, logout }
 
 class OrganizerScreen extends StatelessWidget {
+  final NPSearchDelegate _delegate = NPSearchDelegate();
+
   @override
   Widget build(context) {
     final organizeBloc = ApplicationStateProvider.forOrganize(context);
 
     return Scaffold(
-        appBar: AppBar(
-          title: Text('main organizer screen'),
-        ),
+        appBar: AppBar(title: _appBarTitle(organizeBloc), actions: <Widget>[
+          IconButton(
+            tooltip: 'Search',
+            icon: const Icon(Icons.search),
+            onPressed: () async {
+              final int selected = await showSearch<int>(
+                context: context,
+                delegate: _delegate,
+              );
+              if (selected != null) {}
+            },
+          ),
+          // overflow menu
+          PopupMenuButton<AccountMenu>(
+            onSelected: (AccountMenu selected) {
+              print(selected);
+              if (selected == AccountMenu.account) {
+                Navigator.pushNamed(context, 'account');
+              }
+            },
+            itemBuilder: (BuildContext context) => <PopupMenuEntry<AccountMenu>>[
+                  const PopupMenuItem<AccountMenu>(
+                    value: AccountMenu.account,
+                    child: Text('account'),
+                  ),
+                  const PopupMenuItem<AccountMenu>(
+                    value: AccountMenu.logout,
+                    child: Text('logout'),
+                  ),
+                ],
+          ),
+        ]),
         body: Container(
-          margin: EdgeInsets.all(30.0),
+          margin: EdgeInsets.all(8.0),
           child: Column(
             children: <Widget>[_listWidget(organizeBloc)],
           ),
@@ -25,28 +59,40 @@ class OrganizerScreen extends StatelessWidget {
         bottomNavigationBar: _buildModuleNavigation(context, organizeBloc));
   }
 
+  Widget _appBarTitle(OrganizeBloc organizeBloc) {
+    return StreamBuilder(
+      stream: organizeBloc.stateStream,
+      builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+        // anytime the builder sees new data in the stateStream, it will re-render the list widget
+        if (snapshot.data != null) {
+          return Text(NPModule.name(snapshot.data.moduleId));
+        } else {
+          // todo - a blank screen of loading
+          return Text('organize');
+        }
+      },
+    );
+  }
+
   Widget _listWidget(OrganizeBloc organizeBloc) {
     return StreamBuilder(
       stream: organizeBloc.stateStream,
       builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
         // anytime the builder sees new data in the stateStream, it will re-render the list widget
-        return ListWidget(new NPFolder(NPModule.BOOKMARK));
+        if (snapshot.data != null) {
+          if (snapshot.data.moduleId == NPModule.PHOTO) {
+            return new GridWidget(new NPFolder(snapshot.data.moduleId));
+          }
+          return new ListWidget(new NPFolder(snapshot.data.moduleId));
+        } else {
+          // todo - a blank screen of loading
+          return new Container(width: 0.0, height: 0.0);
+        }
       },
     );
   }
 
   Widget _buildActionButton(context) {
-//    return Align(
-//      alignment: const Alignment(0.0, -0.2),
-//      child: FloatingActionButton(
-//        child: const Icon(Icons.folder),
-//        onPressed: () {
-//          // Perform some action
-//          Navigator.pushNamed(context, 'folders');
-//        },
-//        tooltip: 'open folders',
-//      ),
-//    );
     return FloatingActionButton(
       child: const Icon(Icons.folder),
       onPressed: () {

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:np_mobile/datamodel/np_error.dart';
 import 'package:np_mobile/service/rest_client.dart';
 import 'package:np_mobile/service/base_service.dart';
 import 'package:np_mobile/service/user_service_data.dart';
@@ -34,9 +35,14 @@ class AccountService extends BaseService {
         _currentUser.setSessionId(_prefs.getString("SESSION_ID"));
         String url = getAccountServiceEndPoint("hello") + '/' + _currentUser.sessionId;
         RestClient _client = new RestClient();
-        _client.get(url).then((dynamic result) {
-          _currentUser = Account.fromJson(result['user']);
-          completer.complete(_currentUser);
+        _client.get(url, null).then((dynamic result) {
+          if (result['errorCode'] != null) {
+            completer.completeError(new NPError(result['errorCode']));
+          } else {
+            _currentUser = Account.fromJson(result['user']);
+            completer.complete(_currentUser);
+          }
+
         }).catchError((error) {
           completer.completeError(error);
         });
@@ -59,9 +65,14 @@ class AccountService extends BaseService {
         .post(getAccountServiceEndPoint("login"),
             json.encode(UserServiceData.forLogin(login, password, AppConfig().deviceId)), "", AppConfig().deviceId)
         .then((dynamic result) {
-      _currentUser = Account.fromJson(result['user']);
-      _saveSessionIdLocally();
-      completer.complete(_currentUser);
+
+      if (result['errorCode'] != null) {
+        completer.completeError(new NPError(result['errorCode']));
+      } else {
+        _currentUser = Account.fromJson(result['user']);
+        _saveSessionIdLocally();
+        completer.complete(_currentUser);
+      }
     }).catchError((error) {
       completer.completeError(error);
     });
@@ -72,9 +83,17 @@ class AccountService extends BaseService {
   logout() {}
 
   _saveSessionIdLocally() async {
+    print("saved session id locally...");
     if (_prefs == null) {
       _prefs = await SharedPreferences.getInstance();
     }
     _prefs.setString("SESSION_ID", _currentUser.sessionId);
+  }
+
+  String get sessionId {
+    if (_currentUser == null) {
+      return "35c0d6fd6156188cd79ce437a7a8aee2990b1d2d";
+    }
+    return _currentUser.sessionId;
   }
 }

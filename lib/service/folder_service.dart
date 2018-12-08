@@ -1,13 +1,13 @@
 import 'dart:async';
 
+import 'package:np_mobile/service/account_service.dart';
 import 'package:np_mobile/service/rest_client.dart';
 import 'package:np_mobile/service/base_service.dart';
 import 'package:np_mobile/datamodel/np_folder.dart';
 import 'package:np_mobile/datamodel/folder_tree.dart';
 
 class FolderService extends BaseService {
-  static final Map<String, FolderService> _serviceMap =
-  <String, FolderService>{};
+  static final Map<String, FolderService> _serviceMap = <String, FolderService>{};
 
   factory FolderService(int moduleId, int ownerId) {
     if (_serviceMap.containsKey(_key(moduleId, ownerId))) {
@@ -39,7 +39,7 @@ class FolderService extends BaseService {
     var completer = new Completer();
 
     RestClient _client = new RestClient();
-    _client.get(getFolderServiceEndPoint(_moduleId, _folderId, _ownerId)).then((dynamic result) {
+    _client.get(getFolderServiceEndPoint(_moduleId, _folderId, _ownerId), AccountService().sessionId).then((dynamic result) {
       for (var f in result['folders']) {
         _folders.add(NPFolder.fromJson(f));
       }

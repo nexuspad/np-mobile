@@ -8,9 +8,8 @@ class BaseService {
     return url;
   }
 
-  String getListEndPoint({moduleId, folderId = NPFolder.ROOT, ownerId = 0}) {
-//    String url = AppConfig().serviceHost + _setList(moduleId);
-    String url = "https://lab.nexuspad.com/api" + _setList(moduleId);
+  String getListEndPoint({moduleId, folderId = NPFolder.ROOT, pageId = 1, ownerId = 0}) {
+    String url = AppConfig().serviceHost + _setList(moduleId) + "?folder_id=$folderId&page=$pageId";
     return url;
   }
 

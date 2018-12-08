@@ -8,8 +8,7 @@ class EntryList <T extends NPEntry> {
   List<T> _entries;
   NPFolder _folder;
 
-  EntryList() {
-  }
+  EntryList();
 
   EntryList.fromJson(Map<String, dynamic> data) {
     _listSetting = ListSetting.fromJson(data['listSetting']);
@@ -18,10 +17,12 @@ class EntryList <T extends NPEntry> {
       var entryObj = EntryFactory.initFromJson(e);
       _entries.add(entryObj);
     }
+
+    _sortEntries();
   }
 
   ListSetting get listSetting => _listSetting;
-  List get entries => _entries;
+  List<T> get entries => _entries;
   NPFolder get folder => _folder;
 
   int entryCount() {
@@ -39,7 +40,50 @@ class EntryList <T extends NPEntry> {
     if (_entries == null || _entries.length == 0) {
       return true;
     }
-    print ('not empty');
     return false;
+  }
+
+  mergeList(EntryList anotherList) {
+    if (_listSetting.isTimeLine() && anotherList._listSetting.isTimeLine()) {
+
+    } else if (_listSetting.pages.length > 0 && anotherList._listSetting.pages.length > 0) {
+      // merge the pages
+      anotherList.listSetting.pages.forEach((p) {
+        if (_listSetting.pages.indexOf(p) == -1) {
+          _listSetting.pages.add(p);
+        }
+      });
+      _listSetting.pages.sort();
+
+      List<String> entryIds = anotherList.entries.map((e) => e.entryId).toList();
+
+      // merge the entries
+      _entries = _entries.where((e) => !entryIds.contains(e.entryId)).toList();
+      for (NPEntry e in anotherList.entries) {
+        _entries.add(e);
+      }
+      _sortEntries();
+    }
+  }
+
+  _sortEntries() {
+    if (_listSetting.isTimeLine()) {
+
+    } else {
+      _sortEntriesByUpdateTime();
+    }
+  }
+
+  _sortEntriesByUpdateTime() {
+    _entries.sort((NPEntry a, NPEntry b) {
+      if (a.pinned && !b.pinned) {
+        return -1;
+      }
+      if (!a.pinned && b.pinned) {
+        return 1;
+      }
+
+      return (a.updateTime.isBefore(b.updateTime) ? 1 : (a.updateTime.isAfter(b.updateTime) ? -1 : 0));
+    });
   }
 }

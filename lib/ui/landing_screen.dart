@@ -21,6 +21,7 @@ class LandingScreenState extends State<LandingScreen> {
           _authenticated = false;
         } else {
           _authenticated = true;
+          Navigator.pushReplacementNamed(context, 'organize');
         }
       });
     });
@@ -31,7 +32,7 @@ class LandingScreenState extends State<LandingScreen> {
     if (_authenticated) {
       return Scaffold(
         appBar: AppBar(
-          title: Text('Landing Screen'),
+          title: Text('NexusApp'),
         ),
         body: Center(
           child: Text('initializing'),

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:np_mobile/datamodel/entry_list.dart';
 import 'package:np_mobile/datamodel/list_setting.dart';
+import 'package:np_mobile/service/account_service.dart';
 import 'package:np_mobile/service/base_service.dart';
 import 'package:np_mobile/service/rest_client.dart';
 
@@ -51,12 +52,14 @@ class ListService extends BaseService {
   Future<dynamic> get(ListSetting listQuery) {
     var completer = new Completer();
 
-    if (_entryList != null) { // todo: need to check if the entryList covers the query
+    if (_entryList != null) {
+      // todo: need to check if the entryList covers the query
       completer.complete(_entryList);
     } else {
-      print("make api call");
       RestClient _client = new RestClient();
-      _client.get(getListEndPoint(moduleId: _moduleId)).then((dynamic result) {
+
+      String url = getListEndPoint(moduleId: _moduleId, folderId: _folderId, pageId: listQuery.pageId);
+      _client.get(url, AccountService().sessionId).then((dynamic result) {
         _entryList = new EntryList.fromJson(result['entryList']);
         completer.complete(_entryList);
       }).catchError((error) {
@@ -70,8 +73,16 @@ class ListService extends BaseService {
   Future<dynamic> getNextPage() {
     var completer = new Completer();
     RestClient _client = new RestClient();
-    _client.get(getListEndPoint(moduleId: _moduleId)).then((dynamic result) {
-      _entryList = new EntryList.fromJson(result['entryList']);
+
+    String url = getListEndPoint(
+        moduleId: _moduleId, folderId: _folderId, pageId: _entryList.listSetting.nextPage());
+    _client.get(url, AccountService().sessionId).then((dynamic result) {
+      EntryList entryListNewPage = new EntryList.fromJson(result['entryList']);
+      print("pages.....");
+      print(_entryList.listSetting.pages);
+      print("count before ${_entryList.entries.length}");
+      _entryList.mergeList(entryListNewPage);
+      print("count after ${_entryList.entries.length}");
       completer.complete(_entryList);
     }).catchError((error) {
       completer.completeError(error);
@@ -80,6 +91,6 @@ class ListService extends BaseService {
   }
 
   bool hasMorePage() {
-    return false;
+    return _entryList.listSetting.hasMorePage;
   }
 }

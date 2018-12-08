@@ -25,6 +25,7 @@ class AppConfig {
   }
 
   String _serviceHost = "https://lab.nexuspad.com/api";
+//  String _serviceHost = "http://localhost:8080/api";
   String _deviceId;
 
 

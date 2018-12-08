@@ -1,4 +1,5 @@
 import 'package:np_mobile/datamodel/list_setting.dart';
+import 'package:np_mobile/datamodel/np_folder.dart';
 import 'package:np_mobile/datamodel/np_module.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -17,6 +18,14 @@ class OrganizeBloc {
 
   int getModule() {
     return _currentListSetting.moduleId;
+  }
+
+  NPFolder getFolder() {
+    return new NPFolder(_currentListSetting.moduleId);
+  }
+
+  int getOwnerId() {
+    return _currentListSetting.ownerId;
   }
 
   int getNavigationIndex() {

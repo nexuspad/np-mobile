@@ -1,22 +1,28 @@
+import 'package:np_mobile/datamodel/np_contact.dart';
+import 'package:np_mobile/datamodel/np_doc.dart';
+import 'package:np_mobile/datamodel/np_event.dart';
 import 'package:np_mobile/datamodel/np_module.dart';
 import 'package:np_mobile/datamodel/np_entry.dart';
 import 'package:np_mobile/datamodel/np_bookmark.dart';
+import 'package:np_mobile/datamodel/np_photo.dart';
+import 'package:np_mobile/datamodel/np_upload.dart';
 
 class EntryFactory {
   static NPEntry initFromJson(Map<String, dynamic> data) {
     switch (data['moduleId']) {
       case NPModule.CONTACT:
-        break;
+        return new NPContact.fromJson(data);
       case NPModule.CALENDAR:
-        break;
+        return new NPEvent.fromJson(data);
       case NPModule.DOC:
-        break;
+        print(data);
+        return new NPDoc.fromJson(data);
       case NPModule.BOOKMARK:
         return new NPBookmark.fromJson(data);
       case NPModule.PHOTO:
-        break;
+        return new NPPhoto.fromJson(data);
       case NPModule.UPLOAD:
-        break;
+        return new NPUpload.fromJson(data);
     }
     return null;
   }

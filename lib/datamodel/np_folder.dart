@@ -1,9 +1,12 @@
+import 'package:np_mobile/datamodel/np_user.dart';
+
 class NPFolder {
   static const int ROOT = 0;
   static const int TRASH = 9;
 
   int _moduleId;
   int _folderId;
+  NPUser _owner;
   String _folderName;
   NPFolder _parent;
   List<NPFolder> _subFolders;
@@ -12,6 +15,7 @@ class NPFolder {
     _moduleId = moduleId;
     _folderId = 0;
     _folderName = "root";
+    _subFolders = new List<NPFolder>();
   }
 
   NPFolder.fromJson(Map<String, dynamic> data)
@@ -26,6 +30,14 @@ class NPFolder {
       for (var elem in data['subFolders']) {
         _subFolders.add(NPFolder.fromJson(elem));
       }
+    }
+
+    if (_folderName == null) {
+      _folderId == 0 ? _folderName = 'ROOT' : _folderName = 'ERROR';
+    }
+
+    if (data['owner'] != null) {
+      _owner = NPUser.fromJson(data['owner']);
     }
   }
 
@@ -49,6 +61,8 @@ class NPFolder {
   int get moduleId => _moduleId;
   int get folderId => _folderId;
   String get folderName => _folderName;
+  set folderName(value) => _folderName = value;
   NPFolder get parent => _parent;
   List<NPFolder> get subFolders => _subFolders;
+  NPUser get owner => _owner;
 }

@@ -1,110 +1,47 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:np_mobile/datamodel/entry_list.dart';
 import 'package:np_mobile/datamodel/np_entry.dart';
 import 'package:np_mobile/datamodel/np_folder.dart';
-import 'package:np_mobile/service/list_service.dart';
+import 'package:np_mobile/ui/widgets/base_list.dart';
 import 'package:np_mobile/ui/widgets/entry_tile.dart';
+import 'package:np_mobile/ui/ui_helper.dart';
+import 'package:np_mobile/ui/widgets/infinite_scroll.dart';
 
-class ListWidget extends StatefulWidget {
-  final NPFolder _folder;
-  ListWidget(NPFolder forFolder) : _folder = NPFolder.copy(forFolder);
+class ListWidget extends BaseList {
+  ListWidget(NPFolder forFolder) : super(forFolder);
 
   @override
   State<StatefulWidget> createState() {
+    print('create new state');
     return _ListState();
   }
 }
 
-class _ListState extends State<ListWidget> {
-  ListService _listService;
-  ScrollController _scrollController = new ScrollController();
-  bool _loading = false;
-
-  @override
-  void initState() {
-    super.initState();
-
-    print('calling list service for folder ' + widget._folder.folderName);
-    _loading = true;
-    _listService = new ListService(moduleId: 3, folderId: 0);
-    _listService.get(null).then((dynamic result) {
-      setState(() {
-        print(_listService.entryList.entryCount());
-        _loading = false;
-      });
-    }).catchError((error) {
-      setState(() {
-        _loading = false;
-      });
-      print(error);
-    });
-
-    _scrollController.addListener(() {
-      if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
-        _getMoreData();
-      }
-    });
-  }
-
+class _ListState extends InfiniteScroll<ListWidget> {
   @override
   Widget build(BuildContext context) {
-    if (_listService.entryList.entryCount() == 0) {
-      if (_loading) {
-        return Center(child: _buildProgressIndicator());
+    if (entryList.entryCount() == 0) {
+      if (loading) {
+        return Center(child: buildProgressIndicator());
       } else {
-        return Center(child: Text('empty', style: Theme.of(context).textTheme.display1));
+        return UIHelper.emptyContent(context);
       }
     } else {
-      ListView listView = ListView.builder(
-        itemCount: _listService.entryList.entryCount() + 1,
+      ListView listView = ListView.separated(
+        separatorBuilder: (context, index) => Divider(
+              color: Colors.black12,
+            ),
+        itemCount: entryList.entryCount() + 1,
         itemBuilder: (context, index) {
-          if (index == _listService.entryList.entryCount()) {
-            return _buildProgressIndicator();
+          if (index == entryList.entryCount()) {
+            return buildProgressIndicator();
           } else {
-            NPEntry e = _listService.entryList.entries[index];
+            NPEntry e = entryList.entries[index];
             return EntryTile(e);
           }
         },
-        controller: _scrollController,
+        controller: scrollController,
       );
       return Flexible(child: listView);
     }
-  }
-
-  Widget _buildProgressIndicator() {
-    return new Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: new Center(
-        child: new Opacity(
-          opacity: _loading ? 1.0 : 0.0,
-          child: new CircularProgressIndicator(),
-        ),
-      ),
-    );
-  }
-
-  _getMoreData() async {
-    if (!_loading) {
-      setState(() => _loading = true);
-      await _listService.getNextPage();
-      if (_listService.hasMorePage() == false) {
-        double edge = 50.0;
-        double offsetFromBottom = _scrollController.position.maxScrollExtent - _scrollController.position.pixels;
-        if (offsetFromBottom < edge) {
-          _scrollController.animateTo(_scrollController.offset - (edge - offsetFromBottom),
-              duration: new Duration(milliseconds: 500), curve: Curves.easeOut);
-        }
-      }
-      setState(() {
-        _loading = false;
-      });
-    }
-  }
-
-  @override
-  void dispose() {
-    _scrollController.dispose();
-    super.dispose();
   }
 }

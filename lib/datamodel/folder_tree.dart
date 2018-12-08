@@ -5,14 +5,10 @@ class FolderTree {
 
   FolderTree.fromFolders(int moduleId, List<NPFolder> folders) {
     _root = new NPFolder(moduleId);
-//    for (var f in folders) {
-//      if (f.parent == null || f.parent.folderId == _root.folderId) {
-//        _root.addChild(NPFolder.copy(f));
-//        folders.remove(f);
-//      }
-//    }
 
-    int maxIteration = folders.length ^ 2;
+    folders.sort((a, b) => a.folderName.compareTo(b.folderName));
+
+    int maxIteration = folders.length * folders.length;
     int iteration = 0;
 
     while (folders.length > 0) {
@@ -21,8 +17,8 @@ class FolderTree {
       }
 
       int placedIndex = -1;
-      for (int i=0; i<folders.length; i++) {
-        iteration ++;
+      for (int i = 0; i < folders.length; i++) {
+        iteration++;
         if (_addNode(_root, folders[i])) {
           placedIndex = i;
           break;
@@ -46,7 +42,7 @@ class FolderTree {
       return true;
     } else if (node.subFolders.length > 0) {
       int len = node.subFolders.length;
-      for (var i=0; i<len; i++) {
+      for (var i = 0; i < len; i++) {
         if (_addNode(node.subFolders.elementAt(i), f)) {
           return true;
         }
@@ -57,19 +53,49 @@ class FolderTree {
 
   _deleteNode(NPFolder f) {}
 
-  traverse (NPFolder node, int level) {
+  NPFolder get root => _root;
+
+  NPFolder searchNode(int folderId) {
+    return _searchNodeInternal(folderId, _root);
+  }
+
+  NPFolder _searchNodeInternal(int folderId, NPFolder startNode) {
+    if (startNode == null) {
+      startNode = _root;
+    }
+
+    NPFolder theNode;
+
+    if (startNode.folderId == folderId) {
+      theNode = startNode;
+    } else {
+      if (startNode.subFolders.length > 0) {
+        for (NPFolder f in startNode.subFolders) {
+          if (f.folderId == folderId) {
+            theNode = f;
+          } else {
+            theNode = _searchNodeInternal(folderId, f);
+            if (theNode != null) {
+              break;
+            }
+          }
+        }
+      }
+    }
+    return theNode;
+  }
+
+  traverse(NPFolder node, int level) {
     int padLen = node.folderName.length + level;
     print(node.folderName.padLeft(padLen, "-"));
     if (node.subFolders.length > 0) {
       for (NPFolder n in node.subFolders) {
-        traverse(n, level+1);
+        traverse(n, level + 1);
       }
-     }
+    }
   }
 
   debug() {
     traverse(_root, 1);
   }
-
-  NPFolder get root => _root;
 }

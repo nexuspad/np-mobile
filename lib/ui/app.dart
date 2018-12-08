@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:np_mobile/ui/account_screen.dart';
+import 'package:np_mobile/ui/carousel_screen.dart';
 import 'package:np_mobile/ui/folder_selector_screen.dart';
 import 'landing_screen.dart';
 import 'login_screen.dart';
@@ -13,9 +15,10 @@ class App extends StatelessWidget {
         initialRoute: '/',
         routes: {
           '/': (context) => LandingScreen(),
+          'account': (context) => AccountScreen(),
           'login': (context) => LoginScreen(),
-          'bookmarks': (context) => OrganizerScreen(),
-          'folders': (context) => FolderSelectorScreen(),
+          'organize': (context) => OrganizerScreen(),
+          'folders': (context) => FolderSelectorScreen(context),
         },
       ),
     );

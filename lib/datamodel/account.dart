@@ -1,7 +1,7 @@
-import 'package:np_mobile/datamodel/user.dart';
+import 'package:np_mobile/datamodel/np_user.dart';
 import 'package:np_mobile/datamodel/auth_info.dart';
 
-class Account extends User {
+class Account extends NPUser {
   String _sessionId;
   AuthInfo _auth;
 
