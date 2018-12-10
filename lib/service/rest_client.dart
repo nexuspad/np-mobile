@@ -34,7 +34,6 @@ class RestClient {
       final String res = response.body;
       final int statusCode = response.statusCode;
 
-      print(res);
       if (statusCode < 200 || statusCode > 400 || json == null) {
         throw new Exception("Error while posting data");
       }

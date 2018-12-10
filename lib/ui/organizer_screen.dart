@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:np_mobile/datamodel/np_folder.dart';
 import 'package:np_mobile/datamodel/np_module.dart';
 import 'package:np_mobile/ui/blocs/application_state_provider.dart';
 import 'package:np_mobile/ui/blocs/organize_bloc.dart';
-import 'package:np_mobile/ui/widgets/grid.dart';
-import 'package:np_mobile/ui/widgets/list.dart';
+import 'package:np_mobile/ui/widgets/np_grid.dart';
+import 'package:np_mobile/ui/widgets/np_list.dart';
 import 'package:np_mobile/ui/widgets/np_search_delegate.dart';
 
 enum AccountMenu { account, logout }
 
 class OrganizerScreen extends StatelessWidget {
-  final NPSearchDelegate _delegate = NPSearchDelegate();
+  final NPSearchDelegate _searchDelegate = new NPSearchDelegate();
 
   @override
   Widget build(context) {
@@ -18,17 +17,7 @@ class OrganizerScreen extends StatelessWidget {
 
     return Scaffold(
         appBar: AppBar(title: _appBarTitle(organizeBloc), actions: <Widget>[
-          IconButton(
-            tooltip: 'Search',
-            icon: const Icon(Icons.search),
-            onPressed: () async {
-              final int selected = await showSearch<int>(
-                context: context,
-                delegate: _delegate,
-              );
-              if (selected != null) {}
-            },
-          ),
+          _appBarSearch(organizeBloc),
           // overflow menu
           PopupMenuButton<AccountMenu>(
             onSelected: (AccountMenu selected) {
@@ -49,14 +38,30 @@ class OrganizerScreen extends StatelessWidget {
                 ],
           ),
         ]),
-        body: Container(
-          margin: EdgeInsets.all(8.0),
-          child: Column(
-            children: <Widget>[_listWidget(organizeBloc)],
-          ),
-        ),
+        body: _listWidget(organizeBloc),
         floatingActionButton: _buildActionButton(context),
         bottomNavigationBar: _buildModuleNavigation(context, organizeBloc));
+  }
+
+  Widget _appBarSearch(OrganizeBloc organizeBloc) {
+    return StreamBuilder(
+      stream: organizeBloc.stateStream,
+      builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+        _searchDelegate.listSetting = snapshot.data;
+
+        return IconButton(
+          tooltip: 'Search',
+          icon: const Icon(Icons.search),
+          onPressed: () async {
+            final String selected = await showSearch<String>(
+              context: context,
+              delegate: _searchDelegate,
+            );
+            if (selected != null) {}
+          },
+        );
+      },
+    );
   }
 
   Widget _appBarTitle(OrganizeBloc organizeBloc) {
@@ -74,6 +79,7 @@ class OrganizerScreen extends StatelessWidget {
     );
   }
 
+  /// the list widget will be updated when there is changes in the Bloc.
   Widget _listWidget(OrganizeBloc organizeBloc) {
     return StreamBuilder(
       stream: organizeBloc.stateStream,
@@ -81,9 +87,9 @@ class OrganizerScreen extends StatelessWidget {
         // anytime the builder sees new data in the stateStream, it will re-render the list widget
         if (snapshot.data != null) {
           if (snapshot.data.moduleId == NPModule.PHOTO) {
-            return new GridWidget(new NPFolder(snapshot.data.moduleId));
+            return new NPGridWidget(snapshot.data);
           }
-          return new ListWidget(new NPFolder(snapshot.data.moduleId));
+          return new NPListWidget(snapshot.data);
         } else {
           // todo - a blank screen of loading
           return new Container(width: 0.0, height: 0.0);

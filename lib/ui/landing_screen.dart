@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:np_mobile/datamodel/account.dart';
 import 'package:np_mobile/service/account_service.dart';
+import 'package:np_mobile/ui/blocs/application_state_provider.dart';
 import 'login_screen.dart';
 
 class LandingScreen extends StatefulWidget {
@@ -19,8 +20,12 @@ class LandingScreenState extends State<LandingScreen> {
         Account acct = result;
         if (acct.sessionId == null) {
           _authenticated = false;
+          Navigator.pushReplacementNamed(context, 'login');
         } else {
           _authenticated = true;
+          final organizeBloc = ApplicationStateProvider.forOrganize(context);
+          organizeBloc.setOwnerId(acct.userId);
+          organizeBloc.changeModule(acct.preference.lasAccessedModule);
           Navigator.pushReplacementNamed(context, 'organize');
         }
       });

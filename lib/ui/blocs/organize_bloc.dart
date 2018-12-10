@@ -28,12 +28,18 @@ class OrganizeBloc {
     return _currentListSetting.ownerId;
   }
 
+  void setOwnerId(int ownerId) {
+    _currentListSetting.ownerId = ownerId;
+    _organizeSubject.sink.add(_currentListSetting);
+  }
+
   int getNavigationIndex() {
     return modules.indexOf(_currentListSetting.moduleId);
   }
 
   changeModule(moduleId) {
     _currentListSetting.moduleId = moduleId;
+    _currentListSetting.folderId = NPFolder.ROOT;
     _organizeSubject.sink.add(_currentListSetting);
   }
 

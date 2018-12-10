@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:np_mobile/datamodel/list_setting.dart';
+import 'package:np_mobile/datamodel/np_entry.dart';
 import 'package:np_mobile/datamodel/np_folder.dart';
 import 'package:np_mobile/datamodel/np_photo.dart';
 import 'package:np_mobile/ui/carousel_screen.dart';
 import 'package:np_mobile/ui/widgets/base_list.dart';
-import 'package:np_mobile/ui/widgets/infinite_scroll.dart';
+import 'package:np_mobile/ui/widgets/entry_view.dart';
+import 'package:np_mobile/ui/widgets/infinite_scroll_state.dart';
 
-class GridWidget extends BaseList {
-  GridWidget(NPFolder forFolder) : super(forFolder);
+class NPGridWidget extends BaseList {
+  NPGridWidget(ListSetting setting) : super(setting);
 
   @override
   State<StatefulWidget> createState() {
@@ -15,7 +18,7 @@ class GridWidget extends BaseList {
   }
 }
 
-class _GridState extends InfiniteScroll<BaseList> {
+class _GridState extends InfiniteScrollState<BaseList> {
   @override
   Widget build(BuildContext context) {
     if (entryList.entryCount() == 0) {
@@ -48,15 +51,15 @@ class _GridState extends InfiniteScroll<BaseList> {
           onTap: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => CarouselScreen(entryList.entries, i)),
+              MaterialPageRoute(builder: (context) => CarouselScreen(entryList, i)),
             );
           },
           child: GridItem(
-              photo: entryList.entries[i],
+              entry: entryList.entries[i],
               tileStyle: GridTileStyle.imageOnly,
-              onBannerTap: (NPPhoto photo) {
+              onBannerTap: (NPEntry entry) {
                 setState(() {
-                  photo.pinned = !photo.pinned;
+                  entry.pinned = !entry.pinned;
                 });
               }))
       );
@@ -69,23 +72,21 @@ enum GridTileStyle { imageOnly, oneLine, twoLine }
 typedef BannerTapCallback = void Function(NPPhoto photo);
 
 class GridItem extends StatelessWidget {
-  GridItem({Key key, @required this.photo, @required this.tileStyle, @required this.onBannerTap}) : super(key: key);
+  GridItem({Key key, @required this.entry, @required this.tileStyle, @required this.onBannerTap}) : super(key: key);
 
-  final NPPhoto photo;
+  final NPEntry entry;
   final GridTileStyle tileStyle;
   final BannerTapCallback onBannerTap; // User taps on the photo's header or footer.
 
   @override
   Widget build(BuildContext context) {
     final Widget image = Hero(
-        key: Key(photo.entryId),
-        tag: photo.entryId,
-        child: Image.network(
-          photo.lightbox,
-          fit: BoxFit.cover,
-        ));
+        key: Key(entry.entryId),
+        tag: entry.entryId,
+        child: EntryView.inList(entry)
+    );
 
-    final IconData icon = photo.pinned ? Icons.star : Icons.star_border;
+    final IconData icon = entry.pinned ? Icons.star : Icons.star_border;
 
     switch (tileStyle) {
       case GridTileStyle.imageOnly:
@@ -95,10 +96,10 @@ class GridItem extends StatelessWidget {
         return GridTile(
           header: GestureDetector(
             onTap: () {
-              onBannerTap(photo);
+              onBannerTap(entry);
             },
             child: GridTileBar(
-              title: _GridTitleText(photo.title),
+              title: _GridTitleText(entry.title),
               backgroundColor: Colors.black45,
               leading: Icon(
                 icon,
@@ -113,12 +114,12 @@ class GridItem extends StatelessWidget {
         return GridTile(
           footer: GestureDetector(
             onTap: () {
-              onBannerTap(photo);
+              onBannerTap(entry);
             },
             child: GridTileBar(
               backgroundColor: Colors.black45,
-              title: _GridTitleText(photo.title),
-              subtitle: _GridTitleText(photo.note),
+              title: _GridTitleText(entry.title),
+              subtitle: _GridTitleText(entry.note),
               trailing: Icon(
                 icon,
                 color: Colors.white,

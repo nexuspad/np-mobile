@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:np_mobile/datamodel/np_photo.dart';
+import 'package:np_mobile/datamodel/np_entry.dart';
+import 'package:np_mobile/ui/widgets/entry_view.dart';
 
 const double _kMinFlingVelocity = 400.0;
 
 class EntryPageViewer extends StatefulWidget {
-  const EntryPageViewer({Key key, this.photo}) : super(key: key);
-  final NPPhoto photo;
+  const EntryPageViewer({Key key, this.entry}) : super(key: key);
+  final NPEntry entry;
 
   @override
   _EntryPageViewerState createState() => _EntryPageViewerState();
@@ -85,10 +86,7 @@ class _EntryPageViewerState extends State<EntryPageViewer> with SingleTickerProv
           transform: Matrix4.identity()
             ..translate(_offset.dx, _offset.dy)
             ..scale(_scale),
-          child: Image.network(
-            widget.photo.lightbox,
-            fit: BoxFit.cover,
-          ),
+          child: EntryView.fullPage(widget.entry),
         ),
       ),
     );

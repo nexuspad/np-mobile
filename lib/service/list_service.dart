@@ -9,7 +9,10 @@ import 'package:np_mobile/service/rest_client.dart';
 class ListService extends BaseService {
   static final Map<String, ListService> _listServiceMap = <String, ListService>{};
 
-  factory ListService({moduleId, folderId, ownerId = 0, startDate = '', endDate = '', keyword = ''}) {
+  factory ListService({moduleId, folderId, ownerId = 0, startDate = '', endDate = '', String keyword = ''}) {
+    if (keyword == null || keyword.length == 0) {
+      keyword = '';
+    }
     String k = _key(moduleId, folderId, ownerId, keyword);
     if (_listServiceMap.containsKey(k)) {
       return _listServiceMap[k];
@@ -58,7 +61,10 @@ class ListService extends BaseService {
     } else {
       RestClient _client = new RestClient();
 
-      String url = getListEndPoint(moduleId: _moduleId, folderId: _folderId, pageId: listQuery.pageId);
+      String url = getListEndPoint(moduleId: _moduleId, folderId: _folderId, pageId: listQuery.pageId, ownerId: _ownerId);
+      if (listQuery.hasSearchQuery()) {
+        url = getSearchEndPoint(moduleId: _moduleId, folderId: _folderId, keyword: _keyword, ownerId: _ownerId);
+      }
       _client.get(url, AccountService().sessionId).then((dynamic result) {
         _entryList = new EntryList.fromJson(result['entryList']);
         completer.complete(_entryList);

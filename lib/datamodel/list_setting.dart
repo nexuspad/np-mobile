@@ -1,5 +1,7 @@
 import 'dart:math';
 
+import 'package:np_mobile/datamodel/np_folder.dart';
+
 class ListSetting {
   int _moduleId;
   int _folderId = 0;
@@ -32,11 +34,37 @@ class ListSetting {
     }
   }
 
+  /// this is only used in list widget to decide if the organizing topic has changed.
+  ListSetting.shallowCopy(ListSetting otherSetting) {
+    _moduleId = otherSetting.moduleId;
+    _folderId = otherSetting._folderId;
+    _ownerId = otherSetting._ownerId;
+    _keyword = otherSetting.keyword;
+  }
+
   ListSetting.forPageQuery(int moduleId, int folderId, int ownerId, int pageId) {
     _moduleId = moduleId;
     _folderId = folderId;
     _ownerId = ownerId;
     _pageId = pageId;
+  }
+
+  ListSetting.forSearchQuery(int moduleId, String keyword) {
+    _moduleId = moduleId;
+    _folderId = NPFolder.ROOT;
+    _ownerId = 0;
+    _pageId = 0;
+    _keyword = keyword;
+  }
+
+  bool equals(ListSetting otherSetting) {
+    if (_moduleId != otherSetting._moduleId ||
+        _folderId != otherSetting._folderId ||
+        _ownerId != otherSetting.ownerId ||
+        _keyword != otherSetting._keyword) {
+      return false;
+    }
+    return true;
   }
 
   int totalPages() {
@@ -77,10 +105,32 @@ class ListSetting {
   int get moduleId => _moduleId;
   set moduleId(value) => _moduleId = value;
 
+  int get folderId => _folderId;
+  set folderId(value) => _folderId = value;
+
   int get pageId => _pageId;
+  set pageId(value) => _pageId = value;
+
+  String get keyword => _keyword;
+  set keyword(value) => _keyword = value;
 
   int get ownerId => _ownerId;
+  set ownerId(value) => _ownerId = value;
+
   List get pages => _pages;
+
+  String get startDate => _startDate;
+  set startDate(value) => _startDate = value;
+
+  String get endDate => _endDate;
+  set endDate(value) => _endDate = value;
+
+  bool hasSearchQuery() {
+    if (_keyword != null && _keyword.trim() != '') {
+      return true;
+    }
+    return false;
+  }
 
   bool get hasMorePage {
     if (_countPerPage != 0) {
@@ -101,6 +151,6 @@ class ListSetting {
   }
 
   String toString() {
-    return "$_moduleId $_folderId $_countPerPage";
+    return "module:$_moduleId folder:$_folderId owner:$_ownerId keyword:$keyword";
   }
 }

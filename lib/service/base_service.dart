@@ -13,6 +13,11 @@ class BaseService {
     return url;
   }
 
+  String getSearchEndPoint({moduleId, folderId = NPFolder.ROOT, keyword, ownerId = 0}) {
+    String url = AppConfig().serviceHost + _setList(moduleId) + "?keyword=$keyword";
+    return url;
+  }
+
   String getEntryEndPoint({moduleId = NPModule.UNASSIGNED, entryId = '', ownerId = 0}) {
     String url = _setEntry(moduleId);
     return AppConfig().serviceHost + url + '/' + entryId;

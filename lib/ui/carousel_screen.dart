@@ -1,37 +1,45 @@
 import 'package:flutter/material.dart';
+import 'package:np_mobile/datamodel/entry_list.dart';
 import 'package:np_mobile/datamodel/np_entry.dart';
+import 'package:np_mobile/ui/widgets/base_list.dart';
 import 'package:np_mobile/ui/widgets/entry_full_page.dart';
+import 'package:np_mobile/ui/widgets/infinite_scroll_state.dart';
 
-class CarouselScreen extends StatefulWidget {
+/// for displaying entries in a PageView
+class CarouselScreen extends BaseList {
   final int _initialIndex;
-  final List<NPEntry> _entries;
-  CarouselScreen(List entries, int index) :
-        _entries = entries, _initialIndex = index;
+  final EntryList _entryList;
+  CarouselScreen(EntryList entryList, int index) :
+        _entryList = entryList, _initialIndex = index, super(entryList.listSetting);
   @override
   State<StatefulWidget> createState() => CarouselScreenState();
 }
 
-class CarouselScreenState extends State<CarouselScreen> {
+class CarouselScreenState extends InfiniteScrollState<CarouselScreen> {
   PageController _controller;
 
   @override
   void initState() {
     super.initState();
     _controller = new PageController(initialPage: widget._initialIndex);
+
+    _controller.addListener(() {
+      // todo - load more entries at the last page
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    List pages = widget._entries.map((entry) =>
+    List pages = widget._entryList.entries.map((entry) =>
       Hero(
         tag: entry.entryId,
-        child: EntryPageViewer(key: Key(entry.entryId), photo: entry),
+        child: EntryPageViewer(key: Key(entry.entryId), entry: entry),
       )
     ).toList();
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('carousel'),
+        title: Text(''),
       ),
       body: SizedBox.expand(
         child: new Stack(

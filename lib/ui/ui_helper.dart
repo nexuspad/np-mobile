@@ -12,6 +12,10 @@ class UIHelper {
     return lum < 150;
   }
 
+  static Color lightBlue() {
+    return Color(0x8034b0fc);
+  }
+
   static Widget emptyContent(context) {
     return Center(child: Text('empty', style: Theme.of(context).textTheme.display1));
   }

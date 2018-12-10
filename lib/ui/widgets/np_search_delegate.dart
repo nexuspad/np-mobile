@@ -1,8 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:np_mobile/datamodel/list_setting.dart';
+import 'package:np_mobile/ui/widgets/np_list.dart';
 
-class NPSearchDelegate extends SearchDelegate<int> {
-  final List<int> _data = List<int>.generate(100001, (int i) => i).reversed.toList();
-  final List<int> _history = <int>[42607, 85604, 66374, 44, 174];
+class NPSearchDelegate extends SearchDelegate<String> {
+  ListSetting _listSetting;
+  List<String> _data ;
+  List<String> _history = <String>['test'];
+
+  NPSearchDelegate();
+
+  set listSetting(value) => _listSetting = value;
 
   @override
   Widget buildLeading(BuildContext context) {
@@ -20,14 +27,12 @@ class NPSearchDelegate extends SearchDelegate<int> {
 
   @override
   Widget buildSuggestions(BuildContext context) {
-
-    final Iterable<int> suggestions = query.isEmpty
-        ? _history
-        : _data.where((int i) => '$i'.startsWith(query));
+    _data = new List();
+    final Iterable<String> suggestions = query.isEmpty ? _history : _data.where((String s) => s.startsWith(query));
 
     return _SuggestionList(
       query: query,
-      suggestions: suggestions.map<String>((int i) => '$i').toList(),
+      suggestions: suggestions.toList(),
       onSelected: (String suggestion) {
         query = suggestion;
         showResults(context);
@@ -37,35 +42,7 @@ class NPSearchDelegate extends SearchDelegate<int> {
 
   @override
   Widget buildResults(BuildContext context) {
-    final int searched = int.tryParse(query);
-    if (searched == null || !_data.contains(searched)) {
-      return Center(
-        child: Text(
-          '"$query"\n is not a valid integer between 0 and 100,000.\nTry again.',
-          textAlign: TextAlign.center,
-        ),
-      );
-    }
-
-    return ListView(
-      children: <Widget>[
-        _ResultCard(
-          title: 'This integer',
-          integer: searched,
-          searchDelegate: this,
-        ),
-        _ResultCard(
-          title: 'Next integer',
-          integer: searched + 1,
-          searchDelegate: this,
-        ),
-        _ResultCard(
-          title: 'Previous integer',
-          integer: searched - 1,
-          searchDelegate: this,
-        ),
-      ],
-    );
+    return new NPListWidget(ListSetting.forSearchQuery(_listSetting.moduleId, query));
   }
 
   @override
@@ -73,53 +50,21 @@ class NPSearchDelegate extends SearchDelegate<int> {
     return <Widget>[
       query.isEmpty
           ? IconButton(
-        tooltip: 'Voice Search',
-        icon: const Icon(Icons.mic),
-        onPressed: () {
-          query = 'TODO: implement voice input';
-        },
-      )
+              tooltip: 'Voice Search',
+              icon: const Icon(Icons.mic),
+              onPressed: () {
+                query = 'TODO: implement voice input';
+              },
+            )
           : IconButton(
-        tooltip: 'Clear',
-        icon: const Icon(Icons.clear),
-        onPressed: () {
-          query = '';
-          showSuggestions(context);
-        },
-      )
+              tooltip: 'Clear',
+              icon: const Icon(Icons.clear),
+              onPressed: () {
+                query = '';
+                showSuggestions(context);
+              },
+            )
     ];
-  }
-}
-
-class _ResultCard extends StatelessWidget {
-  const _ResultCard({this.integer, this.title, this.searchDelegate});
-
-  final int integer;
-  final String title;
-  final SearchDelegate<int> searchDelegate;
-
-  @override
-  Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
-    return GestureDetector(
-      onTap: () {
-        searchDelegate.close(context, integer);
-      },
-      child: Card(
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            children: <Widget>[
-              Text(title),
-              Text(
-                '$integer',
-                style: theme.textTheme.headline.copyWith(fontSize: 72.0),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
   }
 }
 
