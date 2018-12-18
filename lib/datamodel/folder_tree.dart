@@ -1,10 +1,17 @@
 import 'package:np_mobile/datamodel/np_folder.dart';
+import 'package:np_mobile/datamodel/np_user.dart';
 
 class FolderTree {
   NPFolder _root;
+  Map<int, NPFolder> _lookup;
 
-  FolderTree.fromFolders(int moduleId, List<NPFolder> folders) {
-    _root = new NPFolder(moduleId);
+  FolderTree.fromFolders(int moduleId, List<NPFolder> folders, NPUser owner) {
+    _root = new NPFolder(moduleId, owner);
+
+    _lookup = new Map();
+    for (NPFolder f in folders) {
+      _lookup[f.folderId] = f;
+    }
 
     folders.sort((a, b) => a.folderName.compareTo(b.folderName));
 
@@ -93,6 +100,10 @@ class FolderTree {
         traverse(n, level + 1);
       }
     }
+  }
+
+  NPFolder getFolder(int folderId) {
+    return _lookup[folderId];
   }
 
   debug() {

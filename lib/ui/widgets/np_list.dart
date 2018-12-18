@@ -7,10 +7,10 @@ import 'package:np_mobile/ui/ui_helper.dart';
 import 'package:np_mobile/ui/widgets/entry_view.dart';
 import 'package:np_mobile/ui/widgets/infinite_scroll_state.dart';
 
-enum EntryMenu { favorite, update, delete }
-
 class NPListWidget extends BaseList {
-  NPListWidget(ListSetting setting) : super(setting);
+  NPListWidget(ListSetting setting) : super(setting) {
+    print('====> new NPListWidget construction');
+  }
 
   @override
   State<StatefulWidget> createState() {
@@ -22,7 +22,7 @@ class NPListWidget extends BaseList {
 class _ListState extends InfiniteScrollState<NPListWidget> {
   @override
   Widget build(BuildContext context) {
-    if (entryList.entryCount() == 0) {
+    if (entryList == null || entryList.entryCount() == 0) {
       if (loading) {
         return Center(child: buildProgressIndicator());
       } else {
@@ -54,25 +54,13 @@ class _ListState extends InfiniteScrollState<NPListWidget> {
       title: new Row(
         children: <Widget>[
           new Expanded(
-              child: Material(
-                  child: InkWell(
-                    splashColor: UIHelper.lightBlue(),
-                    highlightColor: UIHelper.lightBlue(),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => CarouselScreen(entryList, index)),
-                      );
-                    },
-                    child: new Hero(
-                        key: Key(e.entryId),
-                        tag: e.entryId,
-                        child: new Text(
-                          e.title,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        )),
-                  ))),
+            child: new Text(
+              e.title,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.title,
+            ),
+          ),
           new PopupMenuButton<EntryMenu>(
             onSelected: (EntryMenu result) {},
             itemBuilder: (BuildContext context) => <PopupMenuEntry<EntryMenu>>[
@@ -92,7 +80,14 @@ class _ListState extends InfiniteScrollState<NPListWidget> {
           )
         ],
       ),
-      subtitle: EntryView.inList(e),
+      subtitle: EntryView.inList(e, context),
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => CarouselScreen(entryList, index)),
+        );
+      },
+      enabled: true,
     );
   }
 }

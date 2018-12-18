@@ -6,10 +6,20 @@ class AppConfig {
   static AppConfig _instance = new AppConfig.internal();
   AppConfig.internal();
 
+  Future<dynamic> test() {
+    var completer = new Completer();
+    _serviceHost = "http://localhost:8080/api";
+    _deviceId = 'nptest';
+    completer.complete(_instance);
+    return completer.future;
+  }
+
   Future<dynamic> env() {
     var completer = new Completer();
 
-    if (_instance._deviceId != null) {
+    _serviceHost = "https://lab.nexuspad.com/api";
+
+    if (_deviceId != null) {
       completer.complete(_instance);
     } else {
       DeviceId.getID.then((dynamic result) {
@@ -24,11 +34,10 @@ class AppConfig {
     return completer.future;
   }
 
-  String _serviceHost = "https://lab.nexuspad.com/api";
-//  String _serviceHost = "http://localhost:8080/api";
+  String _serviceHost;
   String _deviceId;
 
-
   String get serviceHost => _serviceHost;
+  set serviceHost(value) => _serviceHost = value;
   String get deviceId => _deviceId;
 }

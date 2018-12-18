@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:np_mobile/datamodel/entry_list.dart';
-import 'package:np_mobile/datamodel/np_entry.dart';
+import 'package:np_mobile/datamodel/np_module.dart';
+import 'package:np_mobile/service/list_service.dart';
 import 'package:np_mobile/ui/widgets/base_list.dart';
 import 'package:np_mobile/ui/widgets/entry_full_page.dart';
-import 'package:np_mobile/ui/widgets/infinite_scroll_state.dart';
 
 /// for displaying entries in a PageView
 class CarouselScreen extends BaseList {
@@ -15,14 +15,17 @@ class CarouselScreen extends BaseList {
   State<StatefulWidget> createState() => CarouselScreenState();
 }
 
-class CarouselScreenState extends InfiniteScrollState<CarouselScreen> {
+class CarouselScreenState extends State<CarouselScreen> {
+  ListService _listService;
+  EntryList _entryList;
   PageController _controller;
+  bool loading = false;
 
   @override
   void initState() {
     super.initState();
+    _entryList = widget._entryList;
     _controller = new PageController(initialPage: widget._initialIndex);
-
     _controller.addListener(() {
       // todo - load more entries at the last page
     });
@@ -30,12 +33,19 @@ class CarouselScreenState extends InfiniteScrollState<CarouselScreen> {
 
   @override
   Widget build(BuildContext context) {
-    List pages = widget._entryList.entries.map((entry) =>
-      Hero(
-        tag: entry.entryId,
-        child: EntryPageViewer(key: Key(entry.entryId), entry: entry),
-      )
-    ).toList();
+    List pages;
+
+    // only hero for PHOTO
+    if (widget._entryList.listSetting.moduleId == NPModule.PHOTO) {
+      pages = widget._entryList.entries.map((entry) =>
+          Hero(
+            tag: entry.entryId,
+            child: EntryPageViewer(key: Key(entry.entryId), entry: entry),
+          )
+      ).toList();
+    } else {
+      pages = widget._entryList.entries.map((entry) => EntryPageViewer(key: Key(entry.entryId), entry: entry)).toList();
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -47,6 +57,8 @@ class CarouselScreenState extends InfiniteScrollState<CarouselScreen> {
             new PageView.builder(
               physics: new AlwaysScrollableScrollPhysics(),
               controller: _controller,
+              onPageChanged: (index) {
+              },
               itemBuilder: (BuildContext context, int index) {
                 return pages[index % pages.length];
               },
@@ -55,5 +67,31 @@ class CarouselScreenState extends InfiniteScrollState<CarouselScreen> {
         ),
       ),
     );
+  }
+
+  _getMoreData() {
+    if (_listService.hasMorePage() == false) {
+      print('list has no more page to load');
+      return;
+    }
+    if (!loading) {
+      setState(() {
+        loading = true;
+      });
+
+      _listService.getNextPage().then((dynamic result) {
+        setState(() {
+          loading = false;
+          _entryList = _listService.entryList;
+        });
+        if (_listService.hasMorePage() == false) {
+        }
+      }).catchError((error) {
+        setState(() {
+          loading = false;
+        });
+        print(error);
+      });
+    }
   }
 }

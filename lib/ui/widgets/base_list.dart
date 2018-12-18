@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:np_mobile/datamodel/list_setting.dart';
 
+enum EntryMenu { favorite, update, delete }
+
 class BaseList extends StatefulWidget {
   final ListSetting listSetting;
 
@@ -11,5 +13,8 @@ class BaseList extends StatefulWidget {
   State<StatefulWidget> createState() {
     // always overwritten by child class
     return null;
+  }
+
+  void refresh() {
   }
 }

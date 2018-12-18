@@ -9,7 +9,7 @@ enum FolderMenu { update, delete }
 class FolderTile extends ListTile {
   final NPFolder _folder;
 
-  FolderTile(NPFolder folder): _folder = folder;
+  FolderTile(NPFolder folder) : _folder = folder;
 
   @override
   get onTap {
@@ -25,18 +25,17 @@ class FolderTile extends ListTile {
       children: <Widget>[
         new Expanded(child: new Text(_folder.folderName)),
         new PopupMenuButton<FolderMenu>(
-          onSelected: (FolderMenu result) {
-          },
+          onSelected: (FolderMenu result) {},
           itemBuilder: (BuildContext context) => <PopupMenuEntry<FolderMenu>>[
-            const PopupMenuItem<FolderMenu>(
-              value: FolderMenu.update,
-              child: Text('update'),
-            ),
-            const PopupMenuItem<FolderMenu>(
-              value: FolderMenu.delete,
-              child: Text('delete'),
-            ),
-          ],
+                const PopupMenuItem<FolderMenu>(
+                  value: FolderMenu.update,
+                  child: Text('update'),
+                ),
+                const PopupMenuItem<FolderMenu>(
+                  value: FolderMenu.delete,
+                  child: Text('delete'),
+                ),
+              ],
         )
       ],
     );

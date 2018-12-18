@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:np_mobile/datamodel/account.dart';
-import 'package:np_mobile/datamodel/np_error.dart';
+import 'package:np_mobile/service/np_error.dart';
 import 'package:np_mobile/service/account_service.dart';
+import 'package:np_mobile/ui/ui_helper.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -48,14 +49,7 @@ class LoginFormState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     var loginBtn = new Container(
-      child: new RaisedButton(
-        onPressed: _submit,
-        child: new Text(
-          "login",
-          style: new TextStyle(color: Colors.white),
-        ),
-        color: Theme.of(context).accentColor,
-      ),
+      child: UIHelper.actionButton(context, "login", () {_submit();}),
       margin: new EdgeInsets.only(top: 20.0),
     );
 

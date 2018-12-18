@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:np_mobile/datamodel/folder_tree.dart';
 import 'package:np_mobile/datamodel/np_folder.dart';
-import 'package:np_mobile/datamodel/np_module.dart';
 import 'package:np_mobile/service/folder_service.dart';
 import 'package:np_mobile/ui/blocs/application_state_provider.dart';
+import 'package:np_mobile/ui/blocs/organize_bloc.dart';
 
 enum FolderMenu { update, delete }
 
@@ -23,6 +23,8 @@ class FolderSelectionState extends State<FolderSelectorScreen> {
   FolderService _folderService;
   FolderTree _folderTree;
 
+  OrganizeBloc organizeBloc;
+
   FolderSelectionState(NPFolder folder) {
     _currentRootFolder = folder;
   }
@@ -31,11 +33,10 @@ class FolderSelectionState extends State<FolderSelectorScreen> {
   void initState() {
     super.initState();
 
-    print('calling folder service for module ');
+    print('calling folder service for module ${_currentRootFolder.moduleId} for owner: ${_currentRootFolder.owner.userId}');
     _loading = true;
 
-    // todo - owner id
-    _folderService = new FolderService(_currentRootFolder.moduleId, 0);
+    _folderService = new FolderService(_currentRootFolder.moduleId, _currentRootFolder.owner.userId);
     _folderService.get().then((dynamic result) {
       _folderTree = result;
       setState(() {
@@ -53,6 +54,8 @@ class FolderSelectionState extends State<FolderSelectorScreen> {
 
   @override
   Widget build(BuildContext context) {
+    organizeBloc = ApplicationStateProvider.forOrganize(context);
+
     return Scaffold(
         appBar: AppBar(
           title: Text('select folder'),
@@ -103,8 +106,7 @@ class FolderSelectionState extends State<FolderSelectorScreen> {
       Padding(
         padding: EdgeInsets.only(right: 6.0),
       ),
-      Expanded(child: new Text(_currentRootFolder.folderName, style: Theme.of(context).textTheme.title))
-
+      Expanded(child: new Text(_currentRootFolder.folderName, style: Theme.of(context).textTheme.headline))
     ];
 
     if (_currentRootFolder.folderId != 0) {
@@ -124,7 +126,7 @@ class FolderSelectionState extends State<FolderSelectorScreen> {
 
   ListTile _folderTile(NPFolder folder) {
     List<Widget> tileItems = [
-      new Expanded(child: new Text(folder.folderName)),
+      new Expanded(child: new Text(folder.folderName, style: Theme.of(context).textTheme.title,)),
       new PopupMenuButton<FolderMenu>(
         onSelected: (FolderMenu result) {},
         itemBuilder: (BuildContext context) => <PopupMenuEntry<FolderMenu>>[
@@ -154,7 +156,10 @@ class FolderSelectionState extends State<FolderSelectorScreen> {
     }
 
     return  ListTile(
-        onTap: () {},
+        onTap: () {
+          organizeBloc.changeFolder(folder.folderId);
+          Navigator.pop(context);
+        },
         title: Row(
           children: tileItems
         ));

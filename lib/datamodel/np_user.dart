@@ -11,5 +11,12 @@ class NPUser {
         _userName = data['userName'],
         _displayName = data['displayName'];
 
+  Map<String, dynamic> toJson() => {
+    'userId': _userId
+  };
+
   int get userId => _userId;
+  String get email => _email;
+  String get userName => _userName;
+  String get displayName => _displayName;
 }

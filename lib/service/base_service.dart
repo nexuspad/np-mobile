@@ -8,9 +8,14 @@ class BaseService {
     return url;
   }
 
-  String getListEndPoint({moduleId, folderId = NPFolder.ROOT, pageId = 1, ownerId = 0}) {
-    String url = AppConfig().serviceHost + _setList(moduleId) + "?folder_id=$folderId&page=$pageId";
-    return url;
+  String getListEndPoint({moduleId, folderId = NPFolder.ROOT, pageId = 1, startDate, endDate, ownerId = 0}) {
+    if (startDate != null && endDate != null) {
+      return AppConfig().serviceHost +
+          _setList(moduleId) +
+          "?folder_id=all&start_date=$startDate&end_date=$endDate";
+    } else {
+      return AppConfig().serviceHost + _setList(moduleId) + "?folder_id=$folderId&page=$pageId";
+    }
   }
 
   String getSearchEndPoint({moduleId, folderId = NPFolder.ROOT, keyword, ownerId = 0}) {
@@ -18,9 +23,20 @@ class BaseService {
     return url;
   }
 
-  String getEntryEndPoint({moduleId = NPModule.UNASSIGNED, entryId = '', ownerId = 0}) {
+  String getEntryEndPoint({moduleId = NPModule.UNASSIGNED, entryId, ownerId = 0}) {
     String url = _setEntry(moduleId);
-    return AppConfig().serviceHost + url + '/' + entryId;
+    if (entryId != null) {
+      return AppConfig().serviceHost + url + '/' + entryId;
+    }
+    return AppConfig().serviceHost + url;
+  }
+
+  String getUploadPlaceholder(int moduleId) {
+    return AppConfig().serviceHost + _setModule(moduleId) + '/placeholder';
+  }
+
+  String getUploadCompletionEndPoint(int moduleId, String entryId) {
+    return AppConfig().serviceHost + _setModule(moduleId) + '/s3/$entryId';
   }
 
   String getAccountServiceEndPoint(String action) {
@@ -32,7 +48,7 @@ class BaseService {
       case NPModule.CONTACT:
         return '/contact';
       case NPModule.CALENDAR:
-        return '/calendar';
+        return '/event';
       case NPModule.DOC:
         return '/doc';
       case NPModule.BOOKMARK:

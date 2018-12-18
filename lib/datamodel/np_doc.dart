@@ -1,4 +1,6 @@
 import 'package:np_mobile/datamodel/np_entry.dart';
+import 'package:np_mobile/datamodel/np_folder.dart';
+import 'package:np_mobile/datamodel/np_module.dart';
 import 'package:np_mobile/datamodel/np_upload.dart';
 
 enum TextFormat {plain, html}
@@ -7,6 +9,11 @@ class NPDoc extends NPEntry {
   TextFormat _format;
   String _description;
   List<NPUpload> _attachments;
+
+  NPDoc.blank(NPFolder inFolder) {
+    moduleId = NPModule.DOC;
+    folder = inFolder;
+  }
 
   NPDoc.fromJson(Map<String, dynamic> data) : super.fromJson(data) {
     if (data['format'] != null) {

@@ -10,32 +10,52 @@ class RestClient {
   factory RestClient() => _instance;
 
   Future<dynamic> get(String url, String sessionId) {
-    print('make API get call at: ' + url);
+    print('RestClient: make API get call at: ' + url);
     return http.get(url, headers: _headers(sessionId)).then((http.Response response) {
       final String res = response.body;
       final int statusCode = response.statusCode;
 
       if (statusCode < 200 || statusCode > 400 || json == null) {
-        throw new Exception("Error while fetching data");
+        throw new Exception("Error while fetching data with status code $statusCode");
       }
       return json.decode(res);
     });
   }
 
-  Future<dynamic> post(String url, body, sessionId, uuid) {
-    print('make API post call at: ' + url);
-    print('request payload: ' + body);
+  Future<dynamic> postJson(String url, body, sessionId, uuid) {
+    print('RestClient: make API post call at: $url, sessionId: $sessionId, uuid: $uuid');
+    print('RestClient: request payload: $body');
+
+    Map headers = _headers(sessionId);
+    headers['Content-type'] = 'application/json';
+
     return http
         .post(url,
             body: body,
-            headers: {'Content-type':'application/json'},
+            headers: headers,
             encoding: Encoding.getByName("utf-8"))
         .then((http.Response response) {
       final String res = response.body;
       final int statusCode = response.statusCode;
 
       if (statusCode < 200 || statusCode > 400 || json == null) {
-        throw new Exception("Error while posting data");
+        throw new Exception("Error while posting data with status code $statusCode");
+      }
+      return json.decode(res);
+    });
+  }
+
+  Future<dynamic> delete(String url, sessionId, uuid) {
+    print('RestClient: make API delete call at: $url');
+    return http
+        .delete(url,
+        headers: {'Content-type':'application/json'})
+        .then((http.Response response) {
+      final String res = response.body;
+      final int statusCode = response.statusCode;
+
+      if (statusCode < 200 || statusCode > 400 || json == null) {
+        throw new Exception("Error while deleting data with status code $statusCode");
       }
       return json.decode(res);
     });
@@ -48,10 +68,6 @@ class RestClient {
       h['utoken'] = sessionId;
     }
     h['uuid'] = AppConfig().deviceId;
-
-    // for dev
-//    h['utoken'] = '35c0d6fd6156188cd79ce437a7a8aee2990b1d2d';
-//    h['uuid'] = 'dae7a728979476beeef79eb0f4525970';
     return h;
   }
 }

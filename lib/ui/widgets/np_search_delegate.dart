@@ -1,11 +1,17 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:np_mobile/datamodel/list_setting.dart';
+import 'package:np_mobile/datamodel/np_module.dart';
+import 'package:np_mobile/ui/ui_helper.dart';
+import 'package:np_mobile/ui/widgets/np_grid.dart';
 import 'package:np_mobile/ui/widgets/np_list.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class NPSearchDelegate extends SearchDelegate<String> {
   ListSetting _listSetting;
-  List<String> _data ;
-  List<String> _history = <String>['test'];
+  List<String> _data;
+  List<String> _history;
 
   NPSearchDelegate();
 
@@ -30,19 +36,34 @@ class NPSearchDelegate extends SearchDelegate<String> {
     _data = new List();
     final Iterable<String> suggestions = query.isEmpty ? _history : _data.where((String s) => s.startsWith(query));
 
-    return _SuggestionList(
-      query: query,
-      suggestions: suggestions.toList(),
-      onSelected: (String suggestion) {
-        query = suggestion;
-        showResults(context);
-      },
-    );
+    return _SuggestionList(query, (String suggestion) {
+      query = suggestion;
+      showResults(context);
+    });
   }
 
   @override
   Widget buildResults(BuildContext context) {
-    return new NPListWidget(ListSetting.forSearchQuery(_listSetting.moduleId, query));
+    SharedPreferences.getInstance().then((pref) {
+      List<String> historyStored = pref.getStringList("SEARCH_HISTORY");
+      if (historyStored != null) {
+        historyStored.insert(0, query);
+        historyStored.removeLast();
+      } else {
+        historyStored = new List<String>();
+        historyStored.add(query);
+      }
+      pref.setStringList("SEARCH_HISTORY", historyStored);
+
+    }).catchError((error) {
+      print('cannot store to shared preference' + error);
+    });
+
+    if (_listSetting.moduleId == NPModule.PHOTO) {
+      return NPListWidget(ListSetting.forSearchModule(_listSetting.moduleId, query));
+    } else {
+      return NPGridWidget(ListSetting.forSearchModule(_listSetting.moduleId, query));
+    }
   }
 
   @override
@@ -69,37 +90,63 @@ class NPSearchDelegate extends SearchDelegate<String> {
 }
 
 class _SuggestionList extends StatelessWidget {
-  const _SuggestionList({this.suggestions, this.query, this.onSelected});
+  _SuggestionList(query, onSelected)
+      : _query = query,
+        _onSelected = onSelected;
 
-  final List<String> suggestions;
-  final String query;
-  final ValueChanged<String> onSelected;
+  final String _query;
+  final ValueChanged<String> _onSelected;
+
+  Future _historySuggestion() async {
+    var completer = new Completer();
+
+    SharedPreferences _pref = await SharedPreferences.getInstance();
+    List<String> historyStored = _pref.getStringList("SEARCH_HISTORY");
+
+    completer.complete(historyStored);
+    return completer.future;
+  }
 
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
-    return ListView.builder(
-      itemCount: suggestions.length,
-      itemBuilder: (BuildContext context, int i) {
-        final String suggestion = suggestions[i];
-        return ListTile(
-          leading: query.isEmpty ? const Icon(Icons.history) : const Icon(null),
-          title: RichText(
-            text: TextSpan(
-              text: suggestion.substring(0, query.length),
-              style: theme.textTheme.subhead.copyWith(fontWeight: FontWeight.bold),
-              children: <TextSpan>[
-                TextSpan(
-                  text: suggestion.substring(query.length),
-                  style: theme.textTheme.subhead,
+
+    return FutureBuilder<dynamic>(
+      future: _historySuggestion(),
+      builder: (context, snapshot) {
+        if (snapshot.hasError) print(snapshot.error);
+
+        print('suggestions::::: ${snapshot.data}');
+
+        if (snapshot.hasData) {
+          List<String> suggestions = snapshot.data;
+          return ListView.builder(
+            itemCount: suggestions.length,
+            itemBuilder: (BuildContext context, int i) {
+              final String suggestion = suggestions[i];
+              return ListTile(
+                leading: _query.isEmpty ? const Icon(Icons.history) : const Icon(null),
+                title: RichText(
+                  text: TextSpan(
+                    text: suggestion.substring(0, _query.length),
+                    style: theme.textTheme.subhead.copyWith(fontWeight: FontWeight.bold),
+                    children: <TextSpan>[
+                      TextSpan(
+                        text: suggestion.substring(_query.length),
+                        style: theme.textTheme.subhead,
+                      ),
+                    ],
+                  ),
                 ),
-              ],
-            ),
-          ),
-          onTap: () {
-            onSelected(suggestion);
-          },
-        );
+                onTap: () {
+                  _onSelected(suggestion);
+                },
+              );
+            },
+          );
+        } else {
+          return UIHelper.emptySpace();
+        }
       },
     );
   }

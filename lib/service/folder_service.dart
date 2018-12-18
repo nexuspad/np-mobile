@@ -22,7 +22,6 @@ class FolderService extends BaseService {
   FolderService._internal(int moduleId, int ownerId) {
     this._moduleId = moduleId;
     this._ownerId = ownerId;
-    this._folders = new List<NPFolder>();
   }
 
   static String _key(moduleId, ownerId) {
@@ -33,21 +32,35 @@ class FolderService extends BaseService {
   int _moduleId;
   int _folderId;
   int _ownerId;
-  List<NPFolder> _folders;
+  FolderTree _folderTree;
 
   Future<dynamic> get() {
     var completer = new Completer();
 
-    RestClient _client = new RestClient();
-    _client.get(getFolderServiceEndPoint(_moduleId, _folderId, _ownerId), AccountService().sessionId).then((dynamic result) {
-      for (var f in result['folders']) {
-        _folders.add(NPFolder.fromJson(f));
-      }
-      completer.complete(FolderTree.fromFolders(_moduleId, _folders));
-    }).catchError((error) {
-      completer.completeError(error);
-    });
+    if (_folderTree != null) {
+      print('use existing folder tree for module: $_moduleId owner: $_ownerId');
+      completer.complete(_folderTree);
+    } else {
+      RestClient _client = new RestClient();
+      _client.get(getFolderServiceEndPoint(_moduleId, _folderId, _ownerId), AccountService().sessionId).then((dynamic result) {
+        List<NPFolder> folders = new List();
+        for (var f in result['folders']) {
+          folders.add(NPFolder.fromJson(f));
+        }
+        _folderTree = FolderTree.fromFolders(_moduleId, folders, AccountService().acctOwner);
+        completer.complete(_folderTree);
+      }).catchError((error) {
+        completer.completeError(error);
+      });
+    }
 
     return completer.future;
+  }
+
+  NPFolder getFolder(int folderId) {
+    if (_folderTree != null) {
+      return _folderTree.getFolder(folderId);
+    }
+    return null;
   }
 }

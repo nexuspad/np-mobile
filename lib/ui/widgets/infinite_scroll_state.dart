@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:np_mobile/datamodel/entry_list.dart';
 import 'package:np_mobile/datamodel/list_setting.dart';
 import 'package:np_mobile/service/list_service.dart';
+import 'package:np_mobile/ui/blocs/application_state_provider.dart';
 import 'package:np_mobile/ui/widgets/base_list.dart';
 
 class InfiniteScrollState<T extends BaseList> extends State<T> {
@@ -14,7 +15,6 @@ class InfiniteScrollState<T extends BaseList> extends State<T> {
   void initState() {
     super.initState();
     loadEntries();
-
     scrollController.addListener(() {
       if (scrollController.position.pixels == scrollController.position.maxScrollExtent) {
         _getMoreData();
@@ -29,10 +29,16 @@ class InfiniteScrollState<T extends BaseList> extends State<T> {
       print(
           'reload entries because setting has changed: old = [${oldWidget.listSetting.toString()}] new = [${widget.listSetting.toString()}]');
       loadEntries();
+    } else {
+      // when pull refresh happens, this is set to 0 as a signal to refresh the list.
+      if (widget.listSetting.totalCount == 0) {
+        print('reload entries because page refresh is requested');
+        loadEntries(refresh: true);
+      }
     }
   }
 
-  loadEntries() {
+  loadEntries({refresh: false}) {
     ListSetting listSetting = widget.listSetting;
     print('calling list service for setting [${listSetting.toString()}]');
 
@@ -47,10 +53,16 @@ class InfiniteScrollState<T extends BaseList> extends State<T> {
         ownerId: listSetting.ownerId,
         startDate: listSetting.startDate,
         endDate: listSetting.endDate,
-        keyword: listSetting.keyword);
+        keyword: listSetting.keyword,
+        refresh: refresh);
 
-    ListSetting listQuery =
-        ListSetting.forPageQuery(listSetting.moduleId, listSetting.folderId, listSetting.ownerId, listSetting.pageId);
+    ListSetting listQuery;
+
+    if (listSetting.startDate != null && listSetting.endDate != null) {
+      listQuery = ListSetting.forTimelineQuery(listSetting.moduleId, listSetting.folderId, listSetting.ownerId, listSetting.startDate, listSetting.endDate);
+    } else {
+      listQuery = ListSetting.forPageQuery(listSetting.moduleId, listSetting.folderId, listSetting.ownerId, listSetting.pageId);
+    }
 
     if (listSetting.hasSearchQuery()) {
       listQuery.pageId = 0;
@@ -61,6 +73,9 @@ class InfiniteScrollState<T extends BaseList> extends State<T> {
       setState(() {
         loading = false;
         entryList = _listService.entryList;
+        // update the total count in the bloc
+        final organizeBloc = ApplicationStateProvider.forOrganize(context);
+        organizeBloc.updateTotalCount(entryList.listSetting.totalCount);
       });
     }).catchError((error) {
       setState(() {

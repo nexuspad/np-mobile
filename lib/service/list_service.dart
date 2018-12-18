@@ -9,12 +9,13 @@ import 'package:np_mobile/service/rest_client.dart';
 class ListService extends BaseService {
   static final Map<String, ListService> _listServiceMap = <String, ListService>{};
 
-  factory ListService({moduleId, folderId, ownerId = 0, startDate = '', endDate = '', String keyword = ''}) {
+  factory ListService(
+      {moduleId, folderId, ownerId = 0, startDate = '', endDate = '', String keyword = '', bool refresh = false}) {
     if (keyword == null || keyword.length == 0) {
       keyword = '';
     }
     String k = _key(moduleId, folderId, ownerId, keyword);
-    if (_listServiceMap.containsKey(k)) {
+    if (refresh == false && _listServiceMap.containsKey(k)) {
       return _listServiceMap[k];
     } else {
       final listService = ListService._internal(
@@ -55,18 +56,35 @@ class ListService extends BaseService {
   Future<dynamic> get(ListSetting listQuery) {
     var completer = new Completer();
 
-    if (_entryList != null) {
-      // todo: need to check if the entryList covers the query
+    if (_entryList != null)
+      print('compare with the existing list [${_entryList.listSetting.toString()}] for [${listQuery.toString()}]');
+
+    if (_entryList != null && _entryList.listSetting.isSuperSetOf(listQuery)) {
+      print('use the existing list [${_entryList.listSetting.toString()}] for [${listQuery.toString()}]');
       completer.complete(_entryList);
     } else {
       RestClient _client = new RestClient();
 
-      String url = getListEndPoint(moduleId: _moduleId, folderId: _folderId, pageId: listQuery.pageId, ownerId: _ownerId);
+      String url = getListEndPoint(
+          moduleId: _moduleId,
+          folderId: _folderId,
+          pageId: listQuery.pageId,
+          startDate: listQuery.startDate,
+          endDate: listQuery.endDate,
+          ownerId: _ownerId);
+
       if (listQuery.hasSearchQuery()) {
         url = getSearchEndPoint(moduleId: _moduleId, folderId: _folderId, keyword: _keyword, ownerId: _ownerId);
       }
       _client.get(url, AccountService().sessionId).then((dynamic result) {
-        _entryList = new EntryList.fromJson(result['entryList']);
+        if (_entryList == null) {
+          _entryList = new EntryList.fromJson(result['entryList']);
+        } else {
+          EntryList entryListNewPage = new EntryList.fromJson(result['entryList']);
+          _entryList.mergeList(entryListNewPage);
+        }
+        _entryList.listSetting.setExpiration();
+
         completer.complete(_entryList);
       }).catchError((error) {
         completer.completeError(error);
@@ -77,23 +95,9 @@ class ListService extends BaseService {
   }
 
   Future<dynamic> getNextPage() {
-    var completer = new Completer();
-    RestClient _client = new RestClient();
-
-    String url = getListEndPoint(
-        moduleId: _moduleId, folderId: _folderId, pageId: _entryList.listSetting.nextPage());
-    _client.get(url, AccountService().sessionId).then((dynamic result) {
-      EntryList entryListNewPage = new EntryList.fromJson(result['entryList']);
-      print("pages.....");
-      print(_entryList.listSetting.pages);
-      print("count before ${_entryList.entries.length}");
-      _entryList.mergeList(entryListNewPage);
-      print("count after ${_entryList.entries.length}");
-      completer.complete(_entryList);
-    }).catchError((error) {
-      completer.completeError(error);
-    });
-    return completer.future;
+    ListSetting listQuery = ListSetting.shallowCopy(_entryList.listSetting);
+    listQuery.pageId = _entryList.listSetting.nextPage();
+    return get(listQuery);
   }
 
   bool hasMorePage() {

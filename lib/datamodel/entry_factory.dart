@@ -15,7 +15,6 @@ class EntryFactory {
       case NPModule.CALENDAR:
         return new NPEvent.fromJson(data);
       case NPModule.DOC:
-        print(data);
         return new NPDoc.fromJson(data);
       case NPModule.BOOKMARK:
         return new NPBookmark.fromJson(data);

@@ -86,7 +86,7 @@ class _EntryPageViewerState extends State<EntryPageViewer> with SingleTickerProv
           transform: Matrix4.identity()
             ..translate(_offset.dx, _offset.dy)
             ..scale(_scale),
-          child: EntryView.fullPage(widget.entry),
+          child: EntryView.fullPage(widget.entry, context),
         ),
       ),
     );

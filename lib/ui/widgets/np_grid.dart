@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:np_mobile/datamodel/list_setting.dart';
 import 'package:np_mobile/datamodel/np_entry.dart';
-import 'package:np_mobile/datamodel/np_folder.dart';
 import 'package:np_mobile/datamodel/np_photo.dart';
 import 'package:np_mobile/ui/carousel_screen.dart';
 import 'package:np_mobile/ui/widgets/base_list.dart';
@@ -9,7 +8,9 @@ import 'package:np_mobile/ui/widgets/entry_view.dart';
 import 'package:np_mobile/ui/widgets/infinite_scroll_state.dart';
 
 class NPGridWidget extends BaseList {
-  NPGridWidget(ListSetting setting) : super(setting);
+  NPGridWidget(ListSetting setting) : super(setting) {
+    print('====> new NPGridWidget construction');
+  }
 
   @override
   State<StatefulWidget> createState() {
@@ -21,7 +22,7 @@ class NPGridWidget extends BaseList {
 class _GridState extends InfiniteScrollState<BaseList> {
   @override
   Widget build(BuildContext context) {
-    if (entryList.entryCount() == 0) {
+    if (entryList == null || entryList.entryCount() == 0) {
       if (loading) {
         return Center(child: buildProgressIndicator());
       } else {
@@ -39,7 +40,7 @@ class _GridState extends InfiniteScrollState<BaseList> {
         children: _gridItems(entryList.entries),
         controller: scrollController,
       );
-      return Flexible(child: gridView);
+      return gridView;
     }
   }
 
@@ -83,7 +84,7 @@ class GridItem extends StatelessWidget {
     final Widget image = Hero(
         key: Key(entry.entryId),
         tag: entry.entryId,
-        child: EntryView.inList(entry)
+        child: EntryView.inList(entry, context)
     );
 
     final IconData icon = entry.pinned ? Icons.star : Icons.star_border;

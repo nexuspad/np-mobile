@@ -4,11 +4,9 @@ import 'package:np_mobile/datamodel/auth_info.dart';
 class UserServiceData {
   Account _account;
 
-  static UserServiceData forLogin(String login, String password, String deviceId) {
-    UserServiceData serviceData = new UserServiceData();
-    serviceData._account = new Account();
-    serviceData._account.auth = new AuthInfo(login, password, deviceId);
-    return serviceData;
+  UserServiceData(String login, String password, String deviceId) {
+    _account = new Account();
+    _account.auth = new AuthInfo(login, password, deviceId);
   }
 
   Map<String, dynamic> toJson() => {

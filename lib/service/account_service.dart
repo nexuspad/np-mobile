@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:np_mobile/datamodel/np_error.dart';
+import 'package:np_mobile/service/np_error.dart';
 import 'package:np_mobile/service/rest_client.dart';
 import 'package:np_mobile/service/base_service.dart';
 import 'package:np_mobile/service/user_service_data.dart';
@@ -15,6 +15,22 @@ class AccountService extends BaseService {
   static AccountService _instance = new AccountService.internal();
   factory AccountService() => _instance;
   AccountService.internal();
+
+  mock() async {
+    await AppConfig().test();
+
+    var completer = new Completer();
+
+    if (_currentUser == null) {
+      print("init user object");
+      _currentUser = new Account();
+    }
+
+    _currentUser.sessionId = 'nptest';
+    completer.complete(_currentUser);
+
+    return completer.future;
+  }
 
   init() async {
     await AppConfig().env();
@@ -31,18 +47,18 @@ class AccountService extends BaseService {
         _prefs = await SharedPreferences.getInstance();
       }
 
-      if (_prefs.getString("SESSION_ID") != null) {
-        _currentUser.setSessionId(_prefs.getString("SESSION_ID"));
+      String storedSessionId = _prefs.getString("SESSION_ID");
+
+      if (storedSessionId != null) {
+        _currentUser.sessionId = storedSessionId;
         String url = getAccountServiceEndPoint("hello") + '/' + _currentUser.sessionId;
-        RestClient _client = new RestClient();
-        _client.get(url, null).then((dynamic result) {
+        RestClient().get(url, null).then((dynamic result) {
           if (result['errorCode'] != null) {
-            completer.completeError(new NPError(result['errorCode']));
+            completer.completeError(new NPError(cause: result['errorCode']));
           } else {
             _currentUser = Account.fromJson(result['user']);
             completer.complete(_currentUser);
           }
-
         }).catchError((error) {
           completer.completeError(error);
         });
@@ -62,12 +78,12 @@ class AccountService extends BaseService {
 
     RestClient _client = new RestClient();
     _client
-        .post(getAccountServiceEndPoint("login"),
-            json.encode(UserServiceData.forLogin(login, password, AppConfig().deviceId)), "", AppConfig().deviceId)
+        .postJson(getAccountServiceEndPoint("login"),
+            json.encode(UserServiceData(login, password, AppConfig().deviceId)), "", AppConfig().deviceId)
         .then((dynamic result) {
 
       if (result['errorCode'] != null) {
-        completer.completeError(new NPError(result['errorCode']));
+        completer.completeError(new NPError(cause: result['errorCode']));
       } else {
         _currentUser = Account.fromJson(result['user']);
         _saveSessionIdLocally();
@@ -96,4 +112,13 @@ class AccountService extends BaseService {
     }
     return _currentUser.sessionId;
   }
+
+  int get userId {
+    if (_currentUser == null) {
+      return 0;
+    }
+    return _currentUser.userId;
+  }
+
+  Account get acctOwner => _currentUser;
 }

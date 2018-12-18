@@ -1,6 +1,5 @@
-import 'dart:math';
-
 import 'package:np_mobile/datamodel/np_folder.dart';
+import 'package:np_mobile/datamodel/np_module.dart';
 
 class ListSetting {
   int _moduleId;
@@ -8,7 +7,7 @@ class ListSetting {
   int _ownerId;
   bool _includeEntriesInAllFolders = false;
   String _keyword;
-  int _pageId = 0; // this is only for querying
+  int _pageId; // this is only for querying
   int _countPerPage;
   String _startDate;
   String _endDate;
@@ -16,13 +15,34 @@ class ListSetting {
   int _totalCount;
   List<int> _pages;
 
-  ListSetting(int moduleId) {
-    _moduleId = moduleId;
+  DateTime _expiration;
+
+  ListSetting() {
+    _moduleId = NPModule.DOC; // just to avoid a null value
+    _folderId = 0;
+    _pageId = 1;
     _pages = new List<int>();
+    _totalCount = 0;
   }
 
   ListSetting.fromJson(Map<String, dynamic> data) {
     _moduleId = data['moduleId'];
+    if (data['folders'] != null) {
+      _folderId = data['folders'][0];
+    }
+
+    if (data['owner'] != null) {
+      _ownerId = data['owner']['userId'];
+    }
+
+    if (data['startDate'] != null &&
+        !data['startDate'].isEmpty &&
+        data['endDate'] != null &&
+        !data['endDate'].isEmpty) {
+      _startDate = data['startDate'];
+      _endDate = data['endDate'];
+    }
+
     _keyword = data['keyword'];
     _totalCount = data['totalCount'];
     _countPerPage = data['countPerPage'];
@@ -32,14 +52,20 @@ class ListSetting {
         _pages.add(p);
       });
     }
+
+    _expiration = DateTime.now().add(Duration(minutes: 30));
   }
 
   /// this is only used in list widget to decide if the organizing topic has changed.
   ListSetting.shallowCopy(ListSetting otherSetting) {
     _moduleId = otherSetting.moduleId;
     _folderId = otherSetting._folderId;
+    _startDate = otherSetting.startDate;
+    _endDate = otherSetting.endDate;
     _ownerId = otherSetting._ownerId;
+    _pageId = otherSetting.pageId;
     _keyword = otherSetting.keyword;
+    _totalCount = otherSetting.totalCount;
   }
 
   ListSetting.forPageQuery(int moduleId, int folderId, int ownerId, int pageId) {
@@ -47,21 +73,34 @@ class ListSetting {
     _folderId = folderId;
     _ownerId = ownerId;
     _pageId = pageId;
+    _totalCount = 0;
   }
 
-  ListSetting.forSearchQuery(int moduleId, String keyword) {
+  ListSetting.forTimelineQuery(int moduleId, int folderId, int ownerId, String startYmd, String endYmd) {
+    _moduleId = moduleId;
+    _folderId = folderId;
+    _ownerId = ownerId;
+    _startDate = startYmd;
+    _endDate = endYmd;
+    _totalCount = 0;
+  }
+
+  ListSetting.forSearchModule(int moduleId, String keyword) {
     _moduleId = moduleId;
     _folderId = NPFolder.ROOT;
     _ownerId = 0;
     _pageId = 0;
     _keyword = keyword;
+    _totalCount = 0;
   }
 
   bool equals(ListSetting otherSetting) {
     if (_moduleId != otherSetting._moduleId ||
         _folderId != otherSetting._folderId ||
         _ownerId != otherSetting.ownerId ||
-        _keyword != otherSetting._keyword) {
+        _keyword != otherSetting._keyword ||
+        _startDate != otherSetting._startDate ||
+        _endDate != otherSetting._endDate) {
       return false;
     }
     return true;
@@ -90,12 +129,20 @@ class ListSetting {
           return true;
         }
       }
-    } else {
+    } else if (_startDate != null &&
+        _endDate != null &&
+        otherSetting._startDate != null &&
+        otherSetting._endDate != null) {
+      DateTime myStart = DateTime.parse(_startDate);
+      DateTime myEnd = DateTime.parse(_endDate);
+      DateTime otherStart = DateTime.parse(otherSetting._startDate);
+      DateTime otherEnd = DateTime.parse(otherSetting._endDate);
+
       if (_moduleId == otherSetting._moduleId &&
-          this._folderId == otherSetting._folderId &&
+          _folderId == otherSetting._folderId &&
           _ownerId == otherSetting._ownerId &&
-          DateTime.parse(_startDate).isBefore(DateTime.parse(otherSetting._startDate)) &&
-          DateTime.parse(_endDate).isAfter(DateTime.parse(otherSetting._endDate))) {
+          (myStart.isBefore(otherStart) || myStart.isAtSameMomentAs(otherStart)) &&
+          (myEnd.isAfter(otherEnd) || myEnd.isAtSameMomentAs(otherEnd))) {
         return true;
       }
     }
@@ -125,6 +172,24 @@ class ListSetting {
   String get endDate => _endDate;
   set endDate(value) => _endDate = value;
 
+  int get totalCount => _totalCount;
+  set totalCount(value) => _totalCount = value;
+
+  bool get expires {
+    if (_expiration != null && _expiration.add(Duration(minutes: 30)).isAfter(DateTime.now())) {
+      return false;
+    }
+    return true;
+  }
+
+  void setExpiration({minutes: 30}) {
+    _expiration = DateTime.now().add(Duration(minutes: 30));
+  }
+
+  void makeExpire() {
+    _expiration = DateTime.now();
+  }
+
   bool hasSearchQuery() {
     if (_keyword != null && _keyword.trim() != '') {
       return true;
@@ -151,6 +216,12 @@ class ListSetting {
   }
 
   String toString() {
-    return "module:$_moduleId folder:$_folderId owner:$_ownerId keyword:$keyword";
+    if (_pages != null && _pages.length > 0) {
+      return "module:$_moduleId, folder:$_folderId, owner:$_ownerId, pages:$_pages, keyword:$keyword, total: $_totalCount";
+    } else if (_startDate != null && _endDate != null) {
+      return "module:$_moduleId, folder:$_folderId, owner:$_ownerId, startDate:$_startDate, endDate:$_endDate, keyword:$keyword";
+    } else {
+      return "module:$_moduleId, folder:$_folderId, owner:$_ownerId, page:$pageId, keyword:$keyword, total: $_totalCount";
+    }
   }
 }

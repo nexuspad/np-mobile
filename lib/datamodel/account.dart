@@ -21,14 +21,15 @@ class Account extends NPUser {
     }
   }
 
-  Map<String, dynamic> toJson() => {
-    'auth': _auth
-  };
-
-  setSessionId(String sessionId) {
-    _sessionId = sessionId;
+  Map<String, dynamic> toJson() {
+    Map data = super.toJson();
+    if (_auth != null) {
+      data['auth'] = _auth.toJson();
+    }
+    return data;
   }
 
+  set sessionId(value) => _sessionId = value;
   set auth(value) => _auth = value;
 
   String get sessionId => _sessionId;
