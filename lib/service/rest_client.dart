@@ -16,7 +16,8 @@ class RestClient {
       final int statusCode = response.statusCode;
 
       if (statusCode < 200 || statusCode > 400 || json == null) {
-        throw new Exception("Error while fetching data with status code $statusCode");
+        print("Error while fetching data with status code $statusCode");
+        return _errorResult(statusCode.toString());
       }
       return json.decode(res);
     });
@@ -39,7 +40,7 @@ class RestClient {
       final int statusCode = response.statusCode;
 
       if (statusCode < 200 || statusCode > 400 || json == null) {
-        throw new Exception("Error while posting data with status code $statusCode");
+        print("Error while posting data with status code $statusCode");
       }
       return json.decode(res);
     });
@@ -69,5 +70,9 @@ class RestClient {
     }
     h['uuid'] = AppConfig().deviceId;
     return h;
+  }
+
+  Map<String, String> _errorResult(String errorCode) {
+    return {'errorCode': errorCode};
   }
 }

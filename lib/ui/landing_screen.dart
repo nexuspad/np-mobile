@@ -29,6 +29,9 @@ class LandingScreenState extends State<LandingScreen> {
           Navigator.pushReplacementNamed(context, 'organize');
         }
       });
+    }).catchError((error) {
+      print('cannot init account $error');
+      Navigator.pushReplacementNamed(context, 'login');
     });
   }
 

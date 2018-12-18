@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:device_id/device_id.dart';
 
 class AppConfig {
   factory AppConfig() => _instance;
@@ -19,16 +18,18 @@ class AppConfig {
 
     _serviceHost = "https://lab.nexuspad.com/api";
 
+    _deviceId = '123abc';
+    
     if (_deviceId != null) {
       completer.complete(_instance);
     } else {
-      DeviceId.getID.then((dynamic result) {
-        _deviceId = result;
-        print("app env: " + _deviceId + ' ' + _serviceHost);
-        completer.complete(_instance);
-      }).catchError((error) {
-        completer.completeError(error);
-      });
+      // DeviceId.getID.then((dynamic result) {
+      //   _deviceId = result;
+      //   print("app env: " + _deviceId + ' ' + _serviceHost);
+      //   completer.complete(_instance);
+      // }).catchError((error) {
+      //   completer.completeError(error);
+      // });
     }
 
     return completer.future;

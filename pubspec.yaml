@@ -20,8 +20,6 @@ dependencies:
   rxdart:
   sprintf:
   shared_preferences:
-  device_id:
-  unique_identifier:
   font_awesome_flutter:
   url_launcher:
   flutter_html_view:
