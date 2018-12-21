@@ -4,6 +4,7 @@ import 'package:np_mobile/datamodel/np_folder.dart';
 import 'package:np_mobile/datamodel/np_module.dart';
 import 'package:np_mobile/datamodel/recurrence.dart';
 import 'package:np_mobile/datamodel/timeline_key.dart';
+import 'package:np_mobile/ui/ui_helper.dart';
 
 class NPEvent extends NPEntry {
   int _recurId = 1;
@@ -14,15 +15,30 @@ class NPEvent extends NPEntry {
   String _localEndDate;
   String _localEndTime;
 
+  // this is the name: America/New_York
   String _timezone;
   String _timezoneOffset;
 
   Recurrence _recurrence;
   EventReminder _reminder;
 
-  NPEvent.blank(NPFolder inFolder) {
+  @override
+  NPEvent.newInFolder(NPFolder inFolder) : super.newInFolder(inFolder) {
     moduleId = NPModule.EVENT;
-    folder = inFolder;
+    _startDateTime = DateTime.now();
+    _localStartDate = UIHelper.npDateStr(_startDateTime);
+    _timezone = DateTime.now().timeZoneName;
+  }
+
+  NPEvent.copy(NPEvent event) : super.copy(event) {
+    _startDateTime = event.startDateTime;
+    _endDateTime = event.endDateTime;
+    _localStartDate = event.localStartDate;
+    _localStartTime = event.localStartTime;
+    _localEndDate = event.localEndDate;
+    _localEndTime = event.localEndTime;
+    _timezone = event.timezone;
+    _timezoneOffset = event._timezoneOffset;
   }
 
   NPEvent.fromJson(Map<String, dynamic> data) : super.fromJson(data) {
@@ -49,10 +65,31 @@ class NPEvent extends NPEntry {
     _endDateTime = DateTime.parse(endDateTimeISO8601);
   }
 
+  Map<String, dynamic> toJson() {
+    Map data = super.toJson();
+    data['localStartDate'] = _localStartDate;
+    if (_localStartTime != null) {
+      data['localStartTime'] = _localStartTime;
+    }
+    if (_localEndDate != null) {
+      data['_localEndDate'] = _localEndDate;
+    }
+    if (_localEndTime != null) {
+      data['localEndTime'] = _localEndTime;
+    }
+    data['timezone'] = _timezone;
+
+    return data;
+  }
+
   String get localStartDate => _localStartDate;
+  set localStartDate(value) => _localStartDate = value;
   String get localStartTime => _localStartTime;
+  set localStartTime(value) => _localStartTime = value;
   String get localEndDate => _localEndDate;
+  set localEndDate(value) => _localEndDate = value;
   String get localEndTime => _localEndTime;
+  set localEndTime(value) => _localEndTime = value;
 
   DateTime get startDateTime => _startDateTime;
   DateTime get endDateTime => _endDateTime;
@@ -62,5 +99,10 @@ class NPEvent extends NPEntry {
   @override
   TimelineKey get timelineKey {
     return new TimelineKey(_startDateTime);
+  }
+
+  @override
+  String toString() {
+    return this.runtimeType.toString() + ' ' + this.toJson().toString();
   }
 }

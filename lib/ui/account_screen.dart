@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:np_mobile/ui/ui_helper.dart';
 
 class AccountScreen extends StatefulWidget {
   @override
@@ -13,6 +14,7 @@ class AccountState extends State<AccountScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('account'),
+        backgroundColor: UIHelper.blackCanvas(),
       ),
       body: Center(
         child: Text('under construction'),

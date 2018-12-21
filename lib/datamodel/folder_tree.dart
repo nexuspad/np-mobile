@@ -6,7 +6,7 @@ class FolderTree {
   Map<int, NPFolder> _lookup;
 
   FolderTree.fromFolders(int moduleId, List<NPFolder> folders, NPUser owner) {
-    _root = new NPFolder(moduleId, owner);
+    _root = new NPFolder(moduleId, NPFolder.ROOT, owner);
 
     _lookup = new Map();
     for (NPFolder f in folders) {

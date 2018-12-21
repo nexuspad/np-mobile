@@ -6,8 +6,9 @@ import 'package:np_mobile/ui/widgets/bookmark_view.dart';
 import 'package:np_mobile/ui/widgets/contact_view.dart';
 import 'package:np_mobile/ui/widgets/doc_view.dart';
 import 'package:np_mobile/ui/widgets/event_view.dart';
+import 'package:np_mobile/ui/widgets/photo_view.dart';
 
-class EntryView {
+class EntryViewUtil {
   static dynamic inList(NPEntry entry, BuildContext context) {
     switch (entry.moduleId) {
       case NPModule.CONTACT:
@@ -19,7 +20,7 @@ class EntryView {
       case NPModule.BOOKMARK:
         return BookmarkView.subTitleInList(entry, context);
       case NPModule.PHOTO:
-        return _photo(entry, context);
+        return PhotoView.photoInGrid(entry, context);
     }
     return null;
   }
@@ -35,16 +36,8 @@ class EntryView {
       case NPModule.BOOKMARK:
         return BookmarkView.fullPage(entry, context);
       case NPModule.PHOTO:
-        return _photo(entry, context);
+        return PhotoView.photoFullview(entry, context);
     }
     return null;
-  }
-
-
-  static Image _photo(NPPhoto photo, BuildContext context) {
-    return Image.network(
-      photo.lightbox,
-      fit: BoxFit.cover,
-    );
   }
 }

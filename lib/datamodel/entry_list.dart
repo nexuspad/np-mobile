@@ -1,7 +1,14 @@
+import 'package:np_mobile/datamodel/np_bookmark.dart';
+import 'package:np_mobile/datamodel/np_contact.dart';
+import 'package:np_mobile/datamodel/np_doc.dart';
 import 'package:np_mobile/datamodel/np_entry.dart';
+import 'package:np_mobile/datamodel/np_event.dart';
 import 'package:np_mobile/datamodel/np_folder.dart';
 import 'package:np_mobile/datamodel/list_setting.dart';
 import 'package:np_mobile/datamodel/entry_factory.dart';
+import 'package:np_mobile/datamodel/np_module.dart';
+import 'package:np_mobile/datamodel/np_photo.dart';
+import 'package:np_mobile/datamodel/np_upload.dart';
 import 'package:np_mobile/ui/ui_helper.dart';
 
 class EntryList<T extends NPEntry> {
@@ -44,6 +51,61 @@ class EntryList<T extends NPEntry> {
       return true;
     }
     return false;
+  }
+
+  updateEntries(List<NPEntry> entries) {
+    entries.forEach((e) => _updateEntry(e));
+    _sortEntries();
+  }
+
+  _updateEntry(NPEntry entry) {
+    int len = _entries.length;
+    for (int i=0; i<len; i++) {
+      if (entry.keyMatches(_entries[i])) {
+        var replacement;
+        switch (entry.moduleId) {
+          case NPModule.CONTACT:
+            replacement = NPContact.copy(entry);
+            break;
+          case NPModule.CALENDAR:
+            replacement = NPEvent.copy(entry);
+            break;
+          case NPModule.DOC:
+            replacement = NPDoc.copy(entry);
+            break;
+          case NPModule.BOOKMARK:
+            replacement = NPBookmark.copy(entry);
+            break;
+          case NPModule.PHOTO:
+            replacement = NPPhoto.copy(entry);
+            break;
+        }
+        if (replacement != null) {
+          _entries[i] = replacement;
+          break;
+        }
+      }
+    }
+  }
+
+  deleteEntries(List<NPEntry> entries) {
+    entries.forEach((e) {
+      _deleteEntry(e);
+    });
+  }
+
+  _deleteEntry(NPEntry entry) {
+    if (_entries == null) return;
+    int len = _entries.length;
+    int idxToRemove = -1;
+    for (int i=0; i<len; i++) {
+      if (entry.keyMatches(_entries[i])) {
+        idxToRemove = i;
+        break;
+      }
+    }
+    _entries.removeAt(idxToRemove);
+    _listSetting.totalCount --;
   }
 
   mergeList(EntryList anotherList) {

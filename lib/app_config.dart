@@ -1,9 +1,14 @@
 import 'dart:async';
+import 'dart:math';
+
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AppConfig {
   factory AppConfig() => _instance;
   static AppConfig _instance = new AppConfig.internal();
   AppConfig.internal();
+
+  SharedPreferences _prefs;
 
   Future<dynamic> test() {
     var completer = new Completer();
@@ -13,23 +18,27 @@ class AppConfig {
     return completer.future;
   }
 
-  Future<dynamic> env() {
+  Future<dynamic> env() async {
     var completer = new Completer();
 
     _serviceHost = "https://lab.nexuspad.com/api";
 
-    _deviceId = '123abc';
-    
-    if (_deviceId != null) {
+    if (_deviceId != null && _deviceId.isNotEmpty) {
       completer.complete(_instance);
     } else {
-      // DeviceId.getID.then((dynamic result) {
-      //   _deviceId = result;
-      //   print("app env: " + _deviceId + ' ' + _serviceHost);
-      //   completer.complete(_instance);
-      // }).catchError((error) {
-      //   completer.completeError(error);
-      // });
+      if (_prefs == null) {
+        _prefs = await SharedPreferences.getInstance();
+      }
+
+      _deviceId = _prefs.getString("DEVICE_ID");
+
+      if (_deviceId == null || _deviceId.isEmpty) {
+        _deviceId = RandomString.generate(10);
+        _prefs.setString("DEVICE_ID", _deviceId);
+        print('AppConfig: generate and stored device id: $_deviceId');
+      }
+
+      completer.complete(_instance);
     }
 
     return completer.future;
@@ -40,5 +49,24 @@ class AppConfig {
 
   String get serviceHost => _serviceHost;
   set serviceHost(value) => _serviceHost = value;
-  String get deviceId => _deviceId;
+  String get deviceId => _deviceId;}
+
+class RandomString {
+  static final String upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  static final String lower = upper.toLowerCase();
+  static final String digits = "0123456789";
+  static final String all = upper + lower + digits;
+
+  static generate(int length) {
+    int max = all.length - 1;
+
+    var random = new Random();
+    List<String> randomChars = new List();
+    for (int i = 0; i< length; i++) {
+      randomChars.add(all[random.nextInt(max)]);
+    }
+
+    randomChars.shuffle();
+    return randomChars.join();
+  }
 }

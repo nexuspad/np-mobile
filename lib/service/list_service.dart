@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:np_mobile/datamodel/entry_list.dart';
 import 'package:np_mobile/datamodel/list_setting.dart';
+import 'package:np_mobile/datamodel/np_entry.dart';
 import 'package:np_mobile/service/account_service.dart';
 import 'package:np_mobile/service/base_service.dart';
 import 'package:np_mobile/service/rest_client.dart';
@@ -38,6 +39,18 @@ class ListService extends BaseService {
     return k;
   }
 
+  static List<ListService> activeServices(int moduleId, int ownerId) {
+    List<ListService> services = new List();
+    if (_listServiceMap != null) {
+      _listServiceMap.forEach((k, v) {
+        if (v._moduleId == moduleId && v._ownerId == ownerId) {
+          services.add(v);
+        }
+      });
+    }
+    return services;
+  }
+
   int _moduleId;
   int _folderId;
   int _ownerId;
@@ -57,10 +70,10 @@ class ListService extends BaseService {
     var completer = new Completer();
 
     if (_entryList != null)
-      print('compare with the existing list [${_entryList.listSetting.toString()}] for [${listQuery.toString()}]');
+      print('compare the existing list [${_entryList.listSetting.toString()}] with query parameters [${listQuery.toString()}]');
 
     if (_entryList != null && _entryList.listSetting.isSuperSetOf(listQuery)) {
-      print('use the existing list [${_entryList.listSetting.toString()}] for [${listQuery.toString()}]');
+      print('use the existing list [${_entryList.listSetting.toString()}] for query parameters [${listQuery.toString()}]');
       completer.complete(_entryList);
     } else {
       RestClient _client = new RestClient();
@@ -83,7 +96,7 @@ class ListService extends BaseService {
           EntryList entryListNewPage = new EntryList.fromJson(result['entryList']);
           _entryList.mergeList(entryListNewPage);
         }
-        _entryList.listSetting.setExpiration();
+        _entryList.listSetting.set30MinutesExpiration();
 
         completer.complete(_entryList);
       }).catchError((error) {
@@ -102,5 +115,13 @@ class ListService extends BaseService {
 
   bool hasMorePage() {
     return _entryList.listSetting.hasMorePage;
+  }
+
+  updateEntries(List<NPEntry> entries) {
+    _entryList.updateEntries(entries);
+  }
+
+  deleteEntries(List<NPEntry> entries) {
+    _entryList.deleteEntries(entries);
   }
 }

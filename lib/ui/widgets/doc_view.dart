@@ -27,10 +27,10 @@ class DocView {
                   print("launch $url failed");
                 })));
       } else {
-        docContent.add(SingleChildScrollView(child: new Text(doc.note, style: Theme.of(context).textTheme.body1)));
+        docContent.add(SingleChildScrollView(child: new Text(doc.note, style: UIHelper.bodyFont(context))));
       }
     }
 
-    return ListView(shrinkWrap: true, padding: const EdgeInsets.all(10.0), children: docContent);
+    return ListView(shrinkWrap: true, padding: UIHelper.contentPadding(), children: docContent);
   }
 }

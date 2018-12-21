@@ -9,17 +9,30 @@ class BookmarkView {
         new Expanded(
             child: Align(
                 alignment: Alignment.topLeft,
-                child: new FlatButton(
-                    onPressed: () {
-                      UIHelper.launchUrl(bookmark.webAddress);
-                    },
-                    textColor: ThemeData().primaryColor,
-                    child: new Text(
-                      bookmark.webAddress,
-                      textAlign: TextAlign.left,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ))))
+//                child: new FlatButton(
+//                    onPressed: () {
+//                      UIHelper.launchUrl(bookmark.webAddress);
+//                    },
+//                    textColor: ThemeData().primaryColor,
+//                    child: new Text(
+//                      bookmark.webAddress,
+//                      textAlign: TextAlign.left,
+//                      maxLines: 1,
+//                      overflow: TextOverflow.ellipsis,
+//                    )
+//                )
+                child: new InkWell(
+                  child: new Text(
+                    bookmark.webAddress,
+                    style: new TextStyle(color: Colors.blue),
+                    textAlign: TextAlign.left,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  onTap: () {
+                    UIHelper.launchUrl(bookmark.webAddress);
+                  },
+                )))
       ],
     );
   }
@@ -28,26 +41,27 @@ class BookmarkView {
     List<Widget> bookmarkContent = new List();
     bookmarkContent.add(Text(bookmark.title, style: Theme.of(context).textTheme.headline));
 
-    bookmarkContent.add(Row(
-        children: <Widget>[Expanded(
-            child: Align(
-                alignment: Alignment.topLeft,
-                child: new FlatButton(
-                    onPressed: () {
-                      UIHelper.launchUrl(bookmark.webAddress);
-                    },
-                    textColor: ThemeData().primaryColor,
-                    child: new Text(
-                      bookmark.webAddress,
-                      textAlign: TextAlign.left,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ))))]));
+    bookmarkContent.add(Row(children: <Widget>[
+      Expanded(
+          child: Align(
+              alignment: Alignment.topLeft,
+              child: new FlatButton(
+                  onPressed: () {
+                    UIHelper.launchUrl(bookmark.webAddress);
+                  },
+                  textColor: ThemeData().primaryColor,
+                  child: new Text(
+                    bookmark.webAddress,
+                    textAlign: TextAlign.left,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ))))
+    ]));
 
     if (bookmark.note != null) {
       bookmarkContent.add(SingleChildScrollView(child: new Text(bookmark.note)));
     }
 
-    return ListView(shrinkWrap: true, padding: const EdgeInsets.all(10.0), children: bookmarkContent);
+    return ListView(shrinkWrap: true, padding: UIHelper.contentPadding(), children: bookmarkContent);
   }
 }

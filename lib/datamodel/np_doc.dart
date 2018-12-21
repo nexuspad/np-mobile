@@ -10,9 +10,15 @@ class NPDoc extends NPEntry {
   String _description;
   List<NPUpload> _attachments;
 
-  NPDoc.blank(NPFolder inFolder) {
+  @override
+  NPDoc.newInFolder(NPFolder inFolder) : super.newInFolder(inFolder) {
     moduleId = NPModule.DOC;
-    folder = inFolder;
+  }
+
+  NPDoc.copy(NPDoc doc) : super.copy(doc) {
+    _format = doc.format;
+    _description = doc.description;
+    _attachments = new List.from(doc.attachment);
   }
 
   NPDoc.fromJson(Map<String, dynamic> data) : super.fromJson(data) {
@@ -26,7 +32,17 @@ class NPDoc extends NPEntry {
     _description = data['description'];
   }
 
+  Map<String, dynamic> toJson() {
+    Map data = super.toJson();
+    return data;
+  }
+
   TextFormat get format => _format;
   List<NPUpload> get attachment => _attachments;
   String get description => _description;
+
+  @override
+  String toString() {
+    return this.runtimeType.toString() + ' ' + this.toJson().toString();
+  }
 }

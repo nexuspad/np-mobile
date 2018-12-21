@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:np_mobile/datamodel/entry_factory.dart';
+import 'package:np_mobile/datamodel/list_setting.dart';
 import 'package:np_mobile/datamodel/np_folder.dart';
 import 'package:np_mobile/datamodel/np_module.dart';
 import 'package:np_mobile/service/account_service.dart';
 import 'package:np_mobile/service/folder_service.dart';
 import 'package:np_mobile/ui/blocs/application_state_provider.dart';
 import 'package:np_mobile/ui/blocs/organize_bloc.dart';
+import 'package:np_mobile/ui/entry_edit_screen.dart';
 import 'package:np_mobile/ui/ui_helper.dart';
 import 'package:np_mobile/ui/widgets/np_timeline.dart';
 import 'package:np_mobile/ui/widgets/np_grid.dart';
@@ -23,37 +26,24 @@ class OrganizerScreen extends StatelessWidget {
     final organizeBloc = ApplicationStateProvider.forOrganize(context);
 
     return Scaffold(
-        appBar: AppBar(title: _appBarTitle(organizeBloc), leading: _appBarLeading(organizeBloc), actions: <Widget>[
+      appBar: AppBar(
+        title: _appBarTitle(organizeBloc),
+        leading: _appBarLeading(organizeBloc),
+        actions: <Widget>[
           _appBarSearch(organizeBloc),
           _appBarAddNew(organizeBloc),
-          // overflow menu
-//          PopupMenuButton<AccountMenu>(
-//            onSelected: (AccountMenu selected) {
-//              if (selected == AccountMenu.account) {
-//                Navigator.pushNamed(context, 'account');
-//              }
-//            },
-//            itemBuilder: (BuildContext context) => <PopupMenuEntry<AccountMenu>>[
-//                  const PopupMenuItem<AccountMenu>(
-//                    value: AccountMenu.account,
-//                    child: Text('account'),
-//                  ),
-//                  const PopupMenuItem<AccountMenu>(
-//                    value: AccountMenu.logout,
-//                    child: Text('logout'),
-//                  ),
-//                ],
-//          ),
-        ]),
-        body: RefreshIndicator(
-          child: _listWidget(organizeBloc),
-          onRefresh: () async {
-            organizeBloc.refreshBloc();
-          },
-        ),
-        floatingActionButton: _buildActionButton(context),
-        bottomNavigationBar: _buildModuleNavigation(context, organizeBloc),
-        drawer: _drawer(context),
+        ],
+        backgroundColor: UIHelper.blackCanvas(),
+      ),
+      body: RefreshIndicator(
+        child: _listWidget(organizeBloc),
+        onRefresh: () async {
+          organizeBloc.refreshBloc();
+        },
+      ),
+      floatingActionButton: _buildActionButton(context),
+      bottomNavigationBar: _buildModuleNavigation(context, organizeBloc),
+      drawer: _drawer(context),
     );
   }
 
@@ -61,19 +51,23 @@ class OrganizerScreen extends StatelessWidget {
     return StreamBuilder(
       stream: organizeBloc.stateStream,
       builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-        _searchDelegate.listSetting = snapshot.data;
+        if (snapshot.data != null) {
+          _searchDelegate.listSetting = snapshot.data.listSetting;
 
-        return IconButton(
-          tooltip: 'search',
-          icon: const Icon(Icons.search),
-          onPressed: () async {
-            final String selected = await showSearch<String>(
-              context: context,
-              delegate: _searchDelegate,
-            );
-            if (selected != null) {}
-          },
-        );
+          return IconButton(
+            tooltip: 'search',
+            icon: const Icon(Icons.search),
+            onPressed: () async {
+              final String selected = await showSearch<String>(
+                context: context,
+                delegate: _searchDelegate,
+              );
+              if (selected != null) {}
+            },
+          );
+        } else {
+          return new Container(width: 0.0, height: 0.0);
+        }
       },
     );
   }
@@ -87,8 +81,13 @@ class OrganizerScreen extends StatelessWidget {
           icon: const Icon(Icons.add),
           onPressed: () {
             // navigate to the new entry screen
-            if (snapshot.data.moduleId == NPModule.PHOTO) {
-              Navigator.pushNamed(context, 'photoUploader');
+            if (snapshot.data != null) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => EntryEditScreen(context, EntryFactory.newInFolder(organizeBloc.getFolder())),
+                ),
+              );
             }
           },
         );
@@ -102,12 +101,13 @@ class OrganizerScreen extends StatelessWidget {
       builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
         // anytime the builder sees new data in the stateStream, it will re-render the list widget
         if (snapshot.data != null) {
-          FolderService folderService = FolderService(snapshot.data.moduleId, snapshot.data.ownerId);
-          NPFolder folder = folderService.getFolder(snapshot.data.folderId);
+          ListSetting listSetting = snapshot.data.listSetting;
+          FolderService folderService = FolderService(listSetting.moduleId, listSetting.ownerId);
+          NPFolder folder = folderService.getFolder(listSetting.folderId);
           if (folder != null) {
             return Text(folder.folderName);
           } else {
-            return Text(NPModule.name(snapshot.data.moduleId));
+            return Text(NPModule.name(listSetting.moduleId));
           }
         } else {
           // todo - a blank screen of loading
@@ -123,14 +123,15 @@ class OrganizerScreen extends StatelessWidget {
       builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
         // anytime the builder sees new data in the stateStream, it will re-render the list widget
         if (snapshot.data != null) {
-          if (snapshot.data.folderId != 0) {
+          ListSetting listSetting = snapshot.data.listSetting;
+          if (listSetting.folderId != 0) {
             return Transform.rotate(
               angle: -math.pi,
               child: IconButton(
                 icon: const Icon(FontAwesomeIcons.levelDownAlt),
                 onPressed: () {
-                  FolderService folderService = FolderService(snapshot.data.moduleId, snapshot.data.ownerId);
-                  NPFolder folder = folderService.getFolder(snapshot.data.folderId);
+                  FolderService folderService = FolderService(listSetting.moduleId, listSetting.ownerId);
+                  NPFolder folder = folderService.getFolder(listSetting.folderId);
                   if (folder != null && folder.parent != null) {
                     organizeBloc.changeFolder(folder.parent.folderId);
                   }
@@ -159,13 +160,14 @@ class OrganizerScreen extends StatelessWidget {
       builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
         // anytime the builder sees new data in the stateStream, it will re-render the list widget
         if (snapshot.data != null) {
-          print('>>>>>>>>>>>>>>>> stream data received ${snapshot.data}');
-          if (snapshot.data.moduleId == NPModule.PHOTO) {
-            return new NPGridWidget(snapshot.data);
-          } else if (snapshot.data.moduleId == NPModule.CALENDAR) {
-            return new NPTimelineWidget(snapshot.data);
+          ListSetting listSetting = snapshot.data.listSetting;
+          print('>>>>>>>>>>>>>>>> stream data received $listSetting');
+          if (listSetting.moduleId == NPModule.PHOTO) {
+            return new NPGridWidget(listSetting);
+          } else if (listSetting.moduleId == NPModule.CALENDAR) {
+            return new NPTimelineWidget(listSetting);
           }
-          return new NPListWidget(snapshot.data);
+          return new NPListWidget(listSetting);
         } else {
           return UIHelper.progressIndicator();
         }
@@ -191,7 +193,7 @@ class OrganizerScreen extends StatelessWidget {
         return new Theme(
             data: Theme.of(context).copyWith(
               // sets the background color of the `BottomNavigationBar`
-              canvasColor: const Color(0xFF343a40),
+              canvasColor: UIHelper.blackCanvas(),
             ), // sets the inactive color of the `BottomNavigationBar`
             child: BottomNavigationBar(
               onTap: (index) {
@@ -239,13 +241,11 @@ class OrganizerScreen extends StatelessWidget {
           ),
           ListTile(
             title: Text(AccountService().acctOwner.preference.locale),
-            onTap: () {
-            },
+            onTap: () {},
           ),
           ListTile(
             title: Text(AccountService().acctOwner.preference.timezone),
-            onTap: () {
-            },
+            onTap: () {},
           ),
           UIHelper.actionButton(context, "logout", () {
             // code to logout

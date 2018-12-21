@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:np_mobile/datamodel/list_setting.dart';
 import 'package:np_mobile/datamodel/np_entry.dart';
 import 'package:np_mobile/datamodel/np_photo.dart';
-import 'package:np_mobile/ui/carousel_screen.dart';
+import 'package:np_mobile/ui/entry_view_screen.dart';
+import 'package:np_mobile/ui/ui_helper.dart';
 import 'package:np_mobile/ui/widgets/base_list.dart';
-import 'package:np_mobile/ui/widgets/entry_view.dart';
-import 'package:np_mobile/ui/widgets/infinite_scroll_state.dart';
+import 'package:np_mobile/ui/widgets/entry_view_util.dart';
+import 'package:np_mobile/ui/widgets/np_module_listing_state.dart';
 
 class NPGridWidget extends BaseList {
   NPGridWidget(ListSetting setting) : super(setting) {
@@ -19,7 +20,7 @@ class NPGridWidget extends BaseList {
   }
 }
 
-class _GridState extends InfiniteScrollState<BaseList> {
+class _GridState extends NPModuleListingState<BaseList> {
   @override
   Widget build(BuildContext context) {
     if (entryList == null || entryList.entryCount() == 0) {
@@ -35,7 +36,7 @@ class _GridState extends InfiniteScrollState<BaseList> {
         crossAxisCount: (orientation == Orientation.portrait) ? 2 : 3,
         mainAxisSpacing: 4.0,
         crossAxisSpacing: 4.0,
-        padding: const EdgeInsets.all(4.0),
+        padding: UIHelper.contentPadding(),
         childAspectRatio: (orientation == Orientation.portrait) ? 1.0 : 1.3,
         children: _gridItems(entryList.entries),
         controller: scrollController,
@@ -52,18 +53,19 @@ class _GridState extends InfiniteScrollState<BaseList> {
           onTap: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => CarouselScreen(entryList, i)),
+              MaterialPageRoute(builder: (context) => EntryViewScreen(entryList, i)),
             );
           },
           child: GridItem(
-              entry: entryList.entries[i],
-              tileStyle: GridTileStyle.imageOnly,
-              onBannerTap: (NPEntry entry) {
-                setState(() {
-                  entry.pinned = !entry.pinned;
-                });
-              }))
-      );
+            entry: entryList.entries[i],
+            tileStyle: GridTileStyle.oneLine,
+            onBannerTap: (NPEntry entry) {
+              setState(() {
+                entry.pinned = !entry.pinned;
+              });
+            },
+            popMenu: entryPopMenu(context, entryList.entries[i]),
+          )));
     }
     return items;
   }
@@ -73,19 +75,18 @@ enum GridTileStyle { imageOnly, oneLine, twoLine }
 typedef BannerTapCallback = void Function(NPPhoto photo);
 
 class GridItem extends StatelessWidget {
-  GridItem({Key key, @required this.entry, @required this.tileStyle, @required this.onBannerTap}) : super(key: key);
+  GridItem(
+      {Key key, @required this.entry, @required this.tileStyle, @required this.onBannerTap, @required this.popMenu})
+      : super(key: key);
 
   final NPEntry entry;
+  final PopupMenuButton popMenu;
   final GridTileStyle tileStyle;
   final BannerTapCallback onBannerTap; // User taps on the photo's header or footer.
 
   @override
   Widget build(BuildContext context) {
-    final Widget image = Hero(
-        key: Key(entry.entryId),
-        tag: entry.entryId,
-        child: EntryView.inList(entry, context)
-    );
+    final Widget image = Hero(key: Key(entry.entryId), tag: entry.entryId, child: EntryViewUtil.inList(entry, context));
 
     final IconData icon = entry.pinned ? Icons.star : Icons.star_border;
 
@@ -96,9 +97,7 @@ class GridItem extends StatelessWidget {
       case GridTileStyle.oneLine:
         return GridTile(
           header: GestureDetector(
-            onTap: () {
-              onBannerTap(entry);
-            },
+            onTap: () {},
             child: GridTileBar(
               title: _GridTitleText(entry.title),
               backgroundColor: Colors.black45,
@@ -106,6 +105,7 @@ class GridItem extends StatelessWidget {
                 icon,
                 color: Colors.white,
               ),
+              trailing: popMenu,
             ),
           ),
           child: image,

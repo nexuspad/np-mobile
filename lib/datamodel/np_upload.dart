@@ -50,19 +50,19 @@ class NPUpload extends NPEntry {
     owner = user;
     switch (parentEntryFolder.moduleId) {
       case NPModule.CONTACT:
-        _parentEntry = new NPContact.blank(parentEntryFolder);
+        _parentEntry = new NPContact.newInFolder(parentEntryFolder);
         break;
       case NPModule.CALENDAR:
-        _parentEntry = new NPEvent.blank(parentEntryFolder);
+        _parentEntry = new NPEvent.newInFolder(parentEntryFolder);
         break;
       case NPModule.DOC:
-        _parentEntry = new NPDoc.blank(parentEntryFolder);
+        _parentEntry = new NPDoc.newInFolder(parentEntryFolder);
         break;
       case NPModule.BOOKMARK:
-        _parentEntry = new NPBookmark.blank(parentEntryFolder);
+        _parentEntry = new NPBookmark.newInFolder(parentEntryFolder);
         break;
       case NPModule.PHOTO:
-        _parentEntry = new NPPhoto.blank(parentEntryFolder);
+        _parentEntry = new NPPhoto.newInFolder(parentEntryFolder);
         break;
     }
   }

@@ -112,6 +112,6 @@ class ContactView {
       contactContent.add(Text(contact.note));
     }
 
-    return ListView(shrinkWrap: true, padding: const EdgeInsets.all(10.0), children: contactContent);
+    return ListView(shrinkWrap: true, padding: UIHelper.contentPadding(), children: contactContent);
   }
 }

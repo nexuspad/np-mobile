@@ -59,7 +59,7 @@ class NPSearchDelegate extends SearchDelegate<String> {
       print('cannot store to shared preference' + error);
     });
 
-    if (_listSetting.moduleId == NPModule.PHOTO) {
+    if (_listSetting.moduleId != NPModule.PHOTO) {
       return NPListWidget(ListSetting.forSearchModule(_listSetting.moduleId, query));
     } else {
       return NPGridWidget(ListSetting.forSearchModule(_listSetting.moduleId, query));
@@ -109,39 +109,35 @@ class _SuggestionList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
-
     return FutureBuilder<dynamic>(
       future: _historySuggestion(),
       builder: (context, snapshot) {
         if (snapshot.hasError) print(snapshot.error);
-
-        print('suggestions::::: ${snapshot.data}');
-
         if (snapshot.hasData) {
           List<String> suggestions = snapshot.data;
           return ListView.builder(
             itemCount: suggestions.length,
             itemBuilder: (BuildContext context, int i) {
               final String suggestion = suggestions[i];
-              return ListTile(
-                leading: _query.isEmpty ? const Icon(Icons.history) : const Icon(null),
-                title: RichText(
-                  text: TextSpan(
-                    text: suggestion.substring(0, _query.length),
-                    style: theme.textTheme.subhead.copyWith(fontWeight: FontWeight.bold),
-                    children: <TextSpan>[
-                      TextSpan(
-                        text: suggestion.substring(_query.length),
-                        style: theme.textTheme.subhead,
-                      ),
-                    ],
-                  ),
-                ),
-                onTap: () {
-                  _onSelected(suggestion);
-                },
-              );
+              bool includeSuggestion = false;
+              if (suggestion.length > _query.length) {
+                if (suggestion.indexOf(_query) != -1) {
+                  includeSuggestion = true;
+                }
+              } else {
+                if (_query.indexOf(suggestion) != -1) {
+                  includeSuggestion = true;
+                }
+              }
+              if (includeSuggestion) {
+                return ListTile(
+                  leading: const Icon(Icons.history),
+                  title: Text(suggestion),
+                  onTap: () {
+                    _onSelected(suggestion);
+                  },
+                );
+              }
             },
           );
         } else {

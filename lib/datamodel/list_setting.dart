@@ -18,7 +18,7 @@ class ListSetting {
   DateTime _expiration;
 
   ListSetting() {
-    _moduleId = NPModule.DOC; // just to avoid a null value
+    _moduleId = NPModule.UNASSIGNED; // just to avoid a null value
     _folderId = 0;
     _pageId = 1;
     _pages = new List<int>();
@@ -66,6 +66,7 @@ class ListSetting {
     _pageId = otherSetting.pageId;
     _keyword = otherSetting.keyword;
     _totalCount = otherSetting.totalCount;
+    _expiration = otherSetting._expiration;
   }
 
   ListSetting.forPageQuery(int moduleId, int folderId, int ownerId, int pageId) {
@@ -94,7 +95,7 @@ class ListSetting {
     _totalCount = 0;
   }
 
-  bool equals(ListSetting otherSetting) {
+  bool sameCriteria(ListSetting otherSetting) {
     if (_moduleId != otherSetting._moduleId ||
         _folderId != otherSetting._folderId ||
         _ownerId != otherSetting.ownerId ||
@@ -104,6 +105,16 @@ class ListSetting {
       return false;
     }
     return true;
+  }
+
+  bool sameCriteriaAndExpires(ListSetting otherSetting) {
+    if (sameCriteria(otherSetting) == false) {
+      return false;
+    }
+    if (_expiration != null && otherSetting.expiration != null && _expiration != otherSetting.expiration) {
+      return true;
+    }
+    return false;
   }
 
   int totalPages() {
@@ -120,27 +131,33 @@ class ListSetting {
     return false;
   }
 
-  bool isSuperSetOf(ListSetting otherSetting) {
+  bool isSuperSetOf(ListSetting queryParams) {
+    // when UI attempts to make a query, the expiration can be just null, when it's not null,
+    // the refresh is being asked.
+    if (queryParams.expiration != null && queryParams.expiration.isAfter(_expiration)) {
+      return false;
+    }
+
     if (_pages.length > 0) {
-      if (_moduleId == otherSetting._moduleId &&
-          this._folderId == otherSetting._folderId &&
-          _ownerId == otherSetting._ownerId) {
-        if (_pages.indexOf(otherSetting._pageId) != -1) {
+      if (_moduleId == queryParams._moduleId &&
+          this._folderId == queryParams._folderId &&
+          _ownerId == queryParams._ownerId) {
+        if (_pages.indexOf(queryParams._pageId) != -1) {
           return true;
         }
       }
     } else if (_startDate != null &&
         _endDate != null &&
-        otherSetting._startDate != null &&
-        otherSetting._endDate != null) {
+        queryParams._startDate != null &&
+        queryParams._endDate != null) {
       DateTime myStart = DateTime.parse(_startDate);
       DateTime myEnd = DateTime.parse(_endDate);
-      DateTime otherStart = DateTime.parse(otherSetting._startDate);
-      DateTime otherEnd = DateTime.parse(otherSetting._endDate);
+      DateTime otherStart = DateTime.parse(queryParams._startDate);
+      DateTime otherEnd = DateTime.parse(queryParams._endDate);
 
-      if (_moduleId == otherSetting._moduleId &&
-          _folderId == otherSetting._folderId &&
-          _ownerId == otherSetting._ownerId &&
+      if (_moduleId == queryParams._moduleId &&
+          _folderId == queryParams._folderId &&
+          _ownerId == queryParams._ownerId &&
           (myStart.isBefore(otherStart) || myStart.isAtSameMomentAs(otherStart)) &&
           (myEnd.isAfter(otherEnd) || myEnd.isAtSameMomentAs(otherEnd))) {
         return true;
@@ -175,6 +192,9 @@ class ListSetting {
   int get totalCount => _totalCount;
   set totalCount(value) => _totalCount = value;
 
+  DateTime get expiration => _expiration;
+  set expiration(value) => _expiration = value;
+
   bool get expires {
     if (_expiration != null && _expiration.add(Duration(minutes: 30)).isAfter(DateTime.now())) {
       return false;
@@ -182,7 +202,7 @@ class ListSetting {
     return true;
   }
 
-  void setExpiration({minutes: 30}) {
+  void set30MinutesExpiration({minutes: 30}) {
     _expiration = DateTime.now().add(Duration(minutes: 30));
   }
 
@@ -217,11 +237,11 @@ class ListSetting {
 
   String toString() {
     if (_pages != null && _pages.length > 0) {
-      return "module:$_moduleId, folder:$_folderId, owner:$_ownerId, pages:$_pages, keyword:$keyword, total: $_totalCount";
+      return "module:$_moduleId, folder:$_folderId, owner:$_ownerId, pages:$_pages, keyword:$keyword, expiration: $_expiration";
     } else if (_startDate != null && _endDate != null) {
-      return "module:$_moduleId, folder:$_folderId, owner:$_ownerId, startDate:$_startDate, endDate:$_endDate, keyword:$keyword";
+      return "module:$_moduleId, folder:$_folderId, owner:$_ownerId, startDate:$_startDate, endDate:$_endDate, keyword:$keyword, expiration: $_expiration";
     } else {
-      return "module:$_moduleId, folder:$_folderId, owner:$_ownerId, page:$pageId, keyword:$keyword, total: $_totalCount";
+      return "module:$_moduleId, folder:$_folderId, owner:$_ownerId, page:$pageId, keyword:$keyword, expiration: $_expiration";
     }
   }
 }

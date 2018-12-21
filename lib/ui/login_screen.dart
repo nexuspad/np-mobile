@@ -60,7 +60,7 @@ class LoginFormState extends State<LoginScreen> {
           child: new Column(
             children: <Widget>[
               new Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding: UIHelper.contentPadding(),
                 child: new TextFormField(
                   onSaved: (val) => _userName = val,
                   validator: (val) {
@@ -78,7 +78,7 @@ class LoginFormState extends State<LoginScreen> {
                 ),
               ),
               new Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding: UIHelper.contentPadding(),
                 child: new TextFormField(
                   onSaved: (val) => _password = val,
                   validator: (val) {
@@ -104,45 +104,14 @@ class LoginFormState extends State<LoginScreen> {
     return new Scaffold(
       appBar: AppBar(
         title: Text('login to NexusApp'),
+        backgroundColor: UIHelper.blackCanvas(),
       ),
       key: scaffoldKey,
       body: new Container(
-        margin: EdgeInsets.all(20.0),
+        margin: UIHelper.contentPadding(),
         child: new Center(child: loginForm),
       ),
     );
-
-    // Build a Form widget using the _formKey we created above
-//    return Form(
-//      key: _formKey,
-//      child: Column(
-//        crossAxisAlignment: CrossAxisAlignment.start,
-//        children: <Widget>[
-//          TextFormField(
-//            validator: (value) {
-//              if (value.isEmpty) {
-//                return 'Please enter some text';
-//              }
-//            },
-//          ),
-//          Padding(
-//            padding: const EdgeInsets.symmetric(vertical: 16.0),
-//            child: RaisedButton(
-//              onPressed: () {
-//                // Validate will return true if the form is valid, or false if
-//                // the form is invalid.
-//                if (_formKey.currentState.validate()) {
-//                  // If the form is valid, we want to show a Snackbar
-//                  Scaffold.of(context)
-//                      .showSnackBar(SnackBar(content: Text('Processing Data')));
-//                }
-//              },
-//              child: Text('Submit'),
-//            ),
-//          ),
-//        ],
-//      ),
-//    );
   }
 
   void _showSnackBar(String text) {

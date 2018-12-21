@@ -3,9 +3,11 @@ import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:np_mobile/app_config.dart';
+import 'package:np_mobile/datamodel/UploadFileWrapper.dart';
 import 'package:np_mobile/datamodel/list_setting.dart';
 import 'package:np_mobile/datamodel/np_doc.dart';
 import 'package:np_mobile/datamodel/np_folder.dart';
+import 'package:np_mobile/service/UploadWorker.dart';
 import 'package:np_mobile/service/upload_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -62,12 +64,42 @@ void main() {
     UploadService uploadService = new UploadService();
 
     final file = new File('c:/tmp/Currently own.ofx');
-    NPFolder folder = NPFolder(NPModule.DOC, AccountService().acctOwner);
+    NPFolder folder = NPFolder(NPModule.DOC, NPFolder.ROOT, AccountService().acctOwner);
     await uploadService.uploadToFolder(folder, file, null).then((dynamic result) {
       NPDoc doc = result;
       print(doc);
     }).catchError((error) {
       print(error);
+    });
+  });
+  test('test upload worker', () async {
+    SharedPreferences.setMockInitialValues({});
+    await AccountService().mock();
+
+    Directory dir = Directory('c:/tmp');
+    List<FileSystemEntity> entities = dir.listSync(followLinks: false);
+    List<UploadFileWrapper> fileEntities = new List();
+    int cnt = 0;
+    for (FileSystemEntity fse in entities) {
+      if (fse is File) {
+        fileEntities.add(UploadFileWrapper(fse));
+        cnt ++;
+        if (cnt > 7) {
+          break;
+        }
+      }
+    }
+    print('test uploading ${fileEntities.length} files');
+    NPFolder folder = NPFolder(NPModule.DOC, NPFolder.ROOT, AccountService().acctOwner);
+    await UploadWorker(folder, fileEntities).start().then((result) {
+      if (result != null) {
+        List<UploadFileWrapper> _fileEntities = result;
+        for (UploadFileWrapper fw in _fileEntities) {
+          print('---- ${fw.path} ${fw.status}');
+        }
+      } else {
+        print('something is wrong....');
+      }
     });
   });
   test('test account service', () async {

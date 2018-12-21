@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:np_mobile/datamodel/list_setting.dart';
 import 'package:np_mobile/datamodel/np_entry.dart';
-import 'package:np_mobile/ui/carousel_screen.dart';
+import 'package:np_mobile/service/entry_service.dart';
+import 'package:np_mobile/ui/entry_view_screen.dart';
+import 'package:np_mobile/ui/entry_edit_screen.dart';
 import 'package:np_mobile/ui/widgets/base_list.dart';
 import 'package:np_mobile/ui/ui_helper.dart';
-import 'package:np_mobile/ui/widgets/entry_view.dart';
-import 'package:np_mobile/ui/widgets/infinite_scroll_state.dart';
+import 'package:np_mobile/ui/widgets/entry_view_util.dart';
+import 'package:np_mobile/ui/widgets/np_module_listing_state.dart';
 
 class NPListWidget extends BaseList {
   NPListWidget(ListSetting setting) : super(setting) {
-    print('====> new NPListWidget construction');
+    print('====> new NPListWidget construction for setting [$listSetting]');
   }
 
   @override
@@ -19,7 +21,7 @@ class NPListWidget extends BaseList {
   }
 }
 
-class _ListState extends InfiniteScrollState<NPListWidget> {
+class _ListState extends NPModuleListingState<NPListWidget> {
   @override
   Widget build(BuildContext context) {
     if (entryList == null || entryList.entryCount() == 0) {
@@ -61,30 +63,14 @@ class _ListState extends InfiniteScrollState<NPListWidget> {
               style: Theme.of(context).textTheme.title,
             ),
           ),
-          new PopupMenuButton<EntryMenu>(
-            onSelected: (EntryMenu result) {},
-            itemBuilder: (BuildContext context) => <PopupMenuEntry<EntryMenu>>[
-                  const PopupMenuItem<EntryMenu>(
-                    value: EntryMenu.favorite,
-                    child: Text('favorite'),
-                  ),
-                  const PopupMenuItem<EntryMenu>(
-                    value: EntryMenu.update,
-                    child: Text('update'),
-                  ),
-                  const PopupMenuItem<EntryMenu>(
-                    value: EntryMenu.delete,
-                    child: Text('delete'),
-                  ),
-                ],
-          )
+          entryPopMenu(context, e),
         ],
       ),
-      subtitle: EntryView.inList(e, context),
+      subtitle: EntryViewUtil.inList(e, context),
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => CarouselScreen(entryList, index)),
+          MaterialPageRoute(builder: (context) => EntryViewScreen(entryList, index)),
         );
       },
       enabled: true,

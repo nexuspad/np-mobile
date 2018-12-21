@@ -11,11 +11,19 @@ class NPFolder {
   NPFolder _parent;
   List<NPFolder> _subFolders;
 
-  NPFolder(int moduleId, NPUser owner) : _owner = owner {
+  NPFolder(int moduleId, int folderId, NPUser owner) : _owner = owner {
     _moduleId = moduleId;
-    _folderId = 0;
+    _folderId = folderId;
     _folderName = "root";
     _subFolders = new List<NPFolder>();
+  }
+
+  NPFolder.copy(NPFolder otherFolder) : _owner = otherFolder.owner {
+    _moduleId = otherFolder.moduleId;
+    _folderId = otherFolder.folderId;
+    _folderName = otherFolder.folderName;
+    if (otherFolder.parent != null)
+      _parent = NPFolder.copy(otherFolder.parent);
   }
 
   NPFolder.fromJson(Map<String, dynamic> data)
@@ -38,17 +46,16 @@ class NPFolder {
     }
   }
 
-  Map<String, dynamic> toJson() => {
-    'moduleId': _moduleId,
-    'folderId': _folderId,
-    'folderName': _folderName,
-    'owner': _owner.toJson()
-  };
-
-  NPFolder.copy(NPFolder otherFolder) : _owner = otherFolder.owner {
-    _moduleId = otherFolder.moduleId;
-    _folderId = otherFolder.folderId;
-    _folderName = otherFolder.folderName;
+  Map<String, dynamic> toJson() {
+    Map<String, dynamic> data = {
+      'moduleId': _moduleId,
+      'folderId': _folderId,
+      'folderName': _folderName,
+    };
+    if (_owner != null) {
+      data['owner'] = _owner.toJson();
+    }
+    return data;
   }
 
   addChild(NPFolder f) {

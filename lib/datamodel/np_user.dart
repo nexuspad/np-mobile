@@ -5,6 +5,14 @@ class NPUser {
   String _displayName;
 
   NPUser();
+
+  NPUser.copy(NPUser otherUser) {
+    _userId = otherUser.userId;
+    _email = otherUser.email;
+    _userName = otherUser.userName;
+    _displayName = otherUser.displayName;
+  }
+
   NPUser.fromJson(Map<String, dynamic> data)
       : _userId = data['userId'],
         _email = data['email'],

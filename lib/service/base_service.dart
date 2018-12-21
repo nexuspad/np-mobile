@@ -23,12 +23,17 @@ class BaseService {
     return url;
   }
 
-  String getEntryEndPoint({moduleId = NPModule.UNASSIGNED, entryId, ownerId = 0}) {
+  String getEntryEndPoint({moduleId = NPModule.UNASSIGNED, String entryId, String attribute, ownerId = 0}) {
     String url = _setEntry(moduleId);
     if (entryId != null) {
-      return AppConfig().serviceHost + url + '/' + entryId;
+      url = AppConfig().serviceHost + url + '/' + entryId;
+    } else {
+      url = AppConfig().serviceHost + url;
     }
-    return AppConfig().serviceHost + url;
+    if (attribute != null && attribute.isNotEmpty) {
+      url = url + '/$attribute';
+    }
+    return url;
   }
 
   String getUploadPlaceholder(int moduleId) {

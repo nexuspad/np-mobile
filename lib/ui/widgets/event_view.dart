@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:np_mobile/datamodel/np_event.dart';
+import 'package:np_mobile/ui/ui_helper.dart';
 
 class EventView {
   static Row subTitleInList(NPEvent event, BuildContext context) {
@@ -57,22 +58,22 @@ class EventView {
       eventContent.add(SingleChildScrollView(child: new Text(event.note)));
     }
 
-    return SafeArea(child: ListView(shrinkWrap: true, padding: const EdgeInsets.all(10.0), children: eventContent));
+    return SafeArea(child: ListView(shrinkWrap: true, padding: UIHelper.contentPadding(), children: eventContent));
   }
 
   static String startDateTimeInfo(NPEvent event, BuildContext context) {
     if (event.localStartTime != null) {
-      return DateFormat.yMMMd(Localizations.localeOf(context).toString()).add_Hm().format(event.startDateTime);
+      return DateFormat.yMMMd(Localizations.localeOf(context).toString()).add_Hm().format(event.startDateTime.toLocal());
     } else {
-      return DateFormat.yMMMd(Localizations.localeOf(context).toString()).format(event.startDateTime);
+      return DateFormat.yMMMd(Localizations.localeOf(context).toString()).format(event.startDateTime.toLocal());
     }
   }
 
   static String endDateTimeInfo(NPEvent event, BuildContext context) {
     if (event.localEndTime != null) {
-      return DateFormat.yMMMd(Localizations.localeOf(context).toString()).add_Hm().format(event.endDateTime);
+      return DateFormat.yMMMd(Localizations.localeOf(context).toString()).add_Hm().format(event.endDateTime.toLocal());
     } else {
-      return DateFormat.yMMMd(Localizations.localeOf(context).toString()).format(event.endDateTime);
+      return DateFormat.yMMMd(Localizations.localeOf(context).toString()).format(event.endDateTime.toLocal());
     }
   }
 

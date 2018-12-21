@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:np_mobile/datamodel/np_entry.dart';
-import 'package:np_mobile/ui/widgets/entry_view.dart';
+import 'package:np_mobile/ui/widgets/entry_view_util.dart';
 
 const double _kMinFlingVelocity = 400.0;
 
-class EntryPageViewer extends StatefulWidget {
-  const EntryPageViewer({Key key, this.entry}) : super(key: key);
+class EntryViewWidget extends StatefulWidget {
+  const EntryViewWidget({Key key, this.entry}) : super(key: key);
   final NPEntry entry;
 
   @override
-  _EntryPageViewerState createState() => _EntryPageViewerState();
+  _EntryViewWidgetState createState() => _EntryViewWidgetState();
 }
 
-class _EntryPageViewerState extends State<EntryPageViewer> with SingleTickerProviderStateMixin {
+class _EntryViewWidgetState extends State<EntryViewWidget> with SingleTickerProviderStateMixin {
   AnimationController _controller;
   Animation<Offset> _flingAnimation;
   Offset _offset = Offset.zero;
@@ -24,6 +24,23 @@ class _EntryPageViewerState extends State<EntryPageViewer> with SingleTickerProv
   void initState() {
     super.initState();
     _controller = AnimationController(vsync: this)..addListener(_handleFlingAnimation);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onScaleStart: _handleOnScaleStart,
+      onScaleUpdate: _handleOnScaleUpdate,
+      onScaleEnd: _handleOnScaleEnd,
+      child: ClipRect(
+        child: Transform(
+          transform: Matrix4.identity()
+            ..translate(_offset.dx, _offset.dy)
+            ..scale(_scale),
+          child: EntryViewUtil.fullPage(widget.entry, context),
+        ),
+      ),
+    );
   }
 
   @override
@@ -73,22 +90,5 @@ class _EntryPageViewerState extends State<EntryPageViewer> with SingleTickerProv
     _controller
       ..value = 0.0
       ..fling(velocity: magnitude / 1000.0);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onScaleStart: _handleOnScaleStart,
-      onScaleUpdate: _handleOnScaleUpdate,
-      onScaleEnd: _handleOnScaleEnd,
-      child: ClipRect(
-        child: Transform(
-          transform: Matrix4.identity()
-            ..translate(_offset.dx, _offset.dy)
-            ..scale(_scale),
-          child: EntryView.fullPage(widget.entry, context),
-        ),
-      ),
-    );
   }
 }

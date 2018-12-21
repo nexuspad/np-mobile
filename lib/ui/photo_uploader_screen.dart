@@ -3,32 +3,75 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-//import 'package:multiple_image_picker/multiple_image_picker.dart';
+import 'package:np_mobile/datamodel/UploadFileWrapper.dart';
 import 'package:np_mobile/datamodel/np_folder.dart';
-import 'package:np_mobile/datamodel/np_module.dart';
-import 'package:np_mobile/datamodel/np_photo.dart';
-import 'package:np_mobile/service/account_service.dart';
-import 'package:np_mobile/service/upload_service.dart';
+import 'package:np_mobile/service/UploadWorker.dart';
 import 'package:np_mobile/ui/blocs/application_state_provider.dart';
+import 'package:np_mobile/ui/ui_helper.dart';
 import 'package:path/path.dart';
 import 'package:video_player/video_player.dart';
 
-class ImageUploaderScreen extends StatefulWidget {
-  ImageUploaderScreen(BuildContext context) : _folder = ApplicationStateProvider.forOrganize(context).getFolder();
+class PhotoUploaderScreen extends StatefulWidget {
+  PhotoUploaderScreen(BuildContext context) : _folder = ApplicationStateProvider.forOrganize(context).getFolder();
 
   final NPFolder _folder;
 
   @override
-  _ImageUploaderScreenState createState() => new _ImageUploaderScreenState();
+  _PhotoUploaderScreenState createState() => new _PhotoUploaderScreenState();
 }
 
-class _ImageUploaderScreenState extends State<ImageUploaderScreen> {
+class _PhotoUploaderScreenState extends State<PhotoUploaderScreen> {
   Future<File> _imageFile;
-  Future<List> _imageFiles;
-  List<File> _selectedImages = new List();
+  List<UploadFileWrapper> _selectedFiles = new List();
   bool isVideo = false;
   VideoPlayerController _controller;
   VoidCallback listener;
+
+  @override
+  Widget build(BuildContext context) {
+    double imageWidth = MediaQuery.of(context).size.width / 4;
+    return Scaffold(
+      appBar: AppBar(title: Text('upload photos'), backgroundColor: UIHelper.blackCanvas(), actions: <Widget>[
+        IconButton(
+          tooltip: 'select from gallery',
+          icon: const Icon(Icons.photo_library),
+          onPressed: () {
+            isVideo = false;
+            _onImageButtonPressed(ImageSource.gallery);
+          },
+        ),
+        IconButton(
+          tooltip: 'take a photo',
+          icon: const Icon(Icons.camera_alt),
+          onPressed: () {
+            isVideo = false;
+            _onImageButtonPressed(ImageSource.camera);
+          },
+        )
+      ]),
+      body: ListView.separated(
+        padding: UIHelper.contentPadding(),
+        separatorBuilder: (context, index) => Divider(
+          color: Colors.black12,
+        ),
+        itemCount: _selectedFiles.length,
+        itemBuilder: (context, index) {
+          File file = _selectedFiles[index].file;
+          return new ListTile(
+            leading: Image.file(
+              file,
+              width: imageWidth,
+              height: imageWidth,
+            ),
+            title: Text(basename(file.path)),
+            onTap: () {},
+            enabled: true,
+          );
+        },
+      ),
+      floatingActionButton: _actionMenuItems(),
+    );
+  }
 
   void _onImageButtonPressed(ImageSource source) {
     setState(() {
@@ -52,16 +95,9 @@ class _ImageUploaderScreenState extends State<ImageUploaderScreen> {
       } else {
         ImagePicker.pickImage(source: source).then((imageFile) {
           setState(() {
-            _selectedImages.add(imageFile);
+            _selectedFiles.add(UploadFileWrapper(imageFile));
           });
-//          UploadService uploadService = new UploadService();
-//          NPFolder folder = NPFolder(NPModule.PHOTO, AccountService().acctOwner);
-//          uploadService.uploadToFolder(folder, imageFile, null).then((dynamic result) {
-//            NPPhoto photo = result;
-//            print(photo);
-//          }).catchError((error) {
-//            print(error);
-//          });
+
         });
       }
     });
@@ -100,7 +136,7 @@ class _ImageUploaderScreenState extends State<ImageUploaderScreen> {
       );
     } else if (controller.value.initialized) {
       return Padding(
-        padding: const EdgeInsets.all(10.0),
+        padding: UIHelper.contentPadding(),
         child: AspectRatioVideo(controller),
       );
     } else {
@@ -115,8 +151,7 @@ class _ImageUploaderScreenState extends State<ImageUploaderScreen> {
     return FutureBuilder<File>(
         future: _imageFile,
         builder: (BuildContext context, AsyncSnapshot<File> snapshot) {
-          if (snapshot.connectionState == ConnectionState.done &&
-              snapshot.data != null) {
+          if (snapshot.connectionState == ConnectionState.done && snapshot.data != null) {
             return Image.file(snapshot.data);
           } else if (snapshot.error != null) {
             return const Text(
@@ -132,84 +167,17 @@ class _ImageUploaderScreenState extends State<ImageUploaderScreen> {
         });
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('upload photos'),
-      ),
-      body: ListView.separated(
-        separatorBuilder: (context, index) => Divider(
-              color: Colors.black12,
-            ),
-        itemCount: _selectedImages.length,
-        itemBuilder: (context, index) {
-          File file = _selectedImages[index];
-          return new ListTile(
-            leading: Image.file(file, width: 100, height: 100,),
-            title: Text(basename(file.path)),
-            onTap: () {},
-            enabled: true,
-          );
-        },
-      ),
-      floatingActionButton: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: _actionMenuItems()
-      ),
-    );
-  }
-
-  List<Widget> _actionMenuItems() {
-    return <Widget>[
-      FloatingActionButton(
+  Widget _actionMenuItems() {
+    if (_selectedFiles.length > 0) {
+      return FloatingActionButton(
+        child: const Icon(Icons.file_upload),
         onPressed: () {
-          isVideo = false;
-          _onImageButtonPressed(ImageSource.gallery);
+          UploadWorker(widget._folder, _selectedFiles);
         },
-        heroTag: 'image0',
-        tooltip: 'Pick Image from gallery',
-        child: const Icon(Icons.photo_library),
-      ),
-      Padding(
-        padding: const EdgeInsets.only(top: 16.0),
-        child: FloatingActionButton(
-          onPressed: () {
-            isVideo = false;
-            _onImageButtonPressed(ImageSource.camera);
-          },
-          heroTag: 'image1',
-          tooltip: 'Take a Photo',
-          child: const Icon(Icons.camera_alt),
-        ),
-      ),
-//      Padding(
-//        padding: const EdgeInsets.only(top: 16.0),
-//        child: FloatingActionButton(
-//          backgroundColor: Colors.red,
-//          onPressed: () {
-//            isVideo = true;
-//            _onImageButtonPressed(ImageSource.gallery);
-//          },
-//          heroTag: 'video0',
-//          tooltip: 'Pick Video from gallery',
-//          child: const Icon(Icons.video_library),
-//        ),
-//      ),
-//      Padding(
-//        padding: const EdgeInsets.only(top: 16.0),
-//        child: FloatingActionButton(
-//          backgroundColor: Colors.red,
-//          onPressed: () {
-//            isVideo = true;
-//            _onImageButtonPressed(ImageSource.camera);
-//          },
-//          heroTag: 'video1',
-//          tooltip: 'Take a Video',
-//          child: const Icon(Icons.videocam),
-//        ),
-//      ),
-    ];
+        tooltip: 'upload',
+      );
+    }
+    return null;
   }
 }
 

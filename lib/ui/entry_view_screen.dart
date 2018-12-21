@@ -1,31 +1,36 @@
 import 'package:flutter/material.dart';
 import 'package:np_mobile/datamodel/entry_list.dart';
+import 'package:np_mobile/datamodel/np_entry.dart';
 import 'package:np_mobile/datamodel/np_module.dart';
 import 'package:np_mobile/service/list_service.dart';
+import 'package:np_mobile/ui/entry_edit_screen.dart';
+import 'package:np_mobile/ui/ui_helper.dart';
 import 'package:np_mobile/ui/widgets/base_list.dart';
-import 'package:np_mobile/ui/widgets/entry_full_page.dart';
+import 'package:np_mobile/ui/widgets/entry_view_widget.dart';
 
 /// for displaying entries in a PageView
-class CarouselScreen extends BaseList {
+class EntryViewScreen extends BaseList {
   final int _initialIndex;
   final EntryList _entryList;
-  CarouselScreen(EntryList entryList, int index) :
+  EntryViewScreen(EntryList entryList, int index) :
         _entryList = entryList, _initialIndex = index, super(entryList.listSetting);
   @override
-  State<StatefulWidget> createState() => CarouselScreenState();
+  State<StatefulWidget> createState() => _EntryViewScreenState();
 }
 
-class CarouselScreenState extends State<CarouselScreen> {
+class _EntryViewScreenState extends State<EntryViewScreen> {
   ListService _listService;
   EntryList _entryList;
   PageController _controller;
   bool loading = false;
+  int _index;
 
   @override
   void initState() {
     super.initState();
     _entryList = widget._entryList;
     _controller = new PageController(initialPage: widget._initialIndex);
+    _index = widget._initialIndex;
     _controller.addListener(() {
       // todo - load more entries at the last page
     });
@@ -40,16 +45,27 @@ class CarouselScreenState extends State<CarouselScreen> {
       pages = widget._entryList.entries.map((entry) =>
           Hero(
             tag: entry.entryId,
-            child: EntryPageViewer(key: Key(entry.entryId), entry: entry),
+            child: EntryViewWidget(key: Key(entry.entryId), entry: entry),
           )
       ).toList();
     } else {
-      pages = widget._entryList.entries.map((entry) => EntryPageViewer(key: Key(entry.entryId), entry: entry)).toList();
+      pages = widget._entryList.entries.map((entry) => EntryViewWidget(key: Key(entry.entryId), entry: entry)).toList();
     }
 
     return Scaffold(
       appBar: AppBar(
         title: Text(''),
+        backgroundColor: UIHelper.blackCanvas(),
+        actions: <Widget>[
+          IconButton(
+            onPressed: () => _editPage(),
+            icon: Icon(Icons.edit),
+          ),
+        ],
+        leading: new IconButton(
+          icon: new Icon(Icons.close),
+          onPressed: () => Navigator.of(context).pop(null),
+        ),
       ),
       body: SizedBox.expand(
         child: new Stack(
@@ -58,6 +74,7 @@ class CarouselScreenState extends State<CarouselScreen> {
               physics: new AlwaysScrollableScrollPhysics(),
               controller: _controller,
               onPageChanged: (index) {
+                _index = index;
               },
               itemBuilder: (BuildContext context, int index) {
                 return pages[index % pages.length];
@@ -67,6 +84,14 @@ class CarouselScreenState extends State<CarouselScreen> {
         ),
       ),
     );
+  }
+
+  _editPage() {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => EntryEditScreen(context, _entryList.entries[_index]),
+        ));
   }
 
   _getMoreData() {

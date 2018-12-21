@@ -1,25 +1,28 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:np_mobile/datamodel/list_setting.dart';
 import 'package:np_mobile/datamodel/np_entry.dart';
+import 'package:np_mobile/datamodel/np_event.dart';
+import 'package:np_mobile/datamodel/np_module.dart';
 import 'package:np_mobile/ui/blocs/application_state_provider.dart';
 import 'package:np_mobile/ui/blocs/organize_bloc.dart';
-import 'package:np_mobile/ui/carousel_screen.dart';
+import 'package:np_mobile/ui/entry_view_screen.dart';
 import 'package:np_mobile/ui/ui_helper.dart';
 import 'package:np_mobile/ui/widgets/base_list.dart';
 import 'package:np_mobile/ui/widgets/date_range_picker.dart';
-import 'package:np_mobile/ui/widgets/entry_view.dart';
-import 'package:np_mobile/ui/widgets/infinite_scroll_state.dart';
+import 'package:np_mobile/ui/widgets/entry_view_util.dart';
+import 'package:np_mobile/ui/widgets/np_module_listing_state.dart';
 
 class NPTimelineWidget extends BaseList {
   NPTimelineWidget(ListSetting setting) : super(setting) {
-    print('====> new NPCalendarWidget construction');
+    print('====> new NPTimelineWidget construction');
   }
   @override
   _CalendarWidgetState createState() => new _CalendarWidgetState();
 }
 
-class _CalendarWidgetState extends InfiniteScrollState<NPTimelineWidget> {
+class _CalendarWidgetState extends NPModuleListingState<NPTimelineWidget> {
   void initState() {
     super.initState();
   }
@@ -44,8 +47,8 @@ class _CalendarWidgetState extends InfiniteScrollState<NPTimelineWidget> {
         String startYmd = widget.listSetting.startDate;
         String endYmd = widget.listSetting.endDate;
         if (snapshot.data != null) {
-          startYmd = snapshot.data.startDate;
-          endYmd = snapshot.data.endDate;
+          startYmd = snapshot.data.listSetting.startDate;
+          endYmd = snapshot.data.listSetting.endDate;
         }
         return DateRangePicker(
           startDate: DateTime.parse(startYmd),
@@ -95,8 +98,23 @@ class _CalendarWidgetState extends InfiniteScrollState<NPTimelineWidget> {
   }
 
   ListTile _buildTile(NPEntry e, int index) {
+    Icon leadingIcon;
+    if (e.moduleId == NPModule.CALENDAR) {
+      NPEvent event = e;
+      if (event.startDateTime.isBefore(DateTime.now())) {
+        leadingIcon = Icon(FontAwesomeIcons.clock, color: Colors.grey);
+      } else if (event.startDateTime.difference(DateTime.now()).inHours < 8) {
+        leadingIcon = Icon(FontAwesomeIcons.clock, color: Colors.orangeAccent);
+      } else {
+        leadingIcon = Icon(FontAwesomeIcons.clock, color: Colors.blueAccent);
+      }
+    } else {
+      if (e.pinned == true) {
+        leadingIcon = Icon(Icons.star);
+      }
+    }
     return new ListTile(
-      leading: e.pinned ? Icon(Icons.star) : null,
+      leading: leadingIcon,
       title: new Row(
         children: <Widget>[
           new Expanded(
@@ -107,30 +125,14 @@ class _CalendarWidgetState extends InfiniteScrollState<NPTimelineWidget> {
               style: Theme.of(context).textTheme.title,
             ),
           ),
-          new PopupMenuButton<EntryMenu>(
-            onSelected: (EntryMenu result) {},
-            itemBuilder: (BuildContext context) => <PopupMenuEntry<EntryMenu>>[
-                  const PopupMenuItem<EntryMenu>(
-                    value: EntryMenu.favorite,
-                    child: Text('favorite'),
-                  ),
-                  const PopupMenuItem<EntryMenu>(
-                    value: EntryMenu.update,
-                    child: Text('update'),
-                  ),
-                  const PopupMenuItem<EntryMenu>(
-                    value: EntryMenu.delete,
-                    child: Text('delete'),
-                  ),
-                ],
-          )
+          entryPopMenu(context, e)
         ],
       ),
-      subtitle: EntryView.inList(e, context),
+      subtitle: EntryViewUtil.inList(e, context),
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => CarouselScreen(entryList, index)),
+          MaterialPageRoute(builder: (context) => EntryViewScreen(entryList, index)),
         );
       },
       enabled: true,

@@ -1,10 +1,14 @@
 import 'dart:ui';
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
+import 'package:np_mobile/datamodel/np_module.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class UIHelper {
   static final npDateFormatter = new DateFormat('yyyy-MM-dd');
+  static final npTimeFormatter = new DateFormat('yyyy-MM-dd');
 
   static Color codeToColor(String colorCode) {
     return Color.fromRGBO(0, 0, 250, 1.0);
@@ -16,16 +20,31 @@ class UIHelper {
     return lum < 150;
   }
 
+  static Color blackCanvas() {
+    return const Color(0xFF343a40);
+  }
+
   static Color lightBlue() {
-    return Color(0x8034b0fc);
+    return const Color(0x8034b0fc);
+  }
+
+  static bodyFont(context) {
+    MediaQueryData queryData = MediaQuery.of(context);
+    print('size: ${queryData.size.shortestSide}');
+    // Theme.of(context).textTheme.body1
+    return TextStyle(fontSize: 22.0);
+  }
+
+  static contentPadding() {
+    return const EdgeInsets.all(10.0);
   }
 
   static Widget emptyContent(context) {
     return Center(child: Text('empty', style: Theme.of(context).textTheme.display1));
   }
 
-  static Widget loadingContent(context) {
-    return Center(child: Text('empty', style: Theme.of(context).textTheme.display1));
+  static Widget loadingContent(context, String text) {
+    return Center(child: Text(text, style: Theme.of(context).textTheme.display1));
   }
 
   static Widget progressIndicator() {
@@ -42,6 +61,10 @@ class UIHelper {
     return new Container(width: 0.0, height: 0.0);
   }
 
+  static Widget formSpacer() {
+    return const SizedBox(width: 8.0, height: 8.0);
+  }
+
   static launchUrl(String url) async {
     if (await canLaunch(url)) {
       await launch(url);
@@ -52,6 +75,13 @@ class UIHelper {
 
   static String npDateStr(DateTime dateTime) {
     return npDateFormatter.format(dateTime);
+  }
+
+  static String npTimeStr(TimeOfDay timeOfDay) {
+    if (timeOfDay.minute < 10) {
+      return '${timeOfDay.hour}:0${timeOfDay.minute}';
+    }
+    return '${timeOfDay.hour}:${timeOfDay.minute}';
   }
 
   static RaisedButton actionButton(BuildContext context, String text, Function onSubmit) {
@@ -65,5 +95,41 @@ class UIHelper {
       ),
       color: Theme.of(context).accentColor,
     );
+  }
+
+  static Icon entryIcon(int moduleId) {
+    switch (moduleId) {
+      case NPModule.CONTACT:
+        return Icon(Icons.person);
+      case NPModule.CALENDAR:
+        return Icon(Icons.event);
+      case NPModule.DOC:
+        return Icon(Icons.note);
+      case NPModule.BOOKMARK:
+        return Icon(Icons.bookmark);
+      case NPModule.PHOTO:
+        return Icon(Icons.photo);
+    }
+    return Icon(Icons.error);
+  }
+
+  static folderTreeNode() {
+    return Transform.rotate(
+      angle: -math.pi/4,
+      child: Icon(FontAwesomeIcons.chevronLeft)
+    );
+  }
+
+  static DateTime firstDayOfWeek({DateTime aDate, int startOfWeek: DateTime.sunday}) {
+    if (aDate.weekday == startOfWeek) {
+      return aDate;
+    } else {
+      return aDate.subtract(Duration(days: aDate.weekday));
+    }
+  }
+
+  static DateTime firstDayOfMonth(DateTime aDate) {
+    String ymd = UIHelper.npDateStr(aDate);
+    return DateTime.parse(ymd.substring(0, 8) + '01');
   }
 }

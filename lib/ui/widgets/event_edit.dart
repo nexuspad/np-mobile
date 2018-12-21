@@ -1,103 +1,79 @@
 import 'package:flutter/material.dart';
+import 'package:np_mobile/datamodel/np_event.dart';
+import 'package:np_mobile/ui/ui_helper.dart';
 import 'package:np_mobile/ui/widgets/date_time_picker.dart';
 
-class EventEdit extends StatefulWidget {
-  @override
-  State<StatefulWidget> createState() => EventEditState();
-}
-
-class EventEditState extends State<EventEdit> {
-  DateTime _fromDate = DateTime.now();
-  TimeOfDay _fromTime = const TimeOfDay(hour: 7, minute: 28);
-  DateTime _toDate = DateTime.now();
-  TimeOfDay _toTime = const TimeOfDay(hour: 7, minute: 28);
-  final List<String> _allActivities = <String>['hiking', 'swimming', 'boating', 'fishing'];
-  String _activity = 'fishing';
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Date and time pickers'),
-      ),
-      body: DropdownButtonHideUnderline(
-        child: SafeArea(
-          top: false,
-          bottom: false,
-          child: ListView(
-            padding: const EdgeInsets.all(16.0),
-            children: <Widget>[
-              TextField(
-                enabled: true,
-                decoration: const InputDecoration(
-                  labelText: 'Event name',
-                  border: OutlineInputBorder(),
-                ),
-                style: Theme.of(context).textTheme.display1,
-              ),
-              TextField(
-                decoration: const InputDecoration(
-                  labelText: 'Location',
-                ),
-                style: Theme.of(context).textTheme.display1.copyWith(fontSize: 20.0),
-              ),
-              DateTimePicker(
-                labelText: 'From',
-                selectedDate: _fromDate,
-                selectedTime: _fromTime,
-                selectDate: (DateTime date) {
-                  setState(() {
-                    _fromDate = date;
-                  });
-                },
-                selectTime: (TimeOfDay time) {
-                  setState(() {
-                    _fromTime = time;
-                  });
-                },
-              ),
-              DateTimePicker(
-                labelText: 'To',
-                selectedDate: _toDate,
-                selectedTime: _toTime,
-                selectDate: (DateTime date) {
-                  setState(() {
-                    _toDate = date;
-                  });
-                },
-                selectTime: (TimeOfDay time) {
-                  setState(() {
-                    _toTime = time;
-                  });
-                },
-              ),
-              const SizedBox(height: 8.0),
-              InputDecorator(
-                decoration: const InputDecoration(
-                  labelText: 'Activity',
-                  hintText: 'Choose an activity',
-                  contentPadding: EdgeInsets.zero,
-                ),
-                isEmpty: _activity == null,
-                child: DropdownButton<String>(
-                  value: _activity,
-                  onChanged: (String newValue) {
-                    setState(() {
-                      _activity = newValue;
-                    });
-                  },
-                  items: _allActivities.map<DropdownMenuItem<String>>((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value),
-                    );
-                  }).toList(),
-                ),
-              ),
-            ],
+class EventEdit {
+  static Form form(BuildContext context, GlobalKey<FormState> formKey, NPEvent event) {
+    return new Form(
+      key: formKey,
+      child: new Column(
+        children: <Widget>[
+          new Padding(
+            padding: UIHelper.contentPadding(),
+            child: new TextFormField(
+              initialValue: event.title,
+              onSaved: (val) => event.title = val,
+              validator: (val) {
+                if (val.length < 1) {
+                  return 'enter something';
+                }
+                return null;
+              },
+              decoration: new InputDecoration(labelText: "title", border: UnderlineInputBorder()),
+            ),
           ),
-        ),
+          new Padding(
+            padding: UIHelper.contentPadding(),
+            child: DateTimePicker(
+              key: Key('StartDateTimePicker'),
+              labelText: 'from',
+              initialDate: event.startDateTime,
+              initialTime: event.localStartTime != null ? _fromNpLocalTime(event.localStartTime) : null,
+              selectDate: (DateTime date) {
+                event.localStartDate = UIHelper.npDateStr(date);
+                print('start date set $date ${event.localStartDate}');
+              },
+              selectTime: (TimeOfDay time) {
+                event.localStartTime = UIHelper.npTimeStr(time);
+              },
+            ),
+          ),
+          new Padding(
+            padding: UIHelper.contentPadding(),
+            child: DateTimePicker(
+              key: Key('EndDateTimePicker'),
+              labelText: 'to',
+              initialDate: event.localEndDate != null ? DateTime.parse(event.localEndDate) : null,
+              initialTime: event.localEndTime != null ? _fromNpLocalTime(event.localEndTime) : null,
+              selectDate: (DateTime date) {
+                event.localEndDate = UIHelper.npDateStr(date);
+              },
+              selectTime: (TimeOfDay time) {
+                event.localEndTime = UIHelper.npTimeStr(time);
+              },
+            ),
+          ),
+          new Padding(
+            padding: UIHelper.contentPadding(),
+            child: new TextFormField(
+              keyboardType: TextInputType.multiline,
+              maxLines: null,
+              initialValue: event.note,
+              onSaved: (val) => event.note = val,
+              decoration: new InputDecoration(labelText: "note", border: OutlineInputBorder()),
+            ),
+          ),
+        ],
       ),
     );
+  }
+
+  static TimeOfDay _fromNpLocalTime(String HHmm) {
+    if (HHmm != null) {
+      List<String> parts = HHmm.split(":");
+      return TimeOfDay(hour: int.parse(parts[0]), minute: int.parse(parts[1]));
+    }
+    return null;
   }
 }

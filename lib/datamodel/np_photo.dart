@@ -7,9 +7,15 @@ class NPPhoto extends NPEntry {
   String _lightbox;
   String _original;
 
-  NPPhoto.blank(NPFolder inFolder) {
+  @override
+  NPPhoto.newInFolder(NPFolder inFolder) : super.newInFolder(inFolder) {
     moduleId = NPModule.PHOTO;
-    folder = inFolder;
+  }
+
+  NPPhoto.copy(NPPhoto photo) : super.copy(photo) {
+    _lightbox = photo.lightbox;
+    _thumbnail = photo.thumbnail;
+    _original = photo._original;
   }
 
   NPPhoto.fromJson(Map<String, dynamic> data) : super.fromJson(data) {

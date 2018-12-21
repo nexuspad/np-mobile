@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:np_mobile/datamodel/account.dart';
 import 'package:np_mobile/service/account_service.dart';
 import 'package:np_mobile/ui/blocs/application_state_provider.dart';
+import 'package:np_mobile/ui/ui_helper.dart';
 import 'login_screen.dart';
 
 class LandingScreen extends StatefulWidget {
@@ -41,10 +42,10 @@ class LandingScreenState extends State<LandingScreen> {
       return Scaffold(
         appBar: AppBar(
           title: Text('NexusApp'),
+          backgroundColor: UIHelper.blackCanvas(),
+          automaticallyImplyLeading: false,
         ),
-        body: Center(
-          child: Text('initializing'),
-        ),
+        body: UIHelper.loadingContent(context, 'starting app...'),
       );
     } else {
       return LoginScreen();

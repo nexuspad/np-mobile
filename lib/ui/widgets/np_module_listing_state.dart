@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:np_mobile/datamodel/entry_list.dart';
 import 'package:np_mobile/datamodel/list_setting.dart';
+import 'package:np_mobile/datamodel/np_entry.dart';
+import 'package:np_mobile/service/entry_service.dart';
 import 'package:np_mobile/service/list_service.dart';
 import 'package:np_mobile/ui/blocs/application_state_provider.dart';
+import 'package:np_mobile/ui/entry_edit_screen.dart';
+import 'package:np_mobile/ui/ui_helper.dart';
 import 'package:np_mobile/ui/widgets/base_list.dart';
 
-class InfiniteScrollState<T extends BaseList> extends State<T> {
+class NPModuleListingState<T extends BaseList> extends State<T> {
   ListService _listService;
   EntryList entryList;
   ScrollController scrollController = new ScrollController();
@@ -25,16 +29,14 @@ class InfiniteScrollState<T extends BaseList> extends State<T> {
   @override
   void didUpdateWidget(BaseList oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (!oldWidget.listSetting.equals(widget.listSetting)) {
+    if (oldWidget.listSetting.sameCriteria(widget.listSetting) == false) {
       print(
           'reload entries because setting has changed: old = [${oldWidget.listSetting.toString()}] new = [${widget.listSetting.toString()}]');
       loadEntries();
-    } else {
-      // when pull refresh happens, this is set to 0 as a signal to refresh the list.
-      if (widget.listSetting.totalCount == 0) {
-        print('reload entries because page refresh is requested');
-        loadEntries(refresh: true);
-      }
+    } else if (oldWidget.listSetting.sameCriteriaAndExpires(widget.listSetting) == true) {
+      // pull refresh, individual entry update.
+      print('reload entries with force expirartion: old = [${oldWidget.listSetting.toString()}] new = [${widget.listSetting.toString()}]');
+      loadEntries(refresh: true);
     }
   }
 
@@ -73,9 +75,9 @@ class InfiniteScrollState<T extends BaseList> extends State<T> {
       setState(() {
         loading = false;
         entryList = _listService.entryList;
-        // update the total count in the bloc
+        // update the bloc
         final organizeBloc = ApplicationStateProvider.forOrganize(context);
-        organizeBloc.updateTotalCount(entryList.listSetting.totalCount);
+        organizeBloc.updateSettingState(entryList.listSetting.totalCount, entryList.listSetting.expiration);
       });
     }).catchError((error) {
       setState(() {
@@ -99,6 +101,9 @@ class InfiniteScrollState<T extends BaseList> extends State<T> {
         setState(() {
           loading = false;
           entryList = _listService.entryList;
+          // update the bloc
+          final organizeBloc = ApplicationStateProvider.forOrganize(context);
+          organizeBloc.updateSettingState(entryList.listSetting.totalCount, entryList.listSetting.expiration);
         });
         if (_listService.hasMorePage() == false) {
           double edge = 50.0;
@@ -117,9 +122,50 @@ class InfiniteScrollState<T extends BaseList> extends State<T> {
     }
   }
 
+  entryPopMenu(BuildContext context, NPEntry e) {
+    return PopupMenuButton<EntryMenu>(
+      onSelected: (EntryMenu selected) {
+        if (selected == EntryMenu.favorite) {
+          e.pinned = !e.pinned;
+          EntryService().updateAttribute(entry: e, attribute: UpdateAttribute.pin).then((updatedEntry) {
+            // listService has been updated. refresh the UI
+            setState(() {
+              entryList = _listService.entryList;
+            });
+          }).catchError((error) {
+            e.pinned = !e.pinned;
+          });
+        } else if (selected == EntryMenu.update) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => EntryEditScreen(context, e),
+            ),
+          );
+        } else if (selected == EntryMenu.update) {
+          EntryService().delete(e);
+        }
+      },
+      itemBuilder: (BuildContext context) => <PopupMenuEntry<EntryMenu>>[
+        const PopupMenuItem<EntryMenu>(
+          value: EntryMenu.favorite,
+          child: Text('favorite'),
+        ),
+        const PopupMenuItem<EntryMenu>(
+          value: EntryMenu.update,
+          child: Text('update'),
+        ),
+        const PopupMenuItem<EntryMenu>(
+          value: EntryMenu.delete,
+          child: Text('delete'),
+        ),
+      ],
+    );
+  }
+
   Widget buildProgressIndicator() {
     return new Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: UIHelper.contentPadding(),
       child: new Center(
         child: new Opacity(
           opacity: loading ? 1.0 : 0.0,

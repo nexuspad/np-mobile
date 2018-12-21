@@ -1,99 +1,133 @@
 import 'package:np_mobile/datamodel/list_setting.dart';
+import 'package:np_mobile/datamodel/np_entry.dart';
 import 'package:np_mobile/datamodel/np_folder.dart';
 import 'package:np_mobile/datamodel/np_module.dart';
 import 'package:np_mobile/service/account_service.dart';
 import 'package:np_mobile/ui/ui_helper.dart';
 import 'package:rxdart/rxdart.dart';
 
+/// The use of ListSetting.expiration:
+/// if UI needs to refresh the content, it's set to current time + 30 minutes to expire the entryList in ListService.
+/// if it's set to null, it means UI don't care. just use whatever matches in ListService.
 class OrganizeBloc {
   static final List<int> modules = [NPModule.CONTACT, NPModule.CALENDAR, NPModule.DOC, NPModule.BOOKMARK, NPModule.PHOTO];
 
-  final _organizeSubject = BehaviorSubject<ListSetting>();
-  ListSetting _currentListSetting;
+  final _organizeSubject = BehaviorSubject<OrganizerSetting>();
+  OrganizerSetting _currentSetting;
 
-  Stream<ListSetting> get stateStream => _organizeSubject.stream;
+  Stream<OrganizerSetting> get stateStream => _organizeSubject.stream;
 
   OrganizeBloc() {
-    _currentListSetting = new ListSetting();
-    _organizeSubject.sink.add(_currentListSetting);
+    _currentSetting = new OrganizerSetting();
+    _organizeSubject.sink.add(_currentSetting);
 
     // this mainly to make sure when UI reloads owner Id field is set
-    if (_currentListSetting.ownerId == null) {
-      _currentListSetting.ownerId = AccountService().userId;
+    if (_currentSetting.listSetting.ownerId == null) {
+      _currentSetting.listSetting.ownerId = AccountService().userId;
     }
   }
 
   setOwnerId(int ownerId) {
-    _currentListSetting.ownerId = ownerId;
-    _currentListSetting.totalCount = 0;
-    _organizeSubject.sink.add(_currentListSetting);
+    _currentSetting.listSetting.ownerId = ownerId;
+    _currentSetting.listSetting.totalCount = 0;
+    _organizeSubject.sink.add(_currentSetting);
   }
 
   changeModule(moduleId) {
-    _currentListSetting.moduleId = moduleId;
-    _currentListSetting.folderId = NPFolder.ROOT;
-    _currentListSetting.pageId = 1;
-    _currentListSetting.totalCount = 0;
+    _currentSetting.listSetting.moduleId = moduleId;
+    _currentSetting.listSetting.folderId = NPFolder.ROOT;
+    _currentSetting.listSetting.pageId = 1;
+    _currentSetting.listSetting.totalCount = 0;
+    _currentSetting.listSetting.expiration = null;
 
     if (moduleId == NPModule.CALENDAR) {
-      _currentListSetting.startDate = '2018-11-01';
-      _currentListSetting.endDate = '2019-01-31';
+      DateTime today = DateTime.now();
+      _currentSetting.listSetting.startDate = UIHelper.npDateStr(today);
+      _currentSetting.listSetting.endDate = UIHelper.npDateStr(today.add(Duration(days: 7)));
     } else {
-      _currentListSetting.startDate = null;
-      _currentListSetting.endDate = null;
+      _currentSetting.listSetting.startDate = null;
+      _currentSetting.listSetting.endDate = null;
     }
 
-    if (_currentListSetting.ownerId == null) {
-      _currentListSetting.ownerId = AccountService().userId;
+    if (_currentSetting.listSetting.ownerId == null) {
+      _currentSetting.listSetting.ownerId = AccountService().userId;
     }
 
-    _organizeSubject.sink.add(_currentListSetting);
+    _organizeSubject.sink.add(_currentSetting);
   }
 
   changeFolder(folderId) {
-    _currentListSetting.folderId = folderId;
-    _currentListSetting.totalCount = 0;
-    _organizeSubject.sink.add(_currentListSetting);
+    _currentSetting.listSetting.folderId = folderId;
+    _currentSetting.listSetting.totalCount = 0;
+    _currentSetting.listSetting.pageId = 1;
+    _currentSetting.listSetting.expiration = null;
+    _organizeSubject.sink.add(_currentSetting);
   }
 
   changeDateRange(List<DateTime> dates) {
     if (dates[0] != null && dates[1] != null && dates[0].isBefore(dates[1])) {
-      _currentListSetting.startDate = UIHelper.npDateStr(dates[0]);
-      _currentListSetting.endDate = UIHelper.npDateStr(dates[1]);
-      _organizeSubject.sink.add(_currentListSetting);
+      _currentSetting.listSetting.startDate = UIHelper.npDateStr(dates[0]);
+      _currentSetting.listSetting.endDate = UIHelper.npDateStr(dates[1]);
+      _organizeSubject.sink.add(_currentSetting);
     }
+  }
+
+  changeActiveEntry(NPEntry entry) {
+    _currentSetting._activeEntry = entry;
   }
 
   /// somehow sink.add is not needed
   refreshBloc() {
-    _currentListSetting.totalCount = 0;
+    // expires the current entryList in the service.
+    _currentSetting.listSetting.expiration = DateTime.now().add(Duration(minutes: 30));
 //    _organizeSubject.sink.add(_currentListSetting);
   }
 
   int getModule() {
-    return _currentListSetting.moduleId;
+    return _currentSetting.listSetting.moduleId;
   }
 
   NPFolder getFolder() {
-    return new NPFolder(_currentListSetting.moduleId, AccountService().acctOwner);
+    return new NPFolder(_currentSetting.listSetting.moduleId, _currentSetting.listSetting.folderId, AccountService().acctOwner);
+  }
+
+  NPEntry getActiveEntry() {
+    return _currentSetting._activeEntry;
   }
 
   int getOwnerId() {
-    return _currentListSetting.ownerId;
+    return _currentSetting.listSetting.ownerId;
   }
 
   int getNavigationIndex() {
-    if (_currentListSetting.moduleId == null) {
+    if (_currentSetting.listSetting.moduleId == null) {
       return 0;
     }
-    return modules.indexOf(_currentListSetting.moduleId);
+    return modules.indexOf(_currentSetting.listSetting.moduleId);
   }
 
-  updateTotalCount(int count) {
-    _currentListSetting.totalCount = count;
+  /// this is just to update the state. no need to publish it.
+  updateSettingState(int totalCount, DateTime listingExpiration) {
+    _currentSetting.listSetting.totalCount = totalCount;
+    _currentSetting.listSetting.expiration = listingExpiration;
   }
 
   dispose() {
     _organizeSubject.close();
   }
+}
+
+class OrganizerSetting {
+  ListSetting _listSetting;
+  NPEntry _activeEntry;
+
+  OrganizerSetting() {
+    _listSetting = new ListSetting();
+    if (_listSetting.moduleId == null || _listSetting.moduleId == NPModule.UNASSIGNED) {
+      _listSetting.moduleId = NPModule.BOOKMARK;
+    }
+  }
+
+  ListSetting get listSetting => _listSetting;
+  NPEntry get activeEntry => _activeEntry;
 }

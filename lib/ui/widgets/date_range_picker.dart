@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:np_mobile/ui/ui_helper.dart';
 import 'package:np_mobile/ui/widgets/input_dropdown.dart';
 
+enum RangeMenu { week, month, year }
+
 class DateRangePicker extends StatefulWidget {
-  const DateRangePicker(
-      {Key key, this.startDate, this.endDate, this.dateRangeSelected})
-      : super(key: key);
+  const DateRangePicker({Key key, this.startDate, this.endDate, this.dateRangeSelected}) : super(key: key);
 
   final DateTime startDate;
   final DateTime endDate;
@@ -33,8 +34,8 @@ class _DateRangePickerState extends State<DateRangePicker> {
   }
 
   Future<void> _pickEndDate(BuildContext context) async {
-    final DateTime picked = await showDatePicker(
-        context: context, initialDate: _endDate, firstDate: _startDate, lastDate: DateTime(2050));
+    final DateTime picked =
+        await showDatePicker(context: context, initialDate: _endDate, firstDate: _startDate, lastDate: DateTime(2050));
     if (picked != null && picked != _endDate) {
       _endDate = picked;
       if (_startDate.isBefore(_endDate)) {
@@ -53,14 +54,42 @@ class _DateRangePickerState extends State<DateRangePicker> {
       crossAxisAlignment: CrossAxisAlignment.end,
       children: <Widget>[
         Expanded(
-          child: Padding(padding: EdgeInsets.all(8.0),
-            child: _inputDropdown('from', DateFormat.yMMMd().format(_startDate))
-          ),
+          child: Padding(
+              padding: EdgeInsets.all(8.0), child: _inputDropdown('from', DateFormat.yMMMd().format(_startDate))),
         ),
         Expanded(
-          child: Padding(padding: EdgeInsets.all(8.0),
-            child: _inputDropdown('to', DateFormat.yMMMd().format(_endDate))
-          ),
+          child:
+              Padding(padding: EdgeInsets.all(8.0), child: _inputDropdown('to', DateFormat.yMMMd().format(_endDate))),
+        ),
+        Expanded(
+          child: FlatButton(onPressed: () {
+            _startDate = DateTime.now();
+            _endDate = DateTime.now().add(Duration(days: 7));
+            widget.dateRangeSelected(<DateTime>[_startDate, _endDate]);
+          }, child: Text('today')),
+        ),
+        PopupMenuButton<RangeMenu>(
+          onSelected: (RangeMenu selected) {
+            if (selected == RangeMenu.week) {
+              _startDate = UIHelper.firstDayOfWeek(aDate: DateTime.now());
+              _endDate = _startDate.add(Duration(days: 7));
+              widget.dateRangeSelected(<DateTime>[_startDate, _endDate]);
+            } else if (selected == RangeMenu.month) {
+              _startDate = UIHelper.firstDayOfMonth(DateTime.now());
+              _endDate = _startDate.add(Duration(days: 35));  // plus 5 weeks
+              widget.dateRangeSelected(<DateTime>[_startDate, _endDate]);
+            }
+          },
+          itemBuilder: (BuildContext context) => <PopupMenuEntry<RangeMenu>>[
+                const PopupMenuItem<RangeMenu>(
+                  value: RangeMenu.week,
+                  child: Text('week'),
+                ),
+                const PopupMenuItem<RangeMenu>(
+                  value: RangeMenu.month,
+                  child: Text('month'),
+                ),
+              ],
         ),
       ],
     );
@@ -94,9 +123,8 @@ class _DateRangePickerState extends State<DateRangePicker> {
   }
 }
 
-class DateRangePicker1 extends StatelessWidget {
-  const DateRangePicker1(
-      {Key key, this.startDate, this.endDate, this.startDateSelected, this.endDateSelected})
+class _DateRangePicker1 extends StatelessWidget {
+  const _DateRangePicker1({Key key, this.startDate, this.endDate, this.startDateSelected, this.endDateSelected})
       : super(key: key);
 
   final DateTime startDate;
@@ -111,8 +139,8 @@ class DateRangePicker1 extends StatelessWidget {
   }
 
   Future<void> _pickEndDate(BuildContext context) async {
-    final DateTime picked = await showDatePicker(
-        context: context, initialDate: endDate, firstDate: startDate, lastDate: DateTime(2050));
+    final DateTime picked =
+        await showDatePicker(context: context, initialDate: endDate, firstDate: startDate, lastDate: DateTime(2050));
     if (picked != null && picked != endDate) endDateSelected(picked);
   }
 
@@ -123,7 +151,8 @@ class DateRangePicker1 extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.end,
       children: <Widget>[
         Expanded(
-          child: Padding(padding: EdgeInsets.all(4.0),
+          child: Padding(
+            padding: EdgeInsets.all(4.0),
             child: InputDropdown(
               labelText: 'from',
               valueText: DateFormat.yMMMd().format(startDate),
@@ -135,7 +164,8 @@ class DateRangePicker1 extends StatelessWidget {
           ),
         ),
         Expanded(
-          child: Padding(padding: EdgeInsets.all(4.0),
+          child: Padding(
+            padding: EdgeInsets.all(4.0),
             child: InputDropdown(
               labelText: 'to',
               valueText: DateFormat.yMMMd().format(endDate),

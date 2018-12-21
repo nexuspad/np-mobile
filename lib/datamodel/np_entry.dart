@@ -3,12 +3,13 @@ import 'package:np_mobile/datamodel/np_user.dart';
 import 'package:np_mobile/datamodel/timeline_key.dart';
 
 class NPEntry {
+  int _moduleId;
+  NPFolder _folder;
+
   String _entryId;
   String _title;
   String _note;
   List<String> _tags;
-  int _moduleId;
-  NPFolder _folder;
   String _colorCode;
   bool _pinned;
   DateTime _updateTime;
@@ -16,6 +17,29 @@ class NPEntry {
   NPUser _owner;
 
   NPEntry();
+
+  NPEntry.newInFolder(NPFolder folder) {
+    _folder = NPFolder.copy(folder);
+    _owner = _folder.owner;
+  }
+
+  NPEntry.copy(NPEntry otherEntry) {
+    _moduleId = otherEntry.moduleId;
+    if (otherEntry.folder != null) {
+      _folder = NPFolder.copy(otherEntry.folder);
+    }
+    _entryId = otherEntry.entryId;
+    _title = otherEntry.title;
+    _note = otherEntry.note;
+    if (otherEntry._tags != null) {
+      _tags = List.from(otherEntry._tags);
+    }
+    _colorCode = otherEntry.colorCode;
+    _pinned = otherEntry.pinned;
+    _owner = NPUser.copy(otherEntry.owner);
+    _updateTime = otherEntry.updateTime;
+  }
+
   NPEntry.fromJson(Map<String, dynamic> data)
       : _entryId = data['entryId'],
         _title = data['title'],
@@ -31,6 +55,13 @@ class NPEntry {
     if (data['owner'] != null) {
       _owner = NPUser.fromJson(data['owner']);
     }
+  }
+
+  bool keyMatches(NPEntry otherEntry) {
+    if (_entryId == otherEntry._entryId && _moduleId == otherEntry._moduleId) {
+      return true;
+    }
+    return false;
   }
 
   Map<String, dynamic> toJson() => {
@@ -56,7 +87,7 @@ class NPEntry {
   set note(value) => _note = value;
 
   bool get pinned => _pinned;
-  set pinned(value) => pinned = value;
+  set pinned(value) => _pinned = value;
 
   DateTime get updateTime => _updateTime;
 
@@ -78,7 +109,7 @@ class NPEntry {
 
   @override
   String toString() {
-    return "$_entryId $title";
+    return this.runtimeType.toString() + " $_entryId $title";
   }
 
   static String nullifyIfEmpty(String value) {
