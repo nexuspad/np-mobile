@@ -8,12 +8,12 @@ import 'package:np_mobile/ui/widgets/np_grid.dart';
 import 'package:np_mobile/ui/widgets/np_list.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class NPSearchDelegate extends SearchDelegate<String> {
+class EntrySearchDelegate extends SearchDelegate<String> {
   ListSetting _listSetting;
   List<String> _data;
   List<String> _history;
 
-  NPSearchDelegate();
+  EntrySearchDelegate();
 
   set listSetting(value) => _listSetting = value;
 
@@ -69,22 +69,22 @@ class NPSearchDelegate extends SearchDelegate<String> {
   @override
   List<Widget> buildActions(BuildContext context) {
     return <Widget>[
-      query.isEmpty
-          ? IconButton(
-              tooltip: 'Voice Search',
-              icon: const Icon(Icons.mic),
-              onPressed: () {
-                query = 'TODO: implement voice input';
-              },
-            )
-          : IconButton(
-              tooltip: 'Clear',
-              icon: const Icon(Icons.clear),
-              onPressed: () {
-                query = '';
-                showSuggestions(context);
-              },
-            )
+//      query.isEmpty
+//          ? IconButton(
+//              tooltip: 'Voice Search',
+//              icon: const Icon(Icons.mic),
+//              onPressed: () {
+//                query = 'TODO: implement voice input';
+//              },
+//            )
+//          : IconButton(
+//              tooltip: 'Clear',
+//              icon: const Icon(Icons.clear),
+//              onPressed: () {
+//                query = '';
+//                showSuggestions(context);
+//              },
+//            )
     ];
   }
 }

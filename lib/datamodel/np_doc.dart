@@ -13,6 +13,7 @@ class NPDoc extends NPEntry {
   @override
   NPDoc.newInFolder(NPFolder inFolder) : super.newInFolder(inFolder) {
     moduleId = NPModule.DOC;
+    _format = TextFormat.plain;
   }
 
   NPDoc.copy(NPDoc doc) : super.copy(doc) {

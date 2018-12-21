@@ -40,7 +40,10 @@ class UIHelper {
   }
 
   static Widget emptyContent(context) {
-    return Center(child: Text('empty', style: Theme.of(context).textTheme.display1));
+    return Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: <Widget>[Text('empty', style: Theme.of(context).textTheme.display1)]);
   }
 
   static Widget loadingContent(context, String text) {
@@ -97,6 +100,18 @@ class UIHelper {
     );
   }
 
+  static FlatButton cancelButton(BuildContext context, Function onSubmit) {
+    return FlatButton(
+      onPressed: () {
+        onSubmit();
+      },
+      textColor: ThemeData().primaryColor,
+      child: new Text(
+        'cancel',
+      ),
+    );
+  }
+
   static Icon entryIcon(int moduleId) {
     switch (moduleId) {
       case NPModule.CONTACT:
@@ -114,10 +129,7 @@ class UIHelper {
   }
 
   static folderTreeNode() {
-    return Transform.rotate(
-      angle: -math.pi/4,
-      child: Icon(FontAwesomeIcons.chevronLeft)
-    );
+    return Transform.rotate(angle: -math.pi / 4, child: Icon(FontAwesomeIcons.chevronLeft));
   }
 
   static DateTime firstDayOfWeek({DateTime aDate, int startOfWeek: DateTime.sunday}) {

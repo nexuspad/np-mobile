@@ -1,32 +1,48 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:np_mobile/datamodel/folder_tree.dart';
+import 'package:np_mobile/datamodel/np_entry.dart';
 import 'package:np_mobile/datamodel/np_folder.dart';
+import 'package:np_mobile/service/entry_service.dart';
 import 'package:np_mobile/service/folder_service.dart';
 import 'package:np_mobile/ui/blocs/application_state_provider.dart';
 import 'package:np_mobile/ui/blocs/organize_bloc.dart';
 import 'package:np_mobile/ui/ui_helper.dart';
+import 'package:np_mobile/ui/widgets/folder_search_delegate.dart';
 
 enum FolderMenu { update, delete }
+enum SelectorAction { showList, moveEntry, moveFolder }
 
 class FolderSelectorScreen extends StatefulWidget {
-  final NPFolder _folder;
-  FolderSelectorScreen(BuildContext context) : _folder = ApplicationStateProvider.forOrganize(context).getFolder();
+  final NPFolder _startingFolder;
+  final dynamic _itemToMove;
+  FolderSelectorScreen({BuildContext context, dynamic itemToMove})
+      : _startingFolder = ApplicationStateProvider.forOrganize(context).getFolder(),
+        _itemToMove = itemToMove;
 
   @override
-  State<StatefulWidget> createState() => FolderSelectionState(_folder);
+  State<StatefulWidget> createState() => FolderSelectionState(_startingFolder, _itemToMove);
 }
 
 class FolderSelectionState extends State<FolderSelectorScreen> {
   bool _loading;
   NPFolder _currentRootFolder;
+  NPEntry _entryToMove;
+  NPFolder _folderToMove;
   FolderService _folderService;
   FolderTree _folderTree;
 
+  NPFolder _moveToFolder;
+
   OrganizeBloc organizeBloc;
 
-  FolderSelectionState(NPFolder folder) {
-    _currentRootFolder = folder;
+  FolderSelectionState(NPFolder startingFolder, dynamic itemToMove) {
+    _currentRootFolder = startingFolder;
+    if (itemToMove is NPEntry) {
+      _entryToMove = itemToMove;
+    } else if (itemToMove is NPFolder) {
+      _folderToMove = itemToMove;
+    }
   }
 
   @override
@@ -59,9 +75,20 @@ class FolderSelectionState extends State<FolderSelectorScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('select folder'),
+        title: _entryToMove != null || _folderToMove != null ? Text('select folder to move into') : Text('open folder'),
         backgroundColor: UIHelper.blackCanvas(),
         actions: <Widget>[
+          IconButton(
+            tooltip: 'search',
+            icon: const Icon(Icons.search),
+            onPressed: () async {
+              final String selected = await showSearch<String>(
+                context: context,
+                delegate: new FolderSearchDelegate(_currentRootFolder.moduleId, _currentRootFolder.owner.userId),
+              );
+              if (selected != null) {}
+            },
+          )
         ],
         leading: new IconButton(
           icon: new Icon(Icons.close),
@@ -107,7 +134,8 @@ class FolderSelectionState extends State<FolderSelectorScreen> {
         padding: EdgeInsets.only(left: 20.0, right: 20.0),
         child: Icon(FontAwesomeIcons.folderOpen),
       ),
-      Expanded(child: new Text(_currentRootFolder.folderName.toUpperCase(), style: Theme.of(context).textTheme.headline))
+      Expanded(
+          child: new Text(_currentRootFolder.folderName.toUpperCase(), style: Theme.of(context).textTheme.headline))
     ];
 
     if (_currentRootFolder.folderId != 0) {
@@ -132,40 +160,69 @@ class FolderSelectionState extends State<FolderSelectorScreen> {
         folder.folderName,
         style: Theme.of(context).textTheme.title,
       )),
-      new PopupMenuButton<FolderMenu>(
-        onSelected: (FolderMenu result) {},
-        itemBuilder: (BuildContext context) => <PopupMenuEntry<FolderMenu>>[
-              const PopupMenuItem<FolderMenu>(
-                value: FolderMenu.update,
-                child: Text('update'),
-              ),
-              const PopupMenuItem<FolderMenu>(
-                value: FolderMenu.delete,
-                child: Text('delete'),
-              ),
-            ],
-      )
     ];
 
-    if (folder.subFolders != null && folder.subFolders.length > 0) {
-      tileItems.insert(
-          1,
-          new IconButton(
-            icon: Icon(FontAwesomeIcons.chevronCircleDown),
-            tooltip: 'open child folders',
-            onPressed: () {
-              setState(() {
-                // refresh the folder selector
-                _currentRootFolder = folder;
-              });
-            },
-          ));
+    // show different buttons when a folder is selected
+    if (_moveToFolder != null && _moveToFolder.folderId == folder.folderId) {
+      tileItems.add(UIHelper.actionButton(context, 'move', () {
+        if (_entryToMove != null) {
+          _entryToMove.folder = folder;
+          EntryService().updateAttribute(entry: _entryToMove, attribute: UpdateAttribute.folder).then((updatedEntry) {
+            Navigator.pop(context);
+          }).catchError((error) {
+            // report issue
+          });
+        }
+      }));
+      tileItems.add(UIHelper.formSpacer());
+      tileItems.add(UIHelper.cancelButton(context, () {
+        _moveToFolder = null;
+        setState(() {
+        });
+      }));
+    } else {
+      if (_entryToMove == null && _folderToMove == null) {
+        tileItems.add(new PopupMenuButton<FolderMenu>(
+          onSelected: (FolderMenu result) {},
+          itemBuilder: (BuildContext context) => <PopupMenuEntry<FolderMenu>>[
+            const PopupMenuItem<FolderMenu>(
+              value: FolderMenu.update,
+              child: Text('update'),
+            ),
+            const PopupMenuItem<FolderMenu>(
+              value: FolderMenu.delete,
+              child: Text('delete'),
+            ),
+          ],
+        ));
+      }
+
+      if (folder.subFolders != null && folder.subFolders.length > 0) {
+        tileItems.insert(
+            1,
+            new IconButton(
+              icon: Icon(FontAwesomeIcons.chevronCircleDown),
+              tooltip: 'open child folders',
+              onPressed: () {
+                setState(() {
+                  // refresh the folder selector
+                  _currentRootFolder = folder;
+                });
+              },
+            ));
+      }
     }
 
     return ListTile(
         onTap: () {
-          organizeBloc.changeFolder(folder.folderId);
-          Navigator.pop(context);
+          if (_entryToMove != null || _folderToMove != null) {
+            _moveToFolder = folder;
+            setState(() {
+            });
+          } else {
+            organizeBloc.changeFolder(folder.folderId);
+            Navigator.pop(context);
+          }
         },
         leading: UIHelper.folderTreeNode(),
         title: Row(children: tileItems));

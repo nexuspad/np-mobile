@@ -104,8 +104,10 @@ class EntryList<T extends NPEntry> {
         break;
       }
     }
-    _entries.removeAt(idxToRemove);
-    _listSetting.totalCount --;
+    if (idxToRemove != -1) {
+      _entries.removeAt(idxToRemove);
+      _listSetting.totalCount --;
+    }
   }
 
   mergeList(EntryList anotherList) {

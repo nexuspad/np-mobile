@@ -57,6 +57,20 @@ class FolderService extends BaseService {
     return completer.future;
   }
 
+  Future<dynamic> getFolders() {
+    var completer = new Completer();
+    if (_folderTree != null) {
+      completer.complete(_folderTree.allFolders());
+    } else {
+      this.get().then((folderTree) {
+        completer.complete(_folderTree.allFolders());
+      }).catchError((error) {
+        completer.completeError(error);
+      });
+    }
+    return completer.future;
+  }
+
   NPFolder getFolder(int folderId) {
     if (_folderTree != null) {
       return _folderTree.getFolder(folderId);

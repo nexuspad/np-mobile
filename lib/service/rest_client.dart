@@ -31,10 +31,7 @@ class RestClient {
     headers['Content-type'] = 'application/json';
 
     return http
-        .post(url,
-            body: body,
-            headers: headers,
-            encoding: Encoding.getByName("utf-8"))
+        .post(url, body: body, headers: headers, encoding: Encoding.getByName("utf-8"))
         .then((http.Response response) {
       final String res = response.body;
       final int statusCode = response.statusCode;
@@ -48,10 +45,7 @@ class RestClient {
 
   Future<dynamic> delete(String url, sessionId, uuid) {
     print('RestClient: make API delete call at: $url');
-    return http
-        .delete(url,
-        headers: {'Content-type':'application/json'})
-        .then((http.Response response) {
+    return http.delete(url, headers: _headers(sessionId)).then((http.Response response) {
       final String res = response.body;
       final int statusCode = response.statusCode;
 

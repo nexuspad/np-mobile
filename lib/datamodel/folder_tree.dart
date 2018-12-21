@@ -8,7 +8,7 @@ class FolderTree {
   FolderTree.fromFolders(int moduleId, List<NPFolder> folders, NPUser owner) {
     _root = new NPFolder(moduleId, NPFolder.ROOT, owner);
 
-    _lookup = new Map();
+    _lookup = new Map<int, NPFolder>();
     for (NPFolder f in folders) {
       _lookup[f.folderId] = f;
     }
@@ -100,6 +100,10 @@ class FolderTree {
         traverse(n, level + 1);
       }
     }
+  }
+
+  List<NPFolder> allFolders() {
+    return new List<NPFolder>.from(_lookup.values);
   }
 
   NPFolder getFolder(int folderId) {

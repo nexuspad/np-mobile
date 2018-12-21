@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:np_mobile/datamodel/np_contact.dart';
 import 'package:np_mobile/datamodel/np_entry.dart';
 import 'package:np_mobile/datamodel/np_module.dart';
 import 'package:np_mobile/service/entry_service.dart';

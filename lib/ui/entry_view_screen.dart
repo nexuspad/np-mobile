@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:np_mobile/datamodel/entry_list.dart';
-import 'package:np_mobile/datamodel/np_entry.dart';
 import 'package:np_mobile/datamodel/np_module.dart';
 import 'package:np_mobile/service/list_service.dart';
 import 'package:np_mobile/ui/entry_edit_screen.dart';
+import 'package:np_mobile/ui/folder_selector_screen.dart';
 import 'package:np_mobile/ui/ui_helper.dart';
 import 'package:np_mobile/ui/widgets/base_list.dart';
 import 'package:np_mobile/ui/widgets/entry_view_widget.dart';
@@ -61,6 +61,10 @@ class _EntryViewScreenState extends State<EntryViewScreen> {
             onPressed: () => _editPage(),
             icon: Icon(Icons.edit),
           ),
+          IconButton(
+            onPressed: () => _moveEntry(),
+            icon: Icon(Icons.folder),
+          ),
         ],
         leading: new IconButton(
           icon: new Icon(Icons.close),
@@ -92,6 +96,15 @@ class _EntryViewScreenState extends State<EntryViewScreen> {
         MaterialPageRoute(
           builder: (context) => EntryEditScreen(context, _entryList.entries[_index]),
         ));
+  }
+
+  _moveEntry() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => FolderSelectorScreen(context: context, itemToMove: _entryList.entries[_index],),
+      ),
+    );
   }
 
   _getMoreData() {

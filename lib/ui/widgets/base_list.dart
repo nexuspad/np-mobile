@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:np_mobile/datamodel/list_setting.dart';
 
-enum EntryMenu { favorite, update, delete }
+enum EntryMenu { favorite, update, move, delete }
 
 class BaseList extends StatefulWidget {
   final ListSetting listSetting;

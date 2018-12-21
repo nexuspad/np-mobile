@@ -6,6 +6,7 @@ import 'package:np_mobile/service/entry_service.dart';
 import 'package:np_mobile/service/list_service.dart';
 import 'package:np_mobile/ui/blocs/application_state_provider.dart';
 import 'package:np_mobile/ui/entry_edit_screen.dart';
+import 'package:np_mobile/ui/folder_selector_screen.dart';
 import 'package:np_mobile/ui/ui_helper.dart';
 import 'package:np_mobile/ui/widgets/base_list.dart';
 
@@ -142,8 +143,18 @@ class NPModuleListingState<T extends BaseList> extends State<T> {
               builder: (context) => EntryEditScreen(context, e),
             ),
           );
-        } else if (selected == EntryMenu.update) {
-          EntryService().delete(e);
+        } else if (selected == EntryMenu.move) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => FolderSelectorScreen(context: context, itemToMove: e),
+            ),
+          );
+        } else if (selected == EntryMenu.delete) {
+          EntryService().delete(e).then((deletedEntry) {
+            setState(() {
+            });
+          });
         }
       },
       itemBuilder: (BuildContext context) => <PopupMenuEntry<EntryMenu>>[
@@ -154,6 +165,10 @@ class NPModuleListingState<T extends BaseList> extends State<T> {
         const PopupMenuItem<EntryMenu>(
           value: EntryMenu.update,
           child: Text('update'),
+        ),
+        const PopupMenuItem<EntryMenu>(
+          value: EntryMenu.move,
+          child: Text('move'),
         ),
         const PopupMenuItem<EntryMenu>(
           value: EntryMenu.delete,

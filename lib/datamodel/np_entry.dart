@@ -64,15 +64,27 @@ class NPEntry {
     return false;
   }
 
-  Map<String, dynamic> toJson() => {
-    'moduleId': _moduleId,
-    'entryId': _entryId??'',
-    'title': _title??'',
-    'note': _note??'',
-    'pinned': _pinned == null ? false : _pinned,
-    'folder': _folder == null ? {} : _folder.toJson(),
-    'owner': _owner == null ? {} : _owner.toJson()
-  };
+  Map<String, dynamic> toJson() {
+    Map<String, dynamic> data = {
+      'moduleId': _moduleId,
+      'entryId': _entryId ?? '',
+      'title': _title ?? '',
+      'note': _note ?? '',
+      'pinned': _pinned == null ? false : _pinned,
+      'folder': _folder == null ? {} : _folder.toJson(),
+      'owner': _owner == null ? {} : _owner.toJson(),
+    };
+
+    if (_colorCode != null) {
+      data['colorCode'] = _colorCode;
+    }
+
+    if (_tags != null && _tags.length > 0) {
+      data['tags'] = _tags;
+    }
+
+    return data;
+  }
 
   int get moduleId => _moduleId;
   set moduleId(value) => _moduleId = value;
@@ -92,7 +104,9 @@ class NPEntry {
   DateTime get updateTime => _updateTime;
 
   NPFolder get folder => _folder;
-  set folder(value) => _folder = value;
+  set folder(value) {
+    _folder = NPFolder.copy(value);
+  }
 
   String get colorCode => _colorCode;
 

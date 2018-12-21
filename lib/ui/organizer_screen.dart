@@ -10,16 +10,17 @@ import 'package:np_mobile/service/folder_service.dart';
 import 'package:np_mobile/ui/blocs/application_state_provider.dart';
 import 'package:np_mobile/ui/blocs/organize_bloc.dart';
 import 'package:np_mobile/ui/entry_edit_screen.dart';
+import 'package:np_mobile/ui/folder_selector_screen.dart';
 import 'package:np_mobile/ui/ui_helper.dart';
 import 'package:np_mobile/ui/widgets/np_timeline.dart';
 import 'package:np_mobile/ui/widgets/np_grid.dart';
 import 'package:np_mobile/ui/widgets/np_list.dart';
-import 'package:np_mobile/ui/widgets/np_search_delegate.dart';
+import 'package:np_mobile/ui/widgets/entry_search_delegate.dart';
 
 enum AccountMenu { account, logout }
 
 class OrganizerScreen extends StatelessWidget {
-  final NPSearchDelegate _searchDelegate = new NPSearchDelegate();
+  final EntrySearchDelegate _searchDelegate = new EntrySearchDelegate();
 
   @override
   Widget build(context) {
@@ -179,8 +180,12 @@ class OrganizerScreen extends StatelessWidget {
     return FloatingActionButton(
       child: const Icon(Icons.folder),
       onPressed: () {
-        // Perform some action
-        Navigator.pushNamed(context, 'folders');
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => FolderSelectorScreen(context: context),
+          ),
+        );
       },
       tooltip: 'open folders',
     );

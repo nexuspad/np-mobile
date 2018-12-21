@@ -20,7 +20,6 @@ class App extends StatelessWidget {
           'account': (context) => AccountScreen(),
           'login': (context) => LoginScreen(),
           'organize': (context) => OrganizerScreen(),
-          'folders': (context) => FolderSelectorScreen(context),
           'photoUploader': (context) => PhotoUploaderScreen(context),
         },
         theme: ThemeData(
