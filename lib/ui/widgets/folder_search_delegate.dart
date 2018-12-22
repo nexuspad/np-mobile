@@ -1,7 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:np_mobile/datamodel/np_entry.dart';
 import 'package:np_mobile/datamodel/np_folder.dart';
+import 'package:np_mobile/service/entry_service.dart';
 import 'package:np_mobile/service/folder_service.dart';
 import 'package:np_mobile/ui/blocs/application_state_provider.dart';
 import 'package:np_mobile/ui/ui_helper.dart';
@@ -10,8 +12,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 class FolderSearchDelegate extends SearchDelegate<String> {
   int _moduleId;
   int _ownerId;
+  dynamic _itemToMove;
 
-  FolderSearchDelegate(int moduleId, int ownerId) : _moduleId = moduleId, _ownerId = ownerId;
+  FolderSearchDelegate(int moduleId, int ownerId, itemToMove)
+      : _moduleId = moduleId,
+        _ownerId = ownerId,
+        _itemToMove = itemToMove;
 
   @override
   Widget buildLeading(BuildContext context) {
@@ -33,9 +39,20 @@ class FolderSearchDelegate extends SearchDelegate<String> {
 
     return _SuggestionList(_moduleId, _ownerId, query, (NPFolder selectedFolder) {
       // perform action on selected folder
-      organizeBloc.changeFolder(selectedFolder.folderId);
-      close(context, null);
-      Navigator.of(context).popUntil(ModalRoute.withName('organize'));
+      if (_itemToMove != null) {
+        if (_itemToMove is NPEntry) {
+          EntryService().move(_itemToMove, selectedFolder).then((updatedEntry) {
+            Navigator.of(context).popUntil(ModalRoute.withName('organize'));
+          }).catchError((error) {
+            // report issue
+          });
+        }
+
+      } else {
+        organizeBloc.changeFolder(selectedFolder.folderId);
+        close(context, null);
+        Navigator.of(context).popUntil(ModalRoute.withName('organize'));
+      }
     });
   }
 
@@ -87,7 +104,6 @@ class _SuggestionList extends StatelessWidget {
     List historyStored = _pref.getStringList("FOLDER_SEARCH_HISTORY");
 
     FolderService(_moduleId, _ownerId).getFolders().then((folders) {
-
       Map<String, NPFolder> nameMap = new Map();
       folders.forEach((f) {
         nameMap[f.folderName] = f;

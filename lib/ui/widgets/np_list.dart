@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:np_mobile/datamodel/list_setting.dart';
 import 'package:np_mobile/datamodel/np_entry.dart';
-import 'package:np_mobile/service/entry_service.dart';
 import 'package:np_mobile/ui/entry_view_screen.dart';
-import 'package:np_mobile/ui/entry_edit_screen.dart';
 import 'package:np_mobile/ui/widgets/base_list.dart';
 import 'package:np_mobile/ui/ui_helper.dart';
 import 'package:np_mobile/ui/widgets/entry_view_util.dart';
@@ -45,6 +43,7 @@ class _ListState extends NPModuleListingState<NPListWidget> {
           }
         },
         controller: scrollController,
+        physics: const AlwaysScrollableScrollPhysics(),
       );
       return listView;
     }

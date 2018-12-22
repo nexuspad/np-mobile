@@ -60,6 +60,7 @@ class ListSetting {
   ListSetting.shallowCopy(ListSetting otherSetting) {
     _moduleId = otherSetting.moduleId;
     _folderId = otherSetting._folderId;
+    _includeEntriesInAllFolders = otherSetting._includeEntriesInAllFolders;
     _startDate = otherSetting.startDate;
     _endDate = otherSetting.endDate;
     _ownerId = otherSetting._ownerId;
@@ -69,17 +70,19 @@ class ListSetting {
     _expiration = otherSetting._expiration;
   }
 
-  ListSetting.forPageQuery(int moduleId, int folderId, int ownerId, int pageId) {
+  ListSetting.forPageQuery(int moduleId, int folderId, bool includeEntriesInAllFolders, int ownerId, int pageId) {
     _moduleId = moduleId;
     _folderId = folderId;
+    _includeEntriesInAllFolders = includeEntriesInAllFolders;
     _ownerId = ownerId;
     _pageId = pageId;
     _totalCount = 0;
   }
 
-  ListSetting.forTimelineQuery(int moduleId, int folderId, int ownerId, String startYmd, String endYmd) {
+  ListSetting.forTimelineQuery(int moduleId, int folderId, bool includeEntriesInAllFolders, int ownerId, String startYmd, String endYmd) {
     _moduleId = moduleId;
     _folderId = folderId;
+    _includeEntriesInAllFolders = includeEntriesInAllFolders;
     _ownerId = ownerId;
     _startDate = startYmd;
     _endDate = endYmd;
@@ -171,6 +174,9 @@ class ListSetting {
 
   int get folderId => _folderId;
   set folderId(value) => _folderId = value;
+
+  bool get includeEntriesInAllFolders => _includeEntriesInAllFolders;
+  set includeEntriesInAllFolders(value) => _includeEntriesInAllFolders = value;
 
   int get pageId => _pageId;
   set pageId(value) => _pageId = value;

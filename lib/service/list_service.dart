@@ -81,6 +81,7 @@ class ListService extends BaseService {
       String url = getListEndPoint(
           moduleId: _moduleId,
           folderId: _folderId,
+          includeAllFolders: listQuery.includeEntriesInAllFolders,
           pageId: listQuery.pageId,
           startDate: listQuery.startDate,
           endDate: listQuery.endDate,

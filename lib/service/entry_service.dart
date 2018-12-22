@@ -87,7 +87,7 @@ class EntryService extends BaseService {
     entry.folder = toFolder;
     _updateAttribute(entry: entry, attribute: UpdateAttribute.folder).then((updatedEntry) {
       ListService.activeServicesForModule(entry.moduleId, entry.owner.userId)
-          .forEach((service) => service.addEntries(List.filled(1, entry)));
+          .forEach((service) => service.addEntries(List.filled(1, updatedEntry)));
       completer.complete(updatedEntry);
     }).catchError((error) {
       completer.completeError(error);

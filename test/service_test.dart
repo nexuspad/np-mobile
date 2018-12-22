@@ -37,7 +37,7 @@ void main() {
     await AccountService().mock();
 
     ListService listService = new ListService(moduleId: 4, folderId: 0);
-    ListSetting listQuery = ListSetting.forPageQuery(NPModule.DOC, NPFolder.ROOT, 5, 1);
+    ListSetting listQuery = ListSetting.forPageQuery(NPModule.DOC, NPFolder.ROOT, false, 5, 1);
     await listService.get(listQuery).then((dynamic result) {
       EntryList entryList = result;
       entryList.entries.forEach((e) => print(e.title));

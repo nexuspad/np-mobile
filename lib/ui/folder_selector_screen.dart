@@ -73,6 +73,13 @@ class FolderSelectionState extends State<FolderSelectorScreen> {
   Widget build(BuildContext context) {
     organizeBloc = ApplicationStateProvider.forOrganize(context);
 
+    dynamic itemToMove;
+    if (_entryToMove != null) {
+      itemToMove = _entryToMove;
+    } else if (_folderToMove != null) {
+      itemToMove = _folderToMove;
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: _entryToMove != null || _folderToMove != null ? Text('select folder to move into') : Text('open folder'),
@@ -84,7 +91,7 @@ class FolderSelectionState extends State<FolderSelectorScreen> {
             onPressed: () async {
               final String selected = await showSearch<String>(
                 context: context,
-                delegate: new FolderSearchDelegate(_currentRootFolder.moduleId, _currentRootFolder.owner.userId),
+                delegate: new FolderSearchDelegate(_currentRootFolder.moduleId, _currentRootFolder.owner.userId, itemToMove),
               );
               if (selected != null) {}
             },

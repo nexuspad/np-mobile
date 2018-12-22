@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:np_mobile/app_config.dart';
 import 'package:np_mobile/datamodel/account.dart';
 import 'package:np_mobile/service/account_service.dart';
 import 'package:np_mobile/ui/blocs/application_state_provider.dart';
@@ -38,6 +39,7 @@ class LandingScreenState extends State<LandingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    AppConfig().checkScreenSize(context);
     if (_authenticated) {
       return Scaffold(
         appBar: AppBar(

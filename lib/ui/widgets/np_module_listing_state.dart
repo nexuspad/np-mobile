@@ -36,7 +36,8 @@ class NPModuleListingState<T extends BaseList> extends State<T> {
       loadEntries();
     } else if (oldWidget.listSetting.sameCriteriaAndExpires(widget.listSetting) == true) {
       // pull refresh, individual entry update.
-      print('reload entries with force expirartion: old = [${oldWidget.listSetting.toString()}] new = [${widget.listSetting.toString()}]');
+      print(
+          'reload entries with force expirartion: old = [${oldWidget.listSetting.toString()}] new = [${widget.listSetting.toString()}]');
       loadEntries(refresh: true);
     }
   }
@@ -62,9 +63,11 @@ class NPModuleListingState<T extends BaseList> extends State<T> {
     ListSetting listQuery;
 
     if (listSetting.startDate != null && listSetting.endDate != null) {
-      listQuery = ListSetting.forTimelineQuery(listSetting.moduleId, listSetting.folderId, listSetting.ownerId, listSetting.startDate, listSetting.endDate);
+      listQuery = ListSetting.forTimelineQuery(listSetting.moduleId, listSetting.folderId,
+          listSetting.includeEntriesInAllFolders, listSetting.ownerId, listSetting.startDate, listSetting.endDate);
     } else {
-      listQuery = ListSetting.forPageQuery(listSetting.moduleId, listSetting.folderId, listSetting.ownerId, listSetting.pageId);
+      listQuery = ListSetting.forPageQuery(listSetting.moduleId, listSetting.folderId,
+          listSetting.includeEntriesInAllFolders, listSetting.ownerId, listSetting.pageId);
     }
 
     if (listSetting.hasSearchQuery()) {
@@ -152,29 +155,28 @@ class NPModuleListingState<T extends BaseList> extends State<T> {
           );
         } else if (selected == EntryMenu.delete) {
           EntryService().delete(e).then((deletedEntry) {
-            setState(() {
-            });
+            setState(() {});
           });
         }
       },
       itemBuilder: (BuildContext context) => <PopupMenuEntry<EntryMenu>>[
-        const PopupMenuItem<EntryMenu>(
-          value: EntryMenu.favorite,
-          child: Text('favorite'),
-        ),
-        const PopupMenuItem<EntryMenu>(
-          value: EntryMenu.update,
-          child: Text('update'),
-        ),
-        const PopupMenuItem<EntryMenu>(
-          value: EntryMenu.move,
-          child: Text('move'),
-        ),
-        const PopupMenuItem<EntryMenu>(
-          value: EntryMenu.delete,
-          child: Text('delete'),
-        ),
-      ],
+            const PopupMenuItem<EntryMenu>(
+              value: EntryMenu.favorite,
+              child: Text('favorite'),
+            ),
+            const PopupMenuItem<EntryMenu>(
+              value: EntryMenu.update,
+              child: Text('update'),
+            ),
+            const PopupMenuItem<EntryMenu>(
+              value: EntryMenu.move,
+              child: Text('move'),
+            ),
+            const PopupMenuItem<EntryMenu>(
+              value: EntryMenu.delete,
+              child: Text('delete'),
+            ),
+          ],
     );
   }
 

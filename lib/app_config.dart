@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:math';
+import 'package:flutter/material.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -9,6 +10,7 @@ class AppConfig {
   AppConfig.internal();
 
   SharedPreferences _prefs;
+  bool _isSmallScreen = false;
 
   Future<dynamic> test() {
     var completer = new Completer();
@@ -49,7 +51,18 @@ class AppConfig {
 
   String get serviceHost => _serviceHost;
   set serviceHost(value) => _serviceHost = value;
-  String get deviceId => _deviceId;}
+  String get deviceId => _deviceId;
+
+  bool get isSmallScreen => _isSmallScreen;
+  checkScreenSize(context) {
+    double width = MediaQuery.of(context).size.width;
+    double height = MediaQuery.of(context).size.height;
+    print('< device size: $width $height >');
+    if (width <= 350) {
+      _isSmallScreen = true;
+    }
+  }
+}
 
 class RandomString {
   static final String upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";

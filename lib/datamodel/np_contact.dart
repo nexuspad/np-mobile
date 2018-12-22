@@ -58,13 +58,13 @@ class NPContact extends NPEntry {
 
   Map<String, dynamic> toJson() {
     Map data = super.toJson();
-    data['firstName'] = _firstName;
-    data['lastName'] = _lastName;
-    data['middleName'] = _middleName;
-    data['businessName'] = _businessName;
-    data['address'] = _address;
-    data['phones'] = _phones;
-    data['emails'] = _emails;
+    data['firstName'] = _firstName ?? '';
+    data['lastName'] = _lastName ?? '';
+    data['middleName'] = _middleName ?? '';
+    data['businessName'] = _businessName ?? '';
+    data['address'] = _address ?? '';
+    data['phones'] = _phones ?? [];
+    data['emails'] = _emails ?? [];
     return data;
   }
 

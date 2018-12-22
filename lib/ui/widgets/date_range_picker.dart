@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:np_mobile/app_config.dart';
 import 'package:np_mobile/ui/ui_helper.dart';
 
-enum RangeMenu { week, month, year }
+enum RangeMenu { today, week, month, year }
 
 class DateRangePicker extends StatefulWidget {
   const DateRangePicker({Key key, this.startDate, this.endDate, this.dateRangeSelected}) : super(key: key);
@@ -48,49 +49,86 @@ class _DateRangePickerState extends State<DateRangePicker> {
     _startDate = widget.startDate;
     _endDate = widget.endDate;
 
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.end,
-      children: <Widget>[
+    List<Widget> menuItems = <Widget>[
+      Expanded(
+        child:
+            Padding(padding: EdgeInsets.all(8.0), child: _inputDropdown('from', DateFormat.yMMMd().format(_startDate))),
+      ),
+      Expanded(
+        child: Padding(padding: EdgeInsets.all(8.0), child: _inputDropdown('to', DateFormat.yMMMd().format(_endDate))),
+      ),
+    ];
+
+    if (!AppConfig().isSmallScreen) {
+      menuItems.add(
         Expanded(
-          child: Padding(
-              padding: EdgeInsets.all(8.0), child: _inputDropdown('from', DateFormat.yMMMd().format(_startDate))),
+          child: FlatButton(
+              onPressed: () {
+                _startDate = DateTime.now();
+                _endDate = DateTime.now().add(Duration(days: 7));
+                widget.dateRangeSelected(<DateTime>[_startDate, _endDate]);
+              },
+              child: Text('today')),
         ),
-        Expanded(
-          child:
-              Padding(padding: EdgeInsets.all(8.0), child: _inputDropdown('to', DateFormat.yMMMd().format(_endDate))),
-        ),
-        Expanded(
-          child: FlatButton(onPressed: () {
+      );
+      menuItems.add(PopupMenuButton<RangeMenu>(
+        onSelected: (RangeMenu selected) {
+          if (selected == RangeMenu.week) {
+            _startDate = UIHelper.firstDayOfWeek(aDate: DateTime.now());
+            _endDate = _startDate.add(Duration(days: 7));
+            widget.dateRangeSelected(<DateTime>[_startDate, _endDate]);
+          } else if (selected == RangeMenu.month) {
+            _startDate = UIHelper.firstDayOfMonth(DateTime.now());
+            _endDate = _startDate.add(Duration(days: 35)); // plus 5 weeks
+            widget.dateRangeSelected(<DateTime>[_startDate, _endDate]);
+          }
+        },
+        itemBuilder: (BuildContext context) => <PopupMenuEntry<RangeMenu>>[
+              const PopupMenuItem<RangeMenu>(
+                value: RangeMenu.week,
+                child: Text('week'),
+              ),
+              const PopupMenuItem<RangeMenu>(
+                value: RangeMenu.month,
+                child: Text('month'),
+              ),
+            ],
+      ));
+    } else {
+      menuItems.add(PopupMenuButton<RangeMenu>(
+        onSelected: (RangeMenu selected) {
+          if (selected == RangeMenu.week) {
             _startDate = DateTime.now();
             _endDate = DateTime.now().add(Duration(days: 7));
             widget.dateRangeSelected(<DateTime>[_startDate, _endDate]);
-          }, child: Text('today')),
-        ),
-        PopupMenuButton<RangeMenu>(
-          onSelected: (RangeMenu selected) {
-            if (selected == RangeMenu.week) {
-              _startDate = UIHelper.firstDayOfWeek(aDate: DateTime.now());
-              _endDate = _startDate.add(Duration(days: 7));
-              widget.dateRangeSelected(<DateTime>[_startDate, _endDate]);
-            } else if (selected == RangeMenu.month) {
-              _startDate = UIHelper.firstDayOfMonth(DateTime.now());
-              _endDate = _startDate.add(Duration(days: 35));  // plus 5 weeks
-              widget.dateRangeSelected(<DateTime>[_startDate, _endDate]);
-            }
-          },
-          itemBuilder: (BuildContext context) => <PopupMenuEntry<RangeMenu>>[
-                const PopupMenuItem<RangeMenu>(
-                  value: RangeMenu.week,
-                  child: Text('week'),
-                ),
-                const PopupMenuItem<RangeMenu>(
-                  value: RangeMenu.month,
-                  child: Text('month'),
-                ),
-              ],
-        ),
-      ],
-    );
+          } else if (selected == RangeMenu.week) {
+            _startDate = UIHelper.firstDayOfWeek(aDate: DateTime.now());
+            _endDate = _startDate.add(Duration(days: 7));
+            widget.dateRangeSelected(<DateTime>[_startDate, _endDate]);
+          } else if (selected == RangeMenu.month) {
+            _startDate = UIHelper.firstDayOfMonth(DateTime.now());
+            _endDate = _startDate.add(Duration(days: 35)); // plus 5 weeks
+            widget.dateRangeSelected(<DateTime>[_startDate, _endDate]);
+          }
+        },
+        itemBuilder: (BuildContext context) => <PopupMenuEntry<RangeMenu>>[
+          const PopupMenuItem<RangeMenu>(
+            value: RangeMenu.today,
+            child: Text('today'),
+          ),
+          const PopupMenuItem<RangeMenu>(
+            value: RangeMenu.week,
+            child: Text('week'),
+          ),
+          const PopupMenuItem<RangeMenu>(
+            value: RangeMenu.month,
+            child: Text('month'),
+          ),
+        ],
+      ));
+    }
+
+    return Row(crossAxisAlignment: CrossAxisAlignment.end, children: menuItems);
   }
 
   Widget _inputDropdown(String labelText, String valueText) {

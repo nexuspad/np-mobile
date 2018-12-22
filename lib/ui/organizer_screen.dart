@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:np_mobile/app_config.dart';
 import 'package:np_mobile/datamodel/entry_factory.dart';
 import 'package:np_mobile/datamodel/list_setting.dart';
 import 'package:np_mobile/datamodel/np_folder.dart';
@@ -25,10 +26,7 @@ class OrganizerScreen extends StatelessWidget {
   @override
   Widget build(context) {
     final organizeBloc = ApplicationStateProvider.forOrganize(context);
-
-    double width = MediaQuery.of(context).size.width;
-    double height = MediaQuery.of(context).size.height;
-    print('< device size: $width $height >');
+    AppConfig().checkScreenSize(context);
 
     return Scaffold(
       appBar: AppBar(

@@ -40,6 +40,12 @@ class OrganizeBloc {
     _currentSetting.listSetting.totalCount = 0;
     _currentSetting.listSetting.expiration = null;
 
+    if (moduleId == NPModule.CONTACT || moduleId == NPModule.CALENDAR) {
+      _currentSetting.listSetting.includeEntriesInAllFolders = true;
+    } else {
+      _currentSetting.listSetting.includeEntriesInAllFolders = false;
+    }
+
     if (moduleId == NPModule.CALENDAR) {
       DateTime today = DateTime.now();
       _currentSetting.listSetting.startDate = UIHelper.npDateStr(today);
