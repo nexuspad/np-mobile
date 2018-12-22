@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:flutter/material.dart';
 import 'package:np_mobile/datamodel/UploadFileWrapper.dart';
 import 'package:np_mobile/datamodel/np_doc.dart';
 import 'package:np_mobile/datamodel/np_folder.dart';
@@ -8,11 +9,12 @@ import 'package:np_mobile/datamodel/np_photo.dart';
 import 'package:np_mobile/service/upload_service.dart';
 
 class UploadWorker {
-  final int maxUploadCount = 3;
+  final int _maxUploadCount = 3;
+  final ValueChanged<UploadFileWrapper> _uploadProgress;
 
   final NPFolder _folder;
   List<UploadFileWrapper> _fileEntities;
-  UploadWorker(folder, files) : _folder = folder {
+  UploadWorker(folder, files, progressCallback) : _folder = folder, _uploadProgress = progressCallback {
     _fileEntities = files;
   }
 
@@ -44,7 +46,7 @@ class UploadWorker {
 //            _performMockUpload(i);
             _performUpload(i);
           }
-          if (numberOfUpload == 3) {
+          if (numberOfUpload == _maxUploadCount) {
             break;
           }
         }
@@ -62,8 +64,9 @@ class UploadWorker {
     String path = _fileEntities[index].path;
     print('UploadWorker: upload file: $path');
     UploadService uploadService = new UploadService();
-    uploadService.uploadToFolder(_folder, File(path), null).then((dynamic result) {
+    uploadService.uploadToFolder(_folder, File(path), _uploadProgress).then((dynamic result) {
       _fileEntities[index].status = UploadStatus.completed;
+      _uploadProgress(_fileEntities[index]);
       if (result is NPPhoto) {
       } else if (result is NPDoc) {
       }

@@ -63,9 +63,9 @@ class _PhotoUploaderScreenState extends State<PhotoUploaderScreen> {
               width: imageWidth,
               height: imageWidth,
             ),
-            title: Text(basename(file.path)),
+            title: Text(_selectedFiles[index].status.toString()),
             onTap: () {},
-            enabled: true,
+            enabled: false,
           );
         },
       ),
@@ -172,7 +172,11 @@ class _PhotoUploaderScreenState extends State<PhotoUploaderScreen> {
       return FloatingActionButton(
         child: const Icon(Icons.file_upload),
         onPressed: () {
-          UploadWorker(widget._folder, _selectedFiles);
+          UploadWorker(widget._folder, _selectedFiles, (UploadFileWrapper ufw) {
+            setState(() {
+              // update the uploading status shown in the table
+            });
+          }).start();
         },
         tooltip: 'upload',
       );
