@@ -63,6 +63,7 @@ class UploadWorker {
   _performUpload(int index) {
     String path = _fileEntities[index].path;
     print('UploadWorker: upload file: $path');
+    _uploadProgress(_fileEntities[index]);
     UploadService uploadService = new UploadService();
     uploadService.uploadToFolder(_folder, File(path), _uploadProgress).then((dynamic result) {
       _fileEntities[index].status = UploadStatus.completed;

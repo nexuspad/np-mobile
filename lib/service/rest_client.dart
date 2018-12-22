@@ -28,7 +28,6 @@ class RestClient {
     print('RestClient: request payload: $body');
 
     Map headers = _headers(sessionId);
-    headers['Content-type'] = 'application/json';
 
     return http
         .post(url, body: body, headers: headers, encoding: Encoding.getByName("utf-8"))
@@ -58,6 +57,8 @@ class RestClient {
 
   Map<String, String> _headers(String sessionId) {
     Map<String, String> h = new Map();
+
+    h['Content-type'] = 'application/json';
 
     if (sessionId != null) {
       h['utoken'] = sessionId;
