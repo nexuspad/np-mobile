@@ -91,6 +91,10 @@ class OrganizeBloc {
     return new NPFolder(_currentSetting.listSetting.moduleId, _currentSetting.listSetting.folderId, AccountService().acctOwner);
   }
 
+  NPFolder getRootFolder() {
+    return new NPFolder(_currentSetting.listSetting.moduleId, NPFolder.ROOT, AccountService().acctOwner);
+  }
+
   NPEntry getActiveEntry() {
     return _currentSetting._activeEntry;
   }

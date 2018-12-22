@@ -8,7 +8,6 @@ import 'package:np_mobile/datamodel/list_setting.dart';
 import 'package:np_mobile/datamodel/entry_factory.dart';
 import 'package:np_mobile/datamodel/np_module.dart';
 import 'package:np_mobile/datamodel/np_photo.dart';
-import 'package:np_mobile/datamodel/np_upload.dart';
 import 'package:np_mobile/ui/ui_helper.dart';
 
 class EntryList<T extends NPEntry> {
@@ -53,38 +52,62 @@ class EntryList<T extends NPEntry> {
     return false;
   }
 
-  updateEntries(List<NPEntry> entries) {
-    entries.forEach((e) => _updateEntry(e));
+  addEntries(List<NPEntry> entries) {
+    entries.forEach((e) => _addOrUpdateEntry(e));
     _sortEntries();
   }
 
-  _updateEntry(NPEntry entry) {
+  updateEntries(List<NPEntry> entries) {
+    entries.forEach((e) => _addOrUpdateEntry(e));
+    _sortEntries();
+  }
+
+  _addOrUpdateEntry(NPEntry entry) {
+    if (_entries == null) {
+      _entries = new List();
+    }
+
+    // skip this if entry folder doesn't match, or entry is not pinned to ROOT folder.
+    if (entry.folder.folderId != _folder.folderId) {
+      if (!(_folder.folderId == NPFolder.ROOT && entry.pinned)) {
+        return;
+      }
+    }
+    var moduleObj;
+    switch (entry.moduleId) {
+      case NPModule.CONTACT:
+        moduleObj = NPContact.copy(entry);
+        break;
+      case NPModule.CALENDAR:
+        moduleObj = NPEvent.copy(entry);
+        break;
+      case NPModule.DOC:
+        moduleObj = NPDoc.copy(entry);
+        break;
+      case NPModule.BOOKMARK:
+        moduleObj = NPBookmark.copy(entry);
+        break;
+      case NPModule.PHOTO:
+        moduleObj = NPPhoto.copy(entry);
+        break;
+    }
+
+    if (moduleObj == null) {
+      print('Error: invalid entry');
+      return;
+    }
+
     int len = _entries.length;
+    bool updated = false;
     for (int i=0; i<len; i++) {
       if (entry.keyMatches(_entries[i])) {
-        var replacement;
-        switch (entry.moduleId) {
-          case NPModule.CONTACT:
-            replacement = NPContact.copy(entry);
-            break;
-          case NPModule.CALENDAR:
-            replacement = NPEvent.copy(entry);
-            break;
-          case NPModule.DOC:
-            replacement = NPDoc.copy(entry);
-            break;
-          case NPModule.BOOKMARK:
-            replacement = NPBookmark.copy(entry);
-            break;
-          case NPModule.PHOTO:
-            replacement = NPPhoto.copy(entry);
-            break;
-        }
-        if (replacement != null) {
-          _entries[i] = replacement;
-          break;
-        }
+        _entries[i] = moduleObj;
+        updated = true;
+        break;
       }
+    }
+    if (!updated) {
+      _entries.insert(0, moduleObj);
     }
   }
 
@@ -95,7 +118,15 @@ class EntryList<T extends NPEntry> {
   }
 
   _deleteEntry(NPEntry entry) {
-    if (_entries == null) return;
+    if (_entries == null) {
+      return;
+    }
+    // if folders don't match, or not deleting un-pinned entry from ROOT, do not proceed.
+    if (entry.folder.folderId != _folder.folderId) {
+      if (!(_folder.folderId == NPFolder.ROOT && entry.pinned == false)) {
+        return;
+      }
+    }
     int len = _entries.length;
     int idxToRemove = -1;
     for (int i=0; i<len; i++) {

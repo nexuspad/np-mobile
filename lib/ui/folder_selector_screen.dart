@@ -17,7 +17,7 @@ class FolderSelectorScreen extends StatefulWidget {
   final NPFolder _startingFolder;
   final dynamic _itemToMove;
   FolderSelectorScreen({BuildContext context, dynamic itemToMove})
-      : _startingFolder = ApplicationStateProvider.forOrganize(context).getFolder(),
+      : _startingFolder = ApplicationStateProvider.forOrganize(context).getRootFolder(),
         _itemToMove = itemToMove;
 
   @override
@@ -129,28 +129,24 @@ class FolderSelectionState extends State<FolderSelectorScreen> {
   }
 
   Widget _parentRow() {
-    List<Widget> items = [
-      Padding(
-        padding: EdgeInsets.only(left: 20.0, right: 20.0),
-        child: Icon(FontAwesomeIcons.folderOpen),
-      ),
+    List<Widget> parentRowItems = [
+      Icon(Icons.folder_open),
+      UIHelper.formSpacer(),
       Expanded(
-          child: new Text(_currentRootFolder.folderName.toUpperCase(), style: Theme.of(context).textTheme.headline))
+        child: InkWell(
+          onTap: () {
+            _moveToFolder = _currentRootFolder;
+            setState(() {
+            });
+          },
+          child: new Text(_currentRootFolder.folderName.toUpperCase(), style: Theme.of(context).textTheme.headline),
+        ),
+      )
     ];
 
-    if (_currentRootFolder.folderId != 0) {
-      items.add(new IconButton(
-        icon: Icon(FontAwesomeIcons.levelUpAlt),
-        tooltip: 'go up',
-        onPressed: () {
-          setState(() {
-            // refresh the folder selector
-            _currentRootFolder = _folderTree.searchNode(_currentRootFolder.parent.folderId);
-          });
-        },
-      ));
-    }
-    return Padding(padding: UIHelper.contentPadding(), child: Row(children: items));
+    _folderActionItems(parentRowItems, _currentRootFolder);
+
+    return Padding(padding: EdgeInsets.only(top:15.0, left: 25.0, right: 20.0), child: Row(children: parentRowItems));
   }
 
   ListTile _folderTile(NPFolder folder) {
@@ -158,74 +154,108 @@ class FolderSelectionState extends State<FolderSelectorScreen> {
       new Expanded(
           child: new Text(
         folder.folderName,
-        style: Theme.of(context).textTheme.title,
+        style: _folderEnabled(folder)
+            ? Theme.of(context).textTheme.title
+            : Theme.of(context).textTheme.title.copyWith(color: Theme.of(context).disabledColor),
       )),
     ];
 
+    _folderActionItems(tileItems, folder);
+
+    return ListTile(
+      onTap: () {
+        if (_entryToMove != null || _folderToMove != null) {
+          _moveToFolder = folder;
+          setState(() {});
+        } else {
+          organizeBloc.changeFolder(folder.folderId);
+          Navigator.pop(context);
+        }
+      },
+      leading: UIHelper.folderTreeNode(),
+      title: Row(children: tileItems),
+      enabled: _folderEnabled(folder),
+    );
+  }
+
+  _folderEnabled(NPFolder folder) {
+    if (_entryToMove == null && _folderToMove == null) {
+      return true;
+    } else {
+      if (_entryToMove != null && _entryToMove.folder.folderId == folder.folderId) {
+        return false;
+      } else if (_folderToMove != null && _folderToMove.folderId == folder.folderId) {
+        return false;
+      }
+      return true;
+    }
+  }
+
+  _folderActionItems(List<Widget> items, NPFolder folder) {
     // show different buttons when a folder is selected
     if (_moveToFolder != null && _moveToFolder.folderId == folder.folderId) {
-      tileItems.add(UIHelper.actionButton(context, 'move', () {
+      items.add(UIHelper.actionButton(context, 'move', () {
         if (_entryToMove != null) {
-          _entryToMove.folder = folder;
-          EntryService().updateAttribute(entry: _entryToMove, attribute: UpdateAttribute.folder).then((updatedEntry) {
+          EntryService().move(_entryToMove, folder).then((updatedEntry) {
             Navigator.pop(context);
           }).catchError((error) {
             // report issue
           });
         }
       }));
-      tileItems.add(UIHelper.formSpacer());
-      tileItems.add(UIHelper.cancelButton(context, () {
+      items.add(UIHelper.formSpacer());
+      items.add(UIHelper.cancelButton(context, () {
         _moveToFolder = null;
-        setState(() {
-        });
+        setState(() {});
       }));
-    } else {
-      if (_entryToMove == null && _folderToMove == null) {
-        tileItems.add(new PopupMenuButton<FolderMenu>(
-          onSelected: (FolderMenu result) {},
-          itemBuilder: (BuildContext context) => <PopupMenuEntry<FolderMenu>>[
-            const PopupMenuItem<FolderMenu>(
-              value: FolderMenu.update,
-              child: Text('update'),
-            ),
-            const PopupMenuItem<FolderMenu>(
-              value: FolderMenu.delete,
-              child: Text('delete'),
-            ),
-          ],
-        ));
-      }
 
-      if (folder.subFolders != null && folder.subFolders.length > 0) {
-        tileItems.insert(
-            1,
-            new IconButton(
-              icon: Icon(FontAwesomeIcons.chevronCircleDown),
-              tooltip: 'open child folders',
-              onPressed: () {
-                setState(() {
-                  // refresh the folder selector
-                  _currentRootFolder = folder;
-                });
-              },
+    } else {
+      if (folder.folderId != NPFolder.ROOT) {
+        if (_currentRootFolder.folderId == folder.folderId) {
+          items.add(new IconButton(
+            icon: Icon(FontAwesomeIcons.levelUpAlt),
+            tooltip: 'go up',
+            onPressed: () {
+              setState(() {
+                // refresh the folder selector
+                _currentRootFolder = _folderTree.searchNode(_currentRootFolder.parent.folderId);
+              });
+            },
+          ));
+        } else {
+          if (_entryToMove == null && _folderToMove == null) {
+            items.add(new PopupMenuButton<FolderMenu>(
+              onSelected: (FolderMenu result) {},
+              itemBuilder: (BuildContext context) => <PopupMenuEntry<FolderMenu>>[
+                const PopupMenuItem<FolderMenu>(
+                  value: FolderMenu.update,
+                  child: Text('update'),
+                ),
+                const PopupMenuItem<FolderMenu>(
+                  value: FolderMenu.delete,
+                  child: Text('delete'),
+                ),
+              ],
             ));
+          }
+
+          if (folder.subFolders != null && folder.subFolders.length > 0) {
+            items.insert(
+                1,
+                new IconButton(
+                  icon: Icon(FontAwesomeIcons.chevronCircleDown),
+                  tooltip: 'open child folders',
+                  onPressed: () {
+                    setState(() {
+                      // refresh the folder selector
+                      _currentRootFolder = folder;
+                    });
+                  },
+                ));
+          }
+        }
       }
     }
-
-    return ListTile(
-        onTap: () {
-          if (_entryToMove != null || _folderToMove != null) {
-            _moveToFolder = folder;
-            setState(() {
-            });
-          } else {
-            organizeBloc.changeFolder(folder.folderId);
-            Navigator.pop(context);
-          }
-        },
-        leading: UIHelper.folderTreeNode(),
-        title: Row(children: tileItems));
   }
 
   Widget buildProgressIndicator() {

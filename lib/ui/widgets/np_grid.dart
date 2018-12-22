@@ -101,10 +101,10 @@ class GridItem extends StatelessWidget {
             child: GridTileBar(
               title: _GridTitleText(entry.title),
               backgroundColor: Colors.black45,
-              leading: Icon(
-                icon,
-                color: Colors.white,
-              ),
+//              leading: Icon(
+//                icon,
+//                color: Colors.white,
+//              ),
               trailing: popMenu,
             ),
           ),

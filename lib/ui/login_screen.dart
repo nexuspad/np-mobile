@@ -108,9 +108,14 @@ class LoginFormState extends State<LoginScreen> {
       ),
       key: scaffoldKey,
       body: new Container(
-        margin: UIHelper.contentPadding(),
-        child: new Center(child: loginForm),
-      ),
+          margin: UIHelper.contentPadding(),
+          child: SingleChildScrollView(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(),
+                child: IntrinsicHeight(
+                  child: new Center(child: loginForm),
+                ),
+              ))),
     );
   }
 

@@ -128,7 +128,7 @@ class NPModuleListingState<T extends BaseList> extends State<T> {
       onSelected: (EntryMenu selected) {
         if (selected == EntryMenu.favorite) {
           e.pinned = !e.pinned;
-          EntryService().updateAttribute(entry: e, attribute: UpdateAttribute.pin).then((updatedEntry) {
+          EntryService().togglePin(e).then((updatedEntry) {
             // listService has been updated. refresh the UI
             setState(() {
               entryList = _listService.entryList;

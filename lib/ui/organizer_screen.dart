@@ -26,6 +26,10 @@ class OrganizerScreen extends StatelessWidget {
   Widget build(context) {
     final organizeBloc = ApplicationStateProvider.forOrganize(context);
 
+    double width = MediaQuery.of(context).size.width;
+    double height = MediaQuery.of(context).size.height;
+    print('< device size: $width $height >');
+
     return Scaffold(
       appBar: AppBar(
         title: _appBarTitle(organizeBloc),
@@ -83,12 +87,16 @@ class OrganizerScreen extends StatelessWidget {
           onPressed: () {
             // navigate to the new entry screen
             if (snapshot.data != null) {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => EntryEditScreen(context, EntryFactory.newInFolder(organizeBloc.getFolder())),
-                ),
-              );
+              if (snapshot.data.listSetting.moduleId == NPModule.PHOTO) {
+                Navigator.pushNamed(context, 'photoUploader');
+              } else {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => EntryEditScreen(context, EntryFactory.newInFolder(organizeBloc.getFolder())),
+                  ),
+                );
+              }
             }
           },
         );

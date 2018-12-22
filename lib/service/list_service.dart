@@ -39,7 +39,7 @@ class ListService extends BaseService {
     return k;
   }
 
-  static List<ListService> activeServices(int moduleId, int ownerId) {
+  static List<ListService> activeServicesForModule(int moduleId, int ownerId) {
     List<ListService> services = new List();
     if (_listServiceMap != null) {
       _listServiceMap.forEach((k, v) {
@@ -115,6 +115,10 @@ class ListService extends BaseService {
 
   bool hasMorePage() {
     return _entryList.listSetting.hasMorePage;
+  }
+
+  addEntries(List<NPEntry> entries) {
+    _entryList.addEntries(entries);
   }
 
   updateEntries(List<NPEntry> entries) {
