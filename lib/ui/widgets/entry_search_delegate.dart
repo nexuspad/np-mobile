@@ -89,8 +89,73 @@ class EntrySearchDelegate extends SearchDelegate<String> {
   }
 }
 
-class _SuggestionList extends StatelessWidget {
-  _SuggestionList(query, onSelected)
+class _SuggestionList extends StatefulWidget {
+  final String _query;
+  final ValueChanged<String> _onSelected;
+
+  _SuggestionList(query, onSelected) : _query = query, _onSelected = onSelected;
+
+  @override
+  State<StatefulWidget> createState() {
+    return _SuggestionListState();
+  }
+}
+
+class _SuggestionListState extends State<_SuggestionList> {
+  Future _historySuggestion() async {
+    var completer = new Completer();
+
+    SharedPreferences _pref = await SharedPreferences.getInstance();
+    List<String> historyStored = _pref.getStringList("SEARCH_HISTORY");
+
+    completer.complete(historyStored);
+    return completer.future;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<dynamic>(
+      future: _historySuggestion(),
+      builder: (context, snapshot) {
+        if (snapshot.hasError) print(snapshot.error);
+        if (snapshot.hasData) {
+          List<String> suggestions = snapshot.data;
+          return ListView.builder(
+            itemCount: suggestions.length,
+            itemBuilder: (BuildContext context, int i) {
+              final String suggestion = suggestions[i];
+              bool includeSuggestion = false;
+              if (suggestion.length > widget._query.length) {
+                if (suggestion.indexOf(widget._query) != -1) {
+                  includeSuggestion = true;
+                }
+              } else {
+                if (widget._query.indexOf(suggestion) != -1) {
+                  includeSuggestion = true;
+                }
+              }
+              if (includeSuggestion) {
+                return ListTile(
+                  leading: const Icon(Icons.history),
+                  title: Text(suggestion),
+                  onTap: () {
+                    widget._onSelected(suggestion);
+                  },
+                );
+              }
+            },
+          );
+        } else {
+          return UIHelper.emptySpace();
+        }
+      },
+    );
+  }
+
+}
+
+class _SuggestionList1 extends StatelessWidget {
+  _SuggestionList1(query, onSelected)
       : _query = query,
         _onSelected = onSelected;
 

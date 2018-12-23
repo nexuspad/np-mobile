@@ -22,7 +22,7 @@ class FolderSearchDelegate extends SearchDelegate<String> {
   @override
   Widget buildLeading(BuildContext context) {
     return IconButton(
-      tooltip: 'Back',
+      tooltip: 'back',
       icon: AnimatedIcon(
         icon: AnimatedIcons.menu_arrow,
         progress: transitionAnimation,
@@ -47,7 +47,6 @@ class FolderSearchDelegate extends SearchDelegate<String> {
             // report issue
           });
         }
-
       } else {
         organizeBloc.changeFolder(selectedFolder.folderId);
         close(context, null);
@@ -108,7 +107,9 @@ class _SuggestionList extends StatelessWidget {
       folders.forEach((f) {
         nameMap[f.folderName] = f;
       });
+
       List suggestedNames = nameMap.keys.toList();
+      suggestedNames.sort();
 
       if (historyStored != null && historyStored.length > 0) {
         historyStored.forEach((name) {
@@ -118,15 +119,13 @@ class _SuggestionList extends StatelessWidget {
             suggestedNames.insert(0, name);
           }
         });
-        Map<String, NPFolder> sortedNameMap = new Map();
-        suggestedNames.forEach((name) {
-          sortedNameMap[name] = nameMap[name];
-        });
-
-        completer.complete(sortedNameMap);
-      } else {
-        completer.complete(nameMap);
       }
+
+      Map<String, NPFolder> sortedNameMap = new Map();
+      suggestedNames.forEach((name) {
+        sortedNameMap[name] = nameMap[name];
+      });
+      completer.complete(sortedNameMap);
     });
 
     return completer.future;
@@ -141,31 +140,48 @@ class _SuggestionList extends StatelessWidget {
         if (snapshot.hasData) {
           Map<String, NPFolder> suggestedFolders = snapshot.data;
           List<String> suggestions = suggestedFolders.keys.toList();
+          List<String> hits = suggestions.where((suggestion) {
+            if (suggestion.length > _query.length) {
+              if (suggestion.indexOf(_query) != -1) {
+                return true;
+              }
+            } else {
+              if (_query.indexOf(suggestion) != -1) {
+                return true;
+              }
+            }
+            return false;
+          }).toList();
           return ListView.builder(
-            itemCount: suggestions.length,
+            itemCount: hits.length,
             itemBuilder: (BuildContext context, int i) {
-              final String suggestion = suggestions[i];
-              bool includeSuggestion = false;
-              if (suggestion.length > _query.length) {
-                if (suggestion.indexOf(_query) != -1) {
-                  includeSuggestion = true;
-                }
-              } else {
-                if (_query.indexOf(suggestion) != -1) {
-                  includeSuggestion = true;
-                }
-              }
-              if (includeSuggestion) {
-                return ListTile(
-                  leading: const Icon(Icons.history),
-                  title: Text(suggestion),
-                  onTap: () {
-                    if (suggestedFolders.containsKey(suggestion)) {
-                      _onSelected(suggestedFolders[suggestion]);
-                    }
-                  },
+              final String suggestion = hits[i];
+
+              var title;
+              if (_query != null && _query.isNotEmpty) {
+                List<String> parts = suggestion.split(_query);
+                title = Text.rich(
+                  TextSpan(
+                      children: <TextSpan>[
+                        TextSpan(text: parts[0]),
+                        TextSpan(text: _query, style: TextStyle(fontWeight: FontWeight.bold)),
+                        TextSpan(text: parts[1]),
+                      ]
+                  ),
                 );
+              } else {
+                title = Text(suggestion);
               }
+
+              return ListTile(
+                leading: const Icon(Icons.folder),
+                title: title,
+                onTap: () {
+                  if (suggestedFolders.containsKey(suggestion)) {
+                    _onSelected(suggestedFolders[suggestion]);
+                  }
+                },
+              );
             },
           );
         } else {

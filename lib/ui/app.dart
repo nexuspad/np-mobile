@@ -23,9 +23,8 @@ class App extends StatelessWidget {
           'photoUploader': (context) => PhotoUploaderScreen(context),
         },
         theme: ThemeData(
-//          textTheme: TextTheme(
-//            body1: UIHelper.bodyFont(context),
-//          ),
+          textTheme: TextTheme(
+          ),
         ),
       ),
     );

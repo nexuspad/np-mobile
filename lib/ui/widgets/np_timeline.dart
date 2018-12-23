@@ -91,6 +91,7 @@ class _CalendarWidgetState extends NPModuleListingState<NPTimelineWidget> {
           }
         },
         controller: scrollController,
+        physics: const AlwaysScrollableScrollPhysics(),
       );
       return listView;
     }
@@ -98,14 +99,21 @@ class _CalendarWidgetState extends NPModuleListingState<NPTimelineWidget> {
 
   ListTile _buildTile(NPEntry e, int index) {
     Icon leadingIcon;
+    var titleStyle;
+
     if (e.moduleId == NPModule.CALENDAR) {
       NPEvent event = e;
       if (event.startDateTime.isBefore(DateTime.now())) {
         leadingIcon = Icon(FontAwesomeIcons.clock, color: Colors.grey);
+        titleStyle = UIHelper.grayedEntryTitle(context);
+
       } else if (event.startDateTime.difference(DateTime.now()).inHours < 8) {
         leadingIcon = Icon(FontAwesomeIcons.clock, color: Colors.orangeAccent);
+        titleStyle = UIHelper.favoriteEntryTitle(context);
+
       } else {
         leadingIcon = Icon(FontAwesomeIcons.clock, color: Colors.blueAccent);
+        titleStyle = UIHelper.regularEntryTitle(context);
       }
     } else {
       if (e.pinned == true) {
@@ -113,7 +121,7 @@ class _CalendarWidgetState extends NPModuleListingState<NPTimelineWidget> {
       }
     }
     return new ListTile(
-      leading: leadingIcon,
+//      leading: leadingIcon,
       title: new Row(
         children: <Widget>[
           new Expanded(
@@ -121,7 +129,7 @@ class _CalendarWidgetState extends NPModuleListingState<NPTimelineWidget> {
               e.title,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: Theme.of(context).textTheme.title,
+              style: titleStyle,
             ),
           ),
           entryPopMenu(context, e)

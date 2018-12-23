@@ -36,8 +36,29 @@ void main() {
     SharedPreferences.setMockInitialValues({});
     await AccountService().mock();
 
-    ListService listService = new ListService(moduleId: 4, folderId: 0);
-    ListSetting listQuery = ListSetting.forPageQuery(NPModule.DOC, NPFolder.ROOT, false, 5, 1);
+    int moduleId = NPModule.CALENDAR;
+    int folderId = 0;
+    int ownerId = 2;
+    int pageId = 1;
+    String startDate = '2018-12-23';
+    String endDate = '2018-12-30';
+
+    ListService listService = new ListService(
+        moduleId: NPModule.CALENDAR,
+        folderId: 0,
+        ownerId: 2,
+        startDate: '2018-12-23',
+        endDate: '2018-12-30',
+        keyword: '');
+
+    ListSetting listQuery;
+
+    if (startDate != null && endDate != null) {
+      listQuery = ListSetting.forTimelineQuery(moduleId, folderId, true, ownerId, startDate, endDate);
+    } else {
+      listQuery = ListSetting.forPageQuery(moduleId, folderId, false, ownerId, pageId);
+    }
+
     await listService.get(listQuery).then((dynamic result) {
       EntryList entryList = result;
       entryList.entries.forEach((e) => print(e.title));

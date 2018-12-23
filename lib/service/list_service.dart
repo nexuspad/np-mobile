@@ -98,7 +98,6 @@ class ListService extends BaseService {
           _entryList.mergeList(entryListNewPage);
         }
         _entryList.listSetting.set30MinutesExpiration();
-
         completer.complete(_entryList);
       }).catchError((error) {
         completer.completeError(error);

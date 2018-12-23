@@ -91,7 +91,8 @@ class FolderSelectionState extends State<FolderSelectorScreen> {
             onPressed: () async {
               final String selected = await showSearch<String>(
                 context: context,
-                delegate: new FolderSearchDelegate(_currentRootFolder.moduleId, _currentRootFolder.owner.userId, itemToMove),
+                delegate:
+                    new FolderSearchDelegate(_currentRootFolder.moduleId, _currentRootFolder.owner.userId, itemToMove),
               );
               if (selected != null) {}
             },
@@ -143,8 +144,7 @@ class FolderSelectionState extends State<FolderSelectorScreen> {
         child: InkWell(
           onTap: () {
             _moveToFolder = _currentRootFolder;
-            setState(() {
-            });
+            setState(() {});
           },
           child: new Text(_currentRootFolder.folderName.toUpperCase(), style: Theme.of(context).textTheme.headline),
         ),
@@ -153,7 +153,7 @@ class FolderSelectionState extends State<FolderSelectorScreen> {
 
     _folderActionItems(parentRowItems, _currentRootFolder);
 
-    return Padding(padding: EdgeInsets.only(top:15.0, left: 25.0, right: 20.0), child: Row(children: parentRowItems));
+    return Padding(padding: EdgeInsets.only(top: 15.0, left: 25.0, right: 20.0), child: Row(children: parentRowItems));
   }
 
   ListTile _folderTile(NPFolder folder) {
@@ -201,21 +201,7 @@ class FolderSelectionState extends State<FolderSelectorScreen> {
   _folderActionItems(List<Widget> items, NPFolder folder) {
     // show different buttons when a folder is selected
     if (_moveToFolder != null && _moveToFolder.folderId == folder.folderId) {
-      items.add(UIHelper.actionButton(context, 'move', () {
-        if (_entryToMove != null) {
-          EntryService().move(_entryToMove, folder).then((updatedEntry) {
-            Navigator.pop(context);
-          }).catchError((error) {
-            // report issue
-          });
-        }
-      }));
-      items.add(UIHelper.formSpacer());
-      items.add(UIHelper.cancelButton(context, () {
-        _moveToFolder = null;
-        setState(() {});
-      }));
-
+      items.add(_moveActionButtons(folder));
     } else {
       if (folder.folderId != NPFolder.ROOT) {
         if (_currentRootFolder.folderId == folder.folderId) {
@@ -234,15 +220,15 @@ class FolderSelectionState extends State<FolderSelectorScreen> {
             items.add(new PopupMenuButton<FolderMenu>(
               onSelected: (FolderMenu result) {},
               itemBuilder: (BuildContext context) => <PopupMenuEntry<FolderMenu>>[
-                const PopupMenuItem<FolderMenu>(
-                  value: FolderMenu.update,
-                  child: Text('update'),
-                ),
-                const PopupMenuItem<FolderMenu>(
-                  value: FolderMenu.delete,
-                  child: Text('delete'),
-                ),
-              ],
+                    const PopupMenuItem<FolderMenu>(
+                      value: FolderMenu.update,
+                      child: Text('update'),
+                    ),
+                    const PopupMenuItem<FolderMenu>(
+                      value: FolderMenu.delete,
+                      child: Text('delete'),
+                    ),
+                  ],
             ));
           }
 
@@ -263,6 +249,31 @@ class FolderSelectionState extends State<FolderSelectorScreen> {
         }
       }
     }
+  }
+
+  _moveActionButtons(folder) {
+    return Stack(
+      children: <Widget>[
+        Row(
+          children: <Widget>[
+            UIHelper.actionButton(context, 'move', () {
+              if (_entryToMove != null) {
+                EntryService().move(_entryToMove, folder).then((updatedEntry) {
+                  Navigator.pop(context);
+                }).catchError((error) {
+                  // report issue
+                });
+              }
+            }),
+            UIHelper.formSpacer(),
+            UIHelper.cancelButton(context, () {
+              _moveToFolder = null;
+              setState(() {});
+            })
+          ],
+        )
+      ],
+    );
   }
 
   Widget buildProgressIndicator() {

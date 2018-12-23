@@ -52,20 +52,26 @@ class _EntryViewScreenState extends State<EntryViewScreen> {
       pages = widget._entryList.entries.map((entry) => EntryViewWidget(key: Key(entry.entryId), entry: entry)).toList();
     }
 
+    List<Widget> actions = <Widget>[
+      IconButton(
+        onPressed: () => _editPage(),
+        icon: Icon(Icons.edit),
+      ),
+      IconButton(
+        onPressed: () => _moveEntry(),
+        icon: Icon(Icons.folder),
+      ),
+    ];
+
+    if (widget._entryList.listSetting.moduleId == NPModule.PHOTO) {
+      actions.removeAt(0);
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: Text(''),
         backgroundColor: UIHelper.blackCanvas(),
-        actions: <Widget>[
-          IconButton(
-            onPressed: () => _editPage(),
-            icon: Icon(Icons.edit),
-          ),
-          IconButton(
-            onPressed: () => _moveEntry(),
-            icon: Icon(Icons.folder),
-          ),
-        ],
+        actions: actions,
         leading: new IconButton(
           icon: new Icon(Icons.close),
           onPressed: () => Navigator.of(context).pop(null),

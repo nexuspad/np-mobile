@@ -99,7 +99,7 @@ class GridItem extends StatelessWidget {
           header: GestureDetector(
             onTap: () {},
             child: GridTileBar(
-              title: _GridTitleText(entry.title),
+              title: _GridTitleText(' '),
               backgroundColor: Colors.black45,
 //              leading: Icon(
 //                icon,

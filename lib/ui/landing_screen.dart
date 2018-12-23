@@ -40,6 +40,7 @@ class LandingScreenState extends State<LandingScreen> {
   @override
   Widget build(BuildContext context) {
     AppConfig().checkScreenSize(context);
+    UIHelper.init(context);
     if (_authenticated) {
       return Scaffold(
         appBar: AppBar(

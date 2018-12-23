@@ -44,14 +44,18 @@ class NPContact extends NPEntry {
     if (data['emails'] != null && data['emails'] is List) {
       _emails = new List();
       for (var item in data['emails']) {
-        _emails.add(Map.from(item));
+        if (item['value'] != null && item['value'].isNotEmpty) {
+          _emails.add(Map.from(item));
+        }
       }
     }
 
     if (data['phones'] != null && data['phones'] is List) {
       _phones = new List();
       for (var item in data['phones']) {
-        _phones.add(Map.from(item));
+        if (item['value'] != null && item['value'].isNotEmpty) {
+          _phones.add(Map.from(item));
+        }
       }
     }
   }
@@ -88,7 +92,7 @@ class NPContact extends NPEntry {
   Map get primaryPhone {
     if (_phones != null && _phones.length > 0) {
       for (var elem in _phones) {
-        if (elem['primary'] == true) {
+        if (elem['primary'] == true && elem['primary']['value'] != null) {
           return elem;
         }
       }
@@ -100,7 +104,7 @@ class NPContact extends NPEntry {
   String get primaryEmail {
     if (_emails != null && _emails.length > 0) {
       for (var elem in _emails) {
-        if (elem['primary'] == true) {
+        if (elem['primary'] == true && elem['value'] != null) {
           return elem['value'];
         }
       }

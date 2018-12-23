@@ -53,16 +53,18 @@ class NPEvent extends NPEntry {
     _timezoneOffset = data['timezoneOffset'];
 
     String startDateTimeISO8601 = _localStartDate;
-    if (!(_localStartTime?.isEmpty ?? true)) {
+    if (localStartTime != null) {
       startDateTimeISO8601 += 'T' + _localStartTime + _timezoneOffset;
     }
     _startDateTime = DateTime.parse(startDateTimeISO8601);
 
-    String endDateTimeISO8601 = _localEndDate;
-    if (!(_localEndTime?.isEmpty ?? true)) {
-      endDateTimeISO8601 += 'T' + _localEndTime + _timezoneOffset;
+    if (_localEndDate != null) {
+      String endDateTimeISO8601 = _localEndDate;
+      if (!(_localEndTime?.isEmpty ?? true)) {
+        endDateTimeISO8601 += 'T' + _localEndTime + _timezoneOffset;
+      }
+      _endDateTime = DateTime.parse(endDateTimeISO8601);
     }
-    _endDateTime = DateTime.parse(endDateTimeISO8601);
   }
 
   Map<String, dynamic> toJson() {

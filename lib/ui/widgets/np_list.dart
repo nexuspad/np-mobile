@@ -51,15 +51,14 @@ class _ListState extends NPModuleListingState<NPListWidget> {
 
   ListTile _buildTile(NPEntry e, int index) {
     return new ListTile(
-      leading: e.pinned ? Icon(Icons.star) : null,
       title: new Row(
         children: <Widget>[
           new Expanded(
             child: new Text(
-              e.title,
+              e.title ?? 'no title',
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: Theme.of(context).textTheme.title,
+              style: e.pinned ? UIHelper.favoriteEntryTitle(context) : UIHelper.regularEntryTitle(context),
             ),
           ),
           entryPopMenu(context, e),

@@ -10,6 +10,16 @@ class UIHelper {
   static final npDateFormatter = new DateFormat('yyyy-MM-dd');
   static final npTimeFormatter = new DateFormat('yyyy-MM-dd');
 
+  static var _grayedTitle;
+  static var _regularTitle;
+  static var _pinnedTitle;
+
+  static init(context) {
+    _grayedTitle = Theme.of(context).textTheme.title.copyWith(fontWeight: FontWeight.normal, fontSize: 19, color: Colors.grey);
+    _regularTitle = Theme.of(context).textTheme.title.copyWith(fontWeight: FontWeight.normal, fontSize: 19);
+    _pinnedTitle = Theme.of(context).textTheme.title;
+  }
+
   static Color codeToColor(String colorCode) {
     return Color.fromRGBO(0, 0, 250, 1.0);
   }
@@ -33,6 +43,21 @@ class UIHelper {
     print('size: ${queryData.size.shortestSide}');
     // Theme.of(context).textTheme.body1
     return TextStyle(fontSize: 22.0);
+  }
+
+  static grayedEntryTitle(context) {
+    if (_grayedTitle == null) init(context);
+    return _grayedTitle;
+  }
+
+  static regularEntryTitle(context) {
+    if (_regularTitle == null) init(context);
+    return _regularTitle;
+  }
+
+  static favoriteEntryTitle(context) {
+    if (_pinnedTitle == null) init(context);
+    return _pinnedTitle;
   }
 
   static contentPadding() {

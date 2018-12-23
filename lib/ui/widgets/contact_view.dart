@@ -43,7 +43,9 @@ class ContactView {
         children: rowChildren,
       );
     } else {
-      return UIHelper.emptySpace();
+      return new Row(
+        children: <Widget>[UIHelper.emptySpace()],
+      );
     }
   }
 
