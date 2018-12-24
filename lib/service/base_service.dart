@@ -8,11 +8,14 @@ class BaseService {
     return url;
   }
 
-  String getListEndPoint({moduleId, folderId = NPFolder.ROOT, includeAllFolders = false, pageId = 1, startDate, endDate, ownerId = 0}) {
+  String getFolderDetailEndPoint(moduleId, folderId) {
+    return AppConfig().serviceHost + _setModuleBase(moduleId) + '/folder/$folderId';
+  }
+
+  String getListEndPoint(
+      {moduleId, folderId = NPFolder.ROOT, includeAllFolders = false, pageId = 1, startDate, endDate, ownerId = 0}) {
     if (startDate != null && endDate != null) {
-      return AppConfig().serviceHost +
-          _setList(moduleId) +
-          "?folder_id=all&start_date=$startDate&end_date=$endDate";
+      return AppConfig().serviceHost + _setList(moduleId) + "?folder_id=all&start_date=$startDate&end_date=$endDate";
     } else {
       if (includeAllFolders) {
         return AppConfig().serviceHost + _setList(moduleId) + "?folder_id=all&page=$pageId";
@@ -27,7 +30,7 @@ class BaseService {
   }
 
   String getEntryEndPoint({moduleId = NPModule.UNASSIGNED, String entryId, String attribute, ownerId = 0}) {
-    String url = _setEntry(moduleId);
+    String url = _setModuleBase(moduleId);
     if (entryId != null) {
       url = AppConfig().serviceHost + url + '/' + entryId;
     } else {
@@ -87,7 +90,7 @@ class BaseService {
     return "";
   }
 
-  String _setEntry(int moduleId) {
+  String _setModuleBase(int moduleId) {
     switch (moduleId) {
       case NPModule.CONTACT:
         return '/contact';

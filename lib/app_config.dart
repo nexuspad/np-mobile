@@ -58,7 +58,7 @@ class AppConfig {
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
     print('< device size: $width $height >');
-    if (width <= 350) {
+    if (width <= 400) {
       _isSmallScreen = true;
     }
   }

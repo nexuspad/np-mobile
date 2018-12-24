@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:np_mobile/datamodel/np_user.dart';
 
 class NPFolder {
@@ -8,6 +10,7 @@ class NPFolder {
   int _folderId;
   final NPUser _owner;
   String _folderName;
+  Color _color;
   NPFolder _parent;
   List<NPFolder> _subFolders;
 
@@ -16,14 +19,22 @@ class NPFolder {
     _folderId = folderId;
     _folderName = "root";
     _subFolders = new List<NPFolder>();
+    _color = new Color(0xff336699);
+  }
+
+  NPFolder.newFolder(NPFolder parent, NPUser owner) : _owner = NPUser.copy(owner) {
+    _moduleId = parent._moduleId;
+    _folderId = -1;
+    _parent = NPFolder.copy(parent);
+    _color = new Color(0xff336699);
   }
 
   NPFolder.copy(NPFolder otherFolder) : _owner = otherFolder.owner {
     _moduleId = otherFolder.moduleId;
     _folderId = otherFolder.folderId;
     _folderName = otherFolder.folderName;
-    if (otherFolder.parent != null)
-      _parent = NPFolder.copy(otherFolder.parent);
+    _color = otherFolder._color;
+    if (otherFolder.parent != null) _parent = NPFolder.copy(otherFolder.parent);
   }
 
   NPFolder.fromJson(Map<String, dynamic> data)
@@ -44,6 +55,19 @@ class NPFolder {
     if (_folderName == null) {
       _folderId == 0 ? _folderName = 'ROOT' : _folderName = 'ERROR';
     }
+
+    if (data['colorCode'] != null) {
+      String hexValue = data['colorCode'];
+      if (hexValue.startsWith('#')) {
+        hexValue = hexValue.replaceAll('#', '');
+      }
+      if (hexValue.length == 6) {
+        hexValue = '0xff' + hexValue;
+        _color = Color(int.parse(hexValue));
+      } else {
+        _color = Color(0xff336699);
+      }
+    }
   }
 
   Map<String, dynamic> toJson() {
@@ -51,10 +75,17 @@ class NPFolder {
       'moduleId': _moduleId,
       'folderId': _folderId,
       'folderName': _folderName,
+      'colorCode': getColorCode(),
     };
+
+    if (_parent != null) {
+      data['parent'] = _parent.toJson();
+    }
+
     if (_owner != null) {
       data['owner'] = _owner.toJson();
     }
+
     return data;
   }
 
@@ -73,7 +104,32 @@ class NPFolder {
   int get folderId => _folderId;
   String get folderName => _folderName;
   set folderName(value) => _folderName = value;
+
+  Color get color => _color != null ? _color : Color(0xff336699);
+  set color(value) => _color = value;
+
+  String getColorCode() {
+    if (_color != null) {
+      int red = _color.red;
+      int green = _color.green;
+      int blue = _color.blue;
+      return '0x' +
+          red.toRadixString(16).toString() +
+          green.toRadixString(16).toString() +
+          blue.toRadixString(16).toString();
+    }
+    return "";
+  }
+
   NPFolder get parent => _parent;
+  set parent(value) => _parent = value;
+
   List<NPFolder> get subFolders => _subFolders;
+  set subFolders(value) => _subFolders = value;
+
   NPUser get owner => _owner;
+
+  String toString() {
+    return "$_moduleId $_folderId $_folderName";
+  }
 }

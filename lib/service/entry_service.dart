@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-
 import 'package:np_mobile/app_config.dart';
 import 'package:np_mobile/datamodel/entry_factory.dart';
 import 'package:np_mobile/datamodel/np_entry.dart';
@@ -18,11 +17,8 @@ class EntryService extends BaseService {
   Future<dynamic> get(int moduleId, String entryId, int ownerId) {
     var completer = new Completer();
 
-    RestClient _client = new RestClient();
-
     String url = getEntryEndPoint(moduleId: moduleId, entryId: entryId, ownerId: ownerId);
-
-    _client.get(url, AccountService().sessionId).then((dynamic result) {
+    RestClient().get(url, AccountService().sessionId).then((dynamic result) {
       if (result['errorCode'] != null) {
       } else {
         completer.complete(EntryFactory.initFromJson(result['entry']));
@@ -127,11 +123,9 @@ class EntryService extends BaseService {
   Future<dynamic> delete(NPEntry entry) {
     var completer = new Completer();
 
-    RestClient _client = new RestClient();
-
     String url = getEntryEndPoint(moduleId: entry.moduleId, entryId: entry.entryId, ownerId: entry.owner.userId);
 
-    _client.delete(url, AccountService().sessionId, AppConfig().deviceId).then((dynamic result) {
+    RestClient().delete(url, AccountService().sessionId, AppConfig().deviceId).then((dynamic result) {
       if (result['errorCode'] != null) {
         completer.completeError(new NPError(cause: result['errorCode']));
       } else {

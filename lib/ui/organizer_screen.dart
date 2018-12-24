@@ -110,11 +110,11 @@ class OrganizerScreen extends StatelessWidget {
         if (snapshot.data != null) {
           ListSetting listSetting = snapshot.data.listSetting;
           FolderService folderService = FolderService(listSetting.moduleId, listSetting.ownerId);
-          NPFolder folder = folderService.getFolder(listSetting.folderId);
+          NPFolder folder = folderService.folderDetail(listSetting.folderId);
           if (folder != null) {
             return Text(folder.folderName);
           } else {
-            return Text(NPModule.name(listSetting.moduleId));
+            return Text(NPModule.listName(listSetting.moduleId));
           }
         } else {
           // todo - a blank screen of loading
@@ -138,7 +138,7 @@ class OrganizerScreen extends StatelessWidget {
                 icon: const Icon(FontAwesomeIcons.levelDownAlt),
                 onPressed: () {
                   FolderService folderService = FolderService(listSetting.moduleId, listSetting.ownerId);
-                  NPFolder folder = folderService.getFolder(listSetting.folderId);
+                  NPFolder folder = folderService.folderDetail(listSetting.folderId);
                   if (folder != null && folder.parent != null) {
                     organizeBloc.changeFolder(folder.parent.folderId);
                   }

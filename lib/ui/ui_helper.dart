@@ -34,6 +34,10 @@ class UIHelper {
     return const Color(0xFF343a40);
   }
 
+  static Color blueCanvas() {
+    return Colors.blue;
+  }
+
   static Color lightBlue() {
     return const Color(0x8034b0fc);
   }

@@ -6,7 +6,11 @@ class FolderTree {
   Map<int, NPFolder> _lookup;
 
   FolderTree.fromFolders(int moduleId, List<NPFolder> folders, NPUser owner) {
-    _root = new NPFolder(moduleId, NPFolder.ROOT, owner);
+    _buildFolderTree(NPFolder(moduleId, NPFolder.ROOT, owner), folders);
+  }
+
+  _buildFolderTree(NPFolder root, List<NPFolder> folders) {
+    _root = root;
 
     _lookup = new Map<int, NPFolder>();
     for (NPFolder f in folders) {
@@ -58,7 +62,19 @@ class FolderTree {
     return false;
   }
 
-  _deleteNode(NPFolder f) {}
+  /// update the _lookup and rebuild folder tree
+  updateNode(NPFolder f) {
+    _lookup[f.folderId] = f;
+    _root.subFolders = new List<NPFolder>();
+    _buildFolderTree(_root, _lookup.values.toList());
+  }
+
+  /// update the _lookup and rebuild folder tree
+  deleteNode(NPFolder f) {
+    _lookup.remove(f.folderId);
+    _root.subFolders = new List<NPFolder>();
+    _buildFolderTree(_root, _lookup.values.toList());
+  }
 
   NPFolder get root => _root;
 

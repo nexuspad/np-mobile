@@ -1,6 +1,9 @@
 import 'dart:async';
-
+import 'dart:convert';
+import 'package:np_mobile/app_config.dart';
+import 'package:np_mobile/service/FolderServiceData.dart';
 import 'package:np_mobile/service/account_service.dart';
+import 'package:np_mobile/service/np_error.dart';
 import 'package:np_mobile/service/rest_client.dart';
 import 'package:np_mobile/service/base_service.dart';
 import 'package:np_mobile/datamodel/np_folder.dart';
@@ -42,7 +45,9 @@ class FolderService extends BaseService {
       completer.complete(_folderTree);
     } else {
       RestClient _client = new RestClient();
-      _client.get(getFolderServiceEndPoint(_moduleId, _folderId, _ownerId), AccountService().sessionId).then((dynamic result) {
+      _client
+          .get(getFolderServiceEndPoint(_moduleId, _folderId, _ownerId), AccountService().sessionId)
+          .then((dynamic result) {
         List<NPFolder> folders = new List();
         for (var f in result['folders']) {
           folders.add(NPFolder.fromJson(f));
@@ -71,10 +76,66 @@ class FolderService extends BaseService {
     return completer.future;
   }
 
-  NPFolder getFolder(int folderId) {
+  Future<dynamic> save(NPFolder folder, FolderUpdateAction action) {
+    var completer = new Completer();
+
+    String url = getFolderDetailEndPoint(folder.moduleId, folder.folderId);
+
+    RestClient()
+        .postJson(url, json.encode(FolderServiceData(folder, action)), AccountService().sessionId, AppConfig().deviceId)
+        .then((dynamic result) {
+      if (result['errorCode'] != null) {
+        completer.completeError(new NPError(cause: result['errorCode']));
+      } else {
+        NPFolder updatedFolder = NPFolder.fromJson(result['folder']);
+        if (_folderTree != null) {
+          _folderTree.updateNode(updatedFolder);
+        }
+        completer.complete(updatedFolder);
+      }
+    }).catchError((error) {
+      completer.completeError(error);
+    });
+
+    return completer.future;
+  }
+
+  Future<dynamic> delete(NPFolder folder) {
+    var completer = new Completer();
+
+    String url = getFolderDetailEndPoint(folder.moduleId, folder.folderId);
+
+    RestClient().delete(url, AccountService().sessionId, AppConfig().deviceId).then((dynamic result) {
+      if (result['errorCode'] != null) {
+        completer.completeError(new NPError(cause: result['errorCode']));
+      } else {
+        NPFolder deletedFolder = NPFolder.fromJson(result['folder']);
+        if (_folderTree != null) {
+          _folderTree.deleteNode(deletedFolder);
+        }
+        completer.complete(deletedFolder);
+      }
+    }).catchError((error) {
+      completer.completeError(error);
+    });
+
+    return completer.future;
+  }
+
+  NPFolder folderDetail(int folderId) {
     if (_folderTree != null) {
       return _folderTree.getFolder(folderId);
     }
     return null;
+  }
+
+  Future<dynamic> getFolderDetail(int folderId) {
+    var completer = new Completer();
+    if (_folderTree != null) {
+      completer.complete(_folderTree.getFolder(folderId));
+    } else {
+      completer.complete(null);
+    }
+    return completer.future;
   }
 }

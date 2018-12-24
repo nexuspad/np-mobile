@@ -28,7 +28,9 @@ class ContactView {
           child: Align(
               alignment: Alignment.topLeft,
               child: new FlatButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    UIHelper.launchUrl("https://www.google.com/maps/search/?api=1&query=${contact.address['addressStr']}");
+                  },
                   textColor: ThemeData().primaryColor,
                   child: new Text(
                     contact.address['addressStr'],

@@ -19,7 +19,9 @@ class NPDoc extends NPEntry {
   NPDoc.copy(NPDoc doc) : super.copy(doc) {
     _format = doc.format;
     _description = doc.description;
-    _attachments = new List.from(doc.attachment);
+    if (doc.attachment != null && doc.attachment.length > 0) {
+      _attachments = new List.from(doc.attachment);
+    }
   }
 
   NPDoc.fromJson(Map<String, dynamic> data) : super.fromJson(data) {

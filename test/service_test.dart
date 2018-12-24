@@ -7,6 +7,7 @@ import 'package:np_mobile/datamodel/UploadFileWrapper.dart';
 import 'package:np_mobile/datamodel/list_setting.dart';
 import 'package:np_mobile/datamodel/np_doc.dart';
 import 'package:np_mobile/datamodel/np_folder.dart';
+import 'package:np_mobile/service/FolderServiceData.dart';
 import 'package:np_mobile/service/UploadWorker.dart';
 import 'package:np_mobile/service/upload_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -74,6 +75,22 @@ void main() {
     await folderService.get().then((dynamic result) {
       FolderTree folderTree = result;
       folderTree.debug();
+    }).catchError((error) {
+      print(error);
+    });
+  });
+  test('test update folder service', () async {
+    SharedPreferences.setMockInitialValues({});
+    await AccountService().mock();
+
+    FolderService folderService = new FolderService(NPModule.DOC, AccountService().userId);
+    await folderService.get();
+    NPFolder folder = folderService.folderDetail(103);
+    folder.folderName = 'dev 3';
+
+    await folderService.save(folder, FolderUpdateAction.UPDATE).then((dynamic result) {
+      NPFolder updatedFolder = result;
+      print(updatedFolder);
     }).catchError((error) {
       print(error);
     });

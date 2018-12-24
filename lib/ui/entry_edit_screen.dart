@@ -29,21 +29,30 @@ class _EntryFormState extends State<EntryEditScreen> {
   _submit() {
     if (_formKey.currentState.validate()) {
       _formKey.currentState.save();
-      print("saving entry $_entry");
       _showSnackBar("saving...");
       EntryService().save(_entry).then((updatedEntry) {
         _showSnackBar("saved...");
+        Navigator.of(context).pop(null);
+      }).catchError((error) {
+        _showSnackBar("$error");
       });
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    String title = NPModule.entryName(_entry.folder.moduleId);
+    if (_entry.entryId != null && _entry.entryId.isNotEmpty) {
+      title = 'update ' + title;
+    } else {
+      title = 'new ' + title;
+    }
+
     return Scaffold(
       key: scaffoldKey,
       appBar: AppBar(
-        title: Text(''),
-        backgroundColor: UIHelper.blackCanvas(),
+        title: Text(title),
+        backgroundColor: UIHelper.blueCanvas(),
         actions: <Widget>[
           IconButton(
             onPressed: () {

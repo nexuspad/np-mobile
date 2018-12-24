@@ -8,7 +8,7 @@ class NPModule {
   static const int PHOTO = 6;
   static const int UPLOAD = 5;
 
-  static String name(int moduleId) {
+  static String listName(int moduleId) {
     switch (moduleId) {
       case NPModule.CONTACT:
         return 'contacts';
@@ -20,6 +20,22 @@ class NPModule {
         return 'bookmarks';
       case NPModule.PHOTO:
         return 'photos';
+    }
+    return 'ERROR';
+  }
+
+  static String entryName(int moduleId) {
+    switch (moduleId) {
+      case NPModule.CONTACT:
+        return 'contact';
+      case NPModule.CALENDAR:
+        return 'event';
+      case NPModule.DOC:
+        return 'doc';
+      case NPModule.BOOKMARK:
+        return 'bookmark';
+      case NPModule.PHOTO:
+        return 'photo';
     }
     return 'ERROR';
   }
