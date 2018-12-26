@@ -68,11 +68,10 @@ class UIHelper {
     return const EdgeInsets.all(10.0);
   }
 
-  static Widget emptyContent(context) {
-    return Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: <Widget>[Text('empty', style: Theme.of(context).textTheme.display1)]);
+  static Widget emptyContent(context, text) {
+    return Center(
+        child: Text(text, textAlign: TextAlign.center, style: Theme.of(context).textTheme.display1)
+    );
   }
 
   static Widget loadingContent(context, String text) {

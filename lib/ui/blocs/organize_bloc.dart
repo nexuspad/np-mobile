@@ -84,9 +84,16 @@ class OrganizeBloc {
 
   /// somehow sink.add is not needed
   refreshBloc() {
-    // expires the current entryList in the service.
-    _currentSetting.listSetting.expiration = DateTime.now().add(Duration(minutes: 30));
+    _currentSetting._refreshRequested = true;
 //    _organizeSubject.sink.add(_currentListSetting);
+  }
+
+  refreshRequested() {
+    if (_currentSetting._refreshRequested) {
+      _currentSetting.refreshRequested = false;
+      return true;
+    }
+    return false;
   }
 
   int getModule() {
@@ -130,6 +137,7 @@ class OrganizeBloc {
 class OrganizerSetting {
   ListSetting _listSetting;
   NPEntry _activeEntry;
+  bool _refreshRequested = false;
 
   OrganizerSetting() {
     _listSetting = new ListSetting();
@@ -140,4 +148,7 @@ class OrganizerSetting {
 
   ListSetting get listSetting => _listSetting;
   NPEntry get activeEntry => _activeEntry;
+
+  bool get refreshRequested => _refreshRequested;
+  set refreshRequested(value) => _refreshRequested = value;
 }

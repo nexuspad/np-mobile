@@ -69,10 +69,15 @@ class ListService extends BaseService {
   Future<dynamic> get(ListSetting listQuery) {
     var completer = new Completer();
 
-    if (_entryList != null)
-      print('compare the existing list [${_entryList.listSetting.toString()}] with query parameters [${listQuery.toString()}]');
+    if (_entryList != null) {
+      print('compare the existing list [${_entryList.listSetting.toString()}] with query parameters [${listQuery
+          .toString()}]');
+      if (_entryList.isExpired()) {
+        print('the list expired...');
+      }
+    }
 
-    if (_entryList != null && _entryList.listSetting.isSuperSetOf(listQuery)) {
+    if (_entryList != null && _entryList.isExpired() == false && _entryList.listSetting.isSuperSetOf(listQuery)) {
       print('use the existing list [${_entryList.listSetting.toString()}] for query parameters [${listQuery.toString()}]');
       completer.complete(_entryList);
     } else {

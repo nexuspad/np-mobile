@@ -42,6 +42,7 @@ class _EntryViewScreenState extends State<EntryViewScreen> {
 
     // only hero for PHOTO
     if (widget._entryList.listSetting.moduleId == NPModule.PHOTO) {
+      print('build page for Hero effect............');
       pages = widget._entryList.entries.map((entry) =>
           Hero(
             tag: entry.entryId,

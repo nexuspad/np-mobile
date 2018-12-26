@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:np_mobile/datamodel/np_doc.dart';
+import 'package:np_mobile/ui/message_helper.dart';
 import 'package:np_mobile/ui/ui_helper.dart';
 
 class DocEdit {
   static Widget form(BuildContext context, GlobalKey<FormState> formKey, NPDoc doc) {
     if (doc.format == TextFormat.html) {
-      return UIHelper.emptyContent(context);
+      return UIHelper.emptyContent(context, MessageHelper.NO_IMPLEMENTATION);
     }
     return new Form(
       key: formKey,

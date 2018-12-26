@@ -92,7 +92,7 @@ class NPContact extends NPEntry {
   Map get primaryPhone {
     if (_phones != null && _phones.length > 0) {
       for (var elem in _phones) {
-        if (elem['primary'] == true && elem['primary']['value'] != null) {
+        if (elem['primary'] == true && elem['value'] != null) {
           return elem;
         }
       }

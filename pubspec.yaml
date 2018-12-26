@@ -39,6 +39,7 @@ flutter_icons:
   android: "launcher_icon"
   ios: true
   image_path: "assets/icon/np2.png"
+  adaptive_icon_foreground: #343a40
 
 # The following section is specific to Flutter.
 flutter:

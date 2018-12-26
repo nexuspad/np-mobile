@@ -202,7 +202,7 @@ class ListSetting {
   set expiration(value) => _expiration = value;
 
   bool get expires {
-    if (_expiration != null && _expiration.add(Duration(minutes: 30)).isAfter(DateTime.now())) {
+    if (_expiration != null && _expiration.isAfter(DateTime.now())) {
       return false;
     }
     return true;

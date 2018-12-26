@@ -19,7 +19,7 @@ class FolderSelectorScreen extends StatefulWidget {
   final NPFolder _startingFolder;
   final dynamic _itemToMove;
   FolderSelectorScreen({BuildContext context, dynamic itemToMove})
-      : _startingFolder = ApplicationStateProvider.forOrganize(context).getRootFolder(),
+      : _startingFolder = ApplicationStateProvider.forOrganize(context).getFolder(),
         _itemToMove = itemToMove;
 
   @override
@@ -130,32 +130,24 @@ class FolderSelectionState extends State<FolderSelectorScreen> {
   }
 
   Widget _folderTreeWidget() {
-    if (_currentRootFolder.subFolders == null || _currentRootFolder.subFolders.length == 0) {
-      if (_loading) {
-        return Center(child: buildProgressIndicator());
-      } else {
-        return UIHelper.emptyContent(context);
-      }
-    } else {
-      return Column(
-          // This makes each child fill the full width of the screen
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            _parentRow(),
-            Flexible(
-                child: ListView.separated(
-              padding: UIHelper.contentPadding(),
-              separatorBuilder: (context, index) => Divider(
-                    color: Colors.black12,
-                  ),
-              itemCount: _currentRootFolder.subFolders != null ? _currentRootFolder.subFolders.length : 0,
-              itemBuilder: (context, index) {
-                return _folderTile(_currentRootFolder.subFolders[index]);
-              },
-            )),
-          ]);
-    }
+    return Column(
+        // This makes each child fill the full width of the screen
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _parentRow(),
+          Flexible(
+              child: ListView.separated(
+            padding: UIHelper.contentPadding(),
+            separatorBuilder: (context, index) => Divider(
+                  color: Colors.black12,
+                ),
+            itemCount: _currentRootFolder.subFolders != null ? _currentRootFolder.subFolders.length : 0,
+            itemBuilder: (context, index) {
+              return _folderTile(_currentRootFolder.subFolders[index]);
+            },
+          )),
+        ]);
   }
 
   Widget _parentRow() {
@@ -381,8 +373,7 @@ class FolderSelectionState extends State<FolderSelectorScreen> {
     FolderService(folder.moduleId, folder.owner.userId).delete(folder).then((deletedFolder) {
       Navigator.of(context).pop();
       _showSnackBar("deleted...");
-      setState(() {
-      });
+      setState(() {});
     }).catchError((error) {
       _showSnackBar("$error");
     });

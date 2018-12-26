@@ -7,6 +7,7 @@ import 'package:np_mobile/datamodel/np_module.dart';
 import 'package:np_mobile/ui/blocs/application_state_provider.dart';
 import 'package:np_mobile/ui/blocs/organize_bloc.dart';
 import 'package:np_mobile/ui/entry_view_screen.dart';
+import 'package:np_mobile/ui/message_helper.dart';
 import 'package:np_mobile/ui/ui_helper.dart';
 import 'package:np_mobile/ui/widgets/base_list.dart';
 import 'package:np_mobile/ui/widgets/date_range_picker.dart';
@@ -74,7 +75,7 @@ class _CalendarWidgetState extends NPModuleListingState<NPTimelineWidget> {
       if (loading) {
         return Center(child: buildProgressIndicator());
       } else {
-        return UIHelper.emptyContent(context);
+        return UIHelper.emptyContent(context, MessageHelper.EMPTY_LIST);
       }
     } else {
 

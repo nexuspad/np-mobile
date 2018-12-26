@@ -30,15 +30,17 @@ class NPModuleListingState<T extends BaseList> extends State<T> {
   @override
   void didUpdateWidget(BaseList oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.listSetting.sameCriteria(widget.listSetting) == false) {
+    final organizeBloc = ApplicationStateProvider.forOrganize(context);
+
+    if (organizeBloc.refreshRequested()) {
+      print(
+          'refresh requested... reload entries: old = [${oldWidget.listSetting.toString()}] new = [${widget.listSetting.toString()}]');
+      loadEntries(refresh: true);
+
+    } else if (oldWidget.listSetting.sameCriteria(widget.listSetting) == false) {
       print(
           'reload entries because setting has changed: old = [${oldWidget.listSetting.toString()}] new = [${widget.listSetting.toString()}]');
       loadEntries();
-    } else if (oldWidget.listSetting.sameCriteriaAndExpires(widget.listSetting) == true) {
-      // pull refresh, individual entry update.
-      print(
-          'reload entries with force expirartion: old = [${oldWidget.listSetting.toString()}] new = [${widget.listSetting.toString()}]');
-      loadEntries(refresh: true);
     }
   }
 

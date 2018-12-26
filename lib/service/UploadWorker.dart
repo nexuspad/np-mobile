@@ -18,46 +18,49 @@ class UploadWorker {
     _fileEntities = files;
   }
 
-  Future<dynamic> start() {
-    var completer = new Completer();
+  start() {
 
     if (_fileEntities == null || _fileEntities.length == 0) {
       print('UploadWorker: nothing to upload.');
-      completer.complete();
     }
 
-    new Timer.periodic(new Duration(seconds: 3), (Timer t) {
-      print('UploadWorker: new uploading cycle.');
+    _uploadCycle(null);
 
-      bool hasMoreToUploadOrStillUploading = false;
-      for (UploadFileWrapper fw in _fileEntities) {
-        if (fw.status == UploadStatus.waiting || fw.status == UploadStatus.uploading) {
-          hasMoreToUploadOrStillUploading = true;
+    new Timer.periodic(new Duration(seconds: 3), (Timer t) {
+      _uploadCycle(t);
+    });
+  }
+
+  _uploadCycle(Timer t) {
+    print('UploadWorker: new uploading cycle.');
+
+    bool hasMoreToUploadOrStillUploading = false;
+    for (UploadFileWrapper fw in _fileEntities) {
+      if (fw.status == UploadStatus.waiting || fw.status == UploadStatus.uploading) {
+        hasMoreToUploadOrStillUploading = true;
+        break;
+      }
+    }
+
+    if (hasMoreToUploadOrStillUploading) {
+      int numberOfUpload = 0;
+      for (int i = 0; i < _fileEntities.length; i++) {
+        if (_fileEntities[i].status == UploadStatus.waiting) {
+          numberOfUpload ++;
+          _fileEntities[i].status = UploadStatus.uploading;
+//            _performMockUpload(i);
+          _performUpload(i);
+        }
+        if (numberOfUpload == _maxUploadCount) {
           break;
         }
       }
-
-      if (hasMoreToUploadOrStillUploading) {
-        int numberOfUpload = 0;
-        for (int i = 0; i < _fileEntities.length; i++) {
-          if (_fileEntities[i].status == UploadStatus.waiting) {
-            numberOfUpload ++;
-            _fileEntities[i].status = UploadStatus.uploading;
-//            _performMockUpload(i);
-            _performUpload(i);
-          }
-          if (numberOfUpload == _maxUploadCount) {
-            break;
-          }
-        }
-      } else {
-        print('UploadWorker: finished all. cancelled timer.');
+    } else {
+      print('UploadWorker: finished all. cancelled timer.');
+      if (t != null) {
         t.cancel();
-        completer.complete(_fileEntities);
       }
-    });
-
-    return completer.future;
+    }
   }
 
   _performUpload(int index) {
@@ -67,10 +70,8 @@ class UploadWorker {
     UploadService uploadService = new UploadService();
     uploadService.uploadToFolder(_folder, File(path), _uploadProgress).then((dynamic result) {
       _fileEntities[index].status = UploadStatus.completed;
+      _fileEntities[index].parentEntry = result;
       _uploadProgress(_fileEntities[index]);
-      if (result is NPPhoto) {
-      } else if (result is NPDoc) {
-      }
     }).catchError((error) {
       _fileEntities[index].status = UploadStatus.failed;
       print(error);

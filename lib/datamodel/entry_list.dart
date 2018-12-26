@@ -52,6 +52,11 @@ class EntryList<T extends NPEntry> {
     return false;
   }
 
+  bool isExpired() {
+    if (_listSetting == null) return true;
+    return _listSetting.expires;
+  }
+
   addEntries(List<NPEntry> entries) {
     entries.forEach((e) => _addOrUpdateEntry(e));
     _sortEntries();

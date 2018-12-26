@@ -89,6 +89,7 @@ class FolderTree {
 
     NPFolder theNode;
 
+    print('search folder id $folderId in ${startNode.folderId}');
     if (startNode.folderId == folderId) {
       theNode = startNode;
     } else {
@@ -96,6 +97,7 @@ class FolderTree {
         for (NPFolder f in startNode.subFolders) {
           if (f.folderId == folderId) {
             theNode = f;
+            break;
           } else {
             theNode = _searchNodeInternal(folderId, f);
             if (theNode != null) {

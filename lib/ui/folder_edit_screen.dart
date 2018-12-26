@@ -132,7 +132,9 @@ class _FolderFormState extends State<FolderEditScreen> {
 
   Widget colorLabelButton(Color color, Function onPressed) {
     return RawMaterialButton(
-      onPressed: () {},
+      onPressed: () {
+        onPressed();
+      },
       child: new Icon(
         Icons.folder,
         color: color,
