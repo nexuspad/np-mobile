@@ -42,7 +42,6 @@ class _EntryViewScreenState extends State<EntryViewScreen> {
 
     // only hero for PHOTO
     if (widget._entryList.listSetting.moduleId == NPModule.PHOTO) {
-      print('build page for Hero effect............');
       pages = widget._entryList.entries.map((entry) =>
           Hero(
             tag: entry.entryId,
@@ -64,8 +63,10 @@ class _EntryViewScreenState extends State<EntryViewScreen> {
       ),
     ];
 
+    var backgroundDecoration = BoxDecoration(color: Colors.white);
     if (widget._entryList.listSetting.moduleId == NPModule.PHOTO) {
       actions.removeAt(0);
+      backgroundDecoration = BoxDecoration(color: UIHelper.blackCanvas());
     }
 
     return Scaffold(
@@ -79,7 +80,8 @@ class _EntryViewScreenState extends State<EntryViewScreen> {
         ),
       ),
       body: SizedBox.expand(
-        child: new Stack(
+        child: DecoratedBox(decoration: backgroundDecoration,
+          child: new Stack(
           children: <Widget>[
             new PageView.builder(
               physics: new AlwaysScrollableScrollPhysics(),
@@ -92,7 +94,7 @@ class _EntryViewScreenState extends State<EntryViewScreen> {
               },
             ),
           ],
-        ),
+        )),
       ),
     );
   }

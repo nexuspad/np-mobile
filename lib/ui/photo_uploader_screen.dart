@@ -27,7 +27,6 @@ class _PhotoUploaderScreenState extends State<PhotoUploaderScreen> {
   List<UploadFileWrapper> _selectedFiles = new List();
   bool isVideo = false;
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -49,30 +48,49 @@ class _PhotoUploaderScreenState extends State<PhotoUploaderScreen> {
           },
         )
       ]),
-      body: _selectedFiles.length == 0 ? UIHelper.emptyContent(context, MessageHelper.NOTHING_SELECTED) : _photoList(context),
+      body: _selectedFiles.length == 0
+          ? UIHelper.emptyContent(context, MessageHelper.NOTHING_SELECTED)
+          : _photoList(context),
       floatingActionButton: _actionMenuItems(),
     );
   }
 
   _photoList(context) {
-    double imageWidth = MediaQuery.of(context).size.width / 4;
+    double imageWidth = MediaQuery.of(context).size.width / 5;
 
     return ListView.separated(
       padding: UIHelper.contentPadding(),
       separatorBuilder: (context, index) => Divider(
-        color: Colors.black12,
-      ),
+            color: Colors.black12,
+          ),
       itemCount: _selectedFiles.length,
       itemBuilder: (context, index) {
         File file = _selectedFiles[index].file;
         return new ListTile(
-          contentPadding: const EdgeInsets.all(5.0),
-          leading: Image.file(
-            file,
-            width: imageWidth,
-            height: imageWidth,
+          title: Row(
+            children: <Widget>[
+              Padding(
+                  padding: const EdgeInsets.only(right: 10.0),
+                  child: Image.file(
+                    file,
+                    fit: BoxFit.cover,
+                    width: imageWidth,
+                    height: imageWidth,
+                  )),
+              Expanded(
+                child: Text(_selectedFiles[index].status.toString().split('.').last),
+              ),
+              IconButton(
+                icon: Icon(Icons.remove_circle),
+                tooltip: 'remove',
+                onPressed: () {
+                  setState(() {
+                    _selectedFiles.removeAt(index);
+                  });
+                },
+              )
+            ],
           ),
-          title: Text(_selectedFiles[index].status.toString()),
           onTap: () {},
           enabled: false,
         );
@@ -85,8 +103,7 @@ class _PhotoUploaderScreenState extends State<PhotoUploaderScreen> {
       if (isVideo) {
         ImagePicker.pickVideo(source: source).then((File file) {
           if (file != null && mounted) {
-            setState(() {
-            });
+            setState(() {});
           }
         });
       } else {
@@ -94,7 +111,6 @@ class _PhotoUploaderScreenState extends State<PhotoUploaderScreen> {
           setState(() {
             _selectedFiles.add(UploadFileWrapper(imageFile));
           });
-
         });
       }
     });

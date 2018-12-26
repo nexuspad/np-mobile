@@ -151,7 +151,9 @@ class FolderSelectionState extends State<FolderSelectorScreen> {
   }
 
   Widget _parentRow() {
-    List<Widget> parentRowItems = [
+    var topWidget;
+
+    List<Widget> titleItems = [
       Icon(Icons.folder_open),
       UIHelper.formSpacer(),
       Expanded(
@@ -165,13 +167,20 @@ class FolderSelectionState extends State<FolderSelectorScreen> {
       )
     ];
 
-    _folderActionItems(parentRowItems, _currentRootFolder);
+    if (_moveToFolder != null && _moveToFolder.folderId == _currentRootFolder.folderId) {
+      topWidget = Stack(
+        alignment: AlignmentDirectional.centerStart,
+        children: <Widget>[Row(children: titleItems), _moveActionButtons(_currentRootFolder)],
+      );
+    } else {
+      topWidget = Row(children: _titleAndActionItems(titleItems, _currentRootFolder));
+    }
 
-    return Padding(padding: EdgeInsets.only(top: 15.0, left: 25.0, right: 20.0), child: Row(children: parentRowItems));
+    return Padding(padding: EdgeInsets.only(top: 15.0, left: 25.0, right: 20.0), child: topWidget);
   }
 
   ListTile _folderTile(NPFolder folder) {
-    List<Widget> tileItems = [
+    List<Widget> titleItems = [
       new Expanded(
         child: _folderTitle(folder),
       ),
@@ -181,7 +190,7 @@ class FolderSelectionState extends State<FolderSelectorScreen> {
     if (_moveToFolder != null && _moveToFolder.folderId == folder.folderId) {
       // move has been initiated
       Row row = Row(
-        children: tileItems,
+        children: titleItems,
       );
       folderTile = Stack(
         alignment: AlignmentDirectional.centerStart,
@@ -189,9 +198,8 @@ class FolderSelectionState extends State<FolderSelectorScreen> {
       );
     } else {
       // just regular folder tile items
-      _folderActionItems(tileItems, folder);
       folderTile = Row(
-        children: tileItems,
+        children: _titleAndActionItems(titleItems, folder),
       );
     }
 
@@ -211,7 +219,7 @@ class FolderSelectionState extends State<FolderSelectorScreen> {
     );
   }
 
-  _folderActionItems(List<Widget> items, NPFolder folder) {
+  List<Widget> _titleAndActionItems(List<Widget> items, NPFolder folder) {
     if (folder.folderId != NPFolder.ROOT) {
       if (_currentRootFolder.folderId == folder.folderId) {
         items.add(new IconButton(
@@ -279,6 +287,7 @@ class FolderSelectionState extends State<FolderSelectorScreen> {
         }
       }
     }
+    return items;
   }
 
   _moveActionButtons(folder) {

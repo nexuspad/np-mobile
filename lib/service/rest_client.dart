@@ -58,7 +58,7 @@ class RestClient {
   Map<String, String> _headers(String sessionId) {
     Map<String, String> h = new Map();
 
-    h['Content-type'] = 'application/json';
+    h['content-type'] = 'application/json';
 
     if (sessionId != null) {
       h['utoken'] = sessionId;

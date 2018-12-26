@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:np_mobile/datamodel/np_entry.dart';
 import 'package:np_mobile/datamodel/np_module.dart';
-import 'package:np_mobile/datamodel/np_photo.dart';
 import 'package:np_mobile/ui/widgets/bookmark_view.dart';
 import 'package:np_mobile/ui/widgets/contact_view.dart';
 import 'package:np_mobile/ui/widgets/doc_view.dart';
