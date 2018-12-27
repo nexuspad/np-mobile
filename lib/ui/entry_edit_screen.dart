@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:np_mobile/app_config.dart';
 import 'package:np_mobile/datamodel/np_entry.dart';
 import 'package:np_mobile/datamodel/np_module.dart';
 import 'package:np_mobile/service/entry_service.dart';
@@ -35,6 +36,7 @@ class _EntryFormState extends State<EntryEditScreen> {
         Navigator.of(context).pop(null);
       }).catchError((error) {
         _showSnackBar("$error");
+        AppConfig().logout(context);
       });
     }
   }

@@ -15,8 +15,6 @@ class ListSetting {
   int _totalCount;
   List<int> _pages;
 
-  DateTime _expiration;
-
   ListSetting() {
     _moduleId = NPModule.UNASSIGNED; // just to avoid a null value
     _folderId = 0;
@@ -52,8 +50,6 @@ class ListSetting {
         _pages.add(p);
       });
     }
-
-    _expiration = DateTime.now().add(Duration(minutes: 30));
   }
 
   /// this is only used in list widget to decide if the organizing topic has changed.
@@ -67,7 +63,6 @@ class ListSetting {
     _pageId = otherSetting.pageId;
     _keyword = otherSetting.keyword;
     _totalCount = otherSetting.totalCount;
-    _expiration = otherSetting._expiration;
   }
 
   ListSetting.forPageQuery(int moduleId, int folderId, bool includeEntriesInAllFolders, int ownerId, int pageId) {
@@ -110,16 +105,6 @@ class ListSetting {
     return true;
   }
 
-  bool sameCriteriaAndExpires(ListSetting otherSetting) {
-    if (sameCriteria(otherSetting) == false) {
-      return false;
-    }
-    if (_expiration != null && otherSetting.expiration != null && _expiration != otherSetting.expiration) {
-      return true;
-    }
-    return false;
-  }
-
   int totalPages() {
     if (this._countPerPage > 0) {
       return (_totalCount / _countPerPage).round();
@@ -135,12 +120,6 @@ class ListSetting {
   }
 
   bool isSuperSetOf(ListSetting queryParams) {
-    // when UI attempts to make a query, the expiration can be just null, when it's not null,
-    // the refresh is being asked.
-    if (queryParams.expiration != null && queryParams.expiration.isAfter(_expiration)) {
-      return false;
-    }
-
     if (_pages.length > 0) {
       if (_moduleId == queryParams._moduleId &&
           this._folderId == queryParams._folderId &&
@@ -198,24 +177,6 @@ class ListSetting {
   int get totalCount => _totalCount;
   set totalCount(value) => _totalCount = value;
 
-  DateTime get expiration => _expiration;
-  set expiration(value) => _expiration = value;
-
-  bool get expires {
-    if (_expiration != null && _expiration.isAfter(DateTime.now())) {
-      return false;
-    }
-    return true;
-  }
-
-  void set30MinutesExpiration({minutes: 30}) {
-    _expiration = DateTime.now().add(Duration(minutes: 30));
-  }
-
-  void makeExpire() {
-    _expiration = DateTime.now();
-  }
-
   bool hasSearchQuery() {
     if (_keyword != null && _keyword.trim() != '') {
       return true;
@@ -243,11 +204,11 @@ class ListSetting {
 
   String toString() {
     if (_pages != null && _pages.length > 0) {
-      return "module:$_moduleId, folder:$_folderId, owner:$_ownerId, pages:$_pages, keyword:$keyword, expiration: $_expiration";
+      return "module:$_moduleId, folder:$_folderId, owner:$_ownerId, pages:$_pages, keyword:$keyword";
     } else if (_startDate != null && _endDate != null) {
-      return "module:$_moduleId, folder:$_folderId, owner:$_ownerId, startDate:$_startDate, endDate:$_endDate, keyword:$keyword, expiration: $_expiration";
+      return "module:$_moduleId, folder:$_folderId, owner:$_ownerId, startDate:$_startDate, endDate:$_endDate, keyword:$keyword";
     } else {
-      return "module:$_moduleId, folder:$_folderId, owner:$_ownerId, page:$pageId, keyword:$keyword, expiration: $_expiration";
+      return "module:$_moduleId, folder:$_folderId, owner:$_ownerId, page:$pageId, keyword:$keyword";
     }
   }
 }

@@ -73,16 +73,14 @@ class ListService extends BaseService {
       print('compare the existing list [${_entryList.listSetting.toString()}] with query parameters [${listQuery
           .toString()}]');
       if (_entryList.isExpired()) {
-        print('the list expired...');
+        print('the list expired... ${_entryList.expiration}');
       }
     }
 
     if (_entryList != null && _entryList.isExpired() == false && _entryList.listSetting.isSuperSetOf(listQuery)) {
-      print('use the existing list [${_entryList.listSetting.toString()}] for query parameters [${listQuery.toString()}]');
+      print('use the existing list(expiration: ${_entryList.expiration}) [${_entryList.listSetting.toString()}] for query parameters [${listQuery.toString()}]');
       completer.complete(_entryList);
     } else {
-      RestClient _client = new RestClient();
-
       String url = getListEndPoint(
           moduleId: _moduleId,
           folderId: _folderId,
@@ -95,14 +93,14 @@ class ListService extends BaseService {
       if (listQuery.hasSearchQuery()) {
         url = getSearchEndPoint(moduleId: _moduleId, folderId: _folderId, keyword: _keyword, ownerId: _ownerId);
       }
-      _client.get(url, AccountService().sessionId).then((dynamic result) {
+      RestClient().get(url, AccountService().sessionId).then((dynamic result) {
         if (_entryList == null) {
           _entryList = new EntryList.fromJson(result['entryList']);
         } else {
           EntryList entryListNewPage = new EntryList.fromJson(result['entryList']);
           _entryList.mergeList(entryListNewPage);
         }
-        _entryList.listSetting.set30MinutesExpiration();
+        _entryList.set30MinutesExpiration();
         completer.complete(_entryList);
       }).catchError((error) {
         completer.completeError(error);
@@ -132,5 +130,14 @@ class ListService extends BaseService {
 
   deleteEntries(List<NPEntry> entries) {
     _entryList.deleteEntries(entries);
+  }
+
+  cleanup() {
+    if (_listServiceMap != null) {
+      List<String> keys = _listServiceMap.keys.toList();
+      for (String k in keys) {
+        _listServiceMap.remove(k);
+      }
+    }
   }
 }

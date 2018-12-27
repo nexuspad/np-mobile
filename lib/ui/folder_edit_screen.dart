@@ -119,7 +119,7 @@ class _FolderFormState extends State<FolderEditScreen> {
     if (_formKey.currentState.validate()) {
       _formKey.currentState.save();
       _showSnackBar("saving...");
-      FolderService(widget._folder.moduleId, widget._folder.owner.userId)
+      FolderService(moduleId: widget._folder.moduleId, ownerId: widget._folder.owner.userId)
           .save(folder, FolderUpdateAction.UPDATE)
           .then((updatedEntry) {
         _showSnackBar("saved...");

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:np_mobile/app_config.dart';
 import 'package:np_mobile/datamodel/entry_list.dart';
 import 'package:np_mobile/datamodel/list_setting.dart';
 import 'package:np_mobile/datamodel/np_entry.dart';
 import 'package:np_mobile/service/entry_service.dart';
 import 'package:np_mobile/service/list_service.dart';
+import 'package:np_mobile/service/np_error.dart';
 import 'package:np_mobile/ui/blocs/application_state_provider.dart';
 import 'package:np_mobile/ui/entry_edit_screen.dart';
 import 'package:np_mobile/ui/folder_selector_screen.dart';
@@ -83,13 +85,16 @@ class NPModuleListingState<T extends BaseList> extends State<T> {
         entryList = _listService.entryList;
         // update the bloc
         final organizeBloc = ApplicationStateProvider.forOrganize(context);
-        organizeBloc.updateSettingState(entryList.listSetting.totalCount, entryList.listSetting.expiration);
+        organizeBloc.updateSettingState(entryList.listSetting.totalCount);
       });
     }).catchError((error) {
       setState(() {
         loading = false;
       });
       print(error);
+      if (error is NPError && error.errorCode == NPError.INVALID_SESSION) {
+        AppConfig().logout(context);
+      }
     });
   }
 
@@ -109,7 +114,7 @@ class NPModuleListingState<T extends BaseList> extends State<T> {
           entryList = _listService.entryList;
           // update the bloc
           final organizeBloc = ApplicationStateProvider.forOrganize(context);
-          organizeBloc.updateSettingState(entryList.listSetting.totalCount, entryList.listSetting.expiration);
+          organizeBloc.updateSettingState(entryList.listSetting.totalCount);
         });
         if (_listService.hasMorePage() == false) {
           double edge = 50.0;

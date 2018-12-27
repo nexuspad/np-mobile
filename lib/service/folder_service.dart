@@ -12,7 +12,7 @@ import 'package:np_mobile/datamodel/folder_tree.dart';
 class FolderService extends BaseService {
   static final Map<String, FolderService> _serviceMap = <String, FolderService>{};
 
-  factory FolderService(int moduleId, int ownerId) {
+  factory FolderService({int moduleId, int ownerId}) {
     if (_serviceMap.containsKey(_key(moduleId, ownerId))) {
       return _serviceMap[_key(moduleId, ownerId)];
     } else {
@@ -137,5 +137,14 @@ class FolderService extends BaseService {
       completer.complete(null);
     }
     return completer.future;
+  }
+
+  cleanup() {
+    if (_serviceMap != null) {
+      List<String> keys = _serviceMap.keys.toList();
+      for (String k in keys) {
+        _serviceMap.remove(k);
+      }
+    }
   }
 }

@@ -76,12 +76,10 @@ class AccountService extends BaseService {
   login(login, password) async {
     var completer = new Completer();
 
-    RestClient _client = new RestClient();
-    _client
+    RestClient()
         .postJson(getAccountServiceEndPoint("login"),
             json.encode(UserServiceData(login, password, AppConfig().deviceId)), "", AppConfig().deviceId)
         .then((dynamic result) {
-
       if (result['errorCode'] != null) {
         completer.completeError(new NPError(cause: result['errorCode']));
       } else {
@@ -96,7 +94,25 @@ class AccountService extends BaseService {
     return completer.future;
   }
 
-  logout() {}
+  Future<dynamic> logout() async {
+    var completer = new Completer();
+
+    RestClient().get(getAccountServiceEndPoint("logout"), _currentUser.sessionId).then((dynamic result) {
+      if (result['errorCode'] != null) {
+        completer.completeError(new NPError(cause: result['errorCode']));
+      } else {
+        cleanupSession().then((result) {
+          completer.complete();
+        }).catchError((error) {
+          completer.complete();
+        });
+      }
+    }).catchError((error) {
+      completer.completeError(error);
+    });
+
+    return completer.future;
+  }
 
   _saveSessionIdLocally() async {
     print("saved session id locally...");
@@ -106,9 +122,25 @@ class AccountService extends BaseService {
     _prefs.setString("SESSION_ID", _currentUser.sessionId);
   }
 
+  Future<dynamic> cleanupSession() async {
+    var completer = new Completer();
+    _currentUser = null;
+    var pref = await SharedPreferences.getInstance();
+
+    if (pref != null) {
+      Set<String> keys = pref.getKeys();
+      for (String k in keys) {
+        pref.remove(k);
+      }
+    }
+
+    completer.complete();
+    return completer.future;
+  }
+
   String get sessionId {
     if (_currentUser == null) {
-      return "35c0d6fd6156188cd79ce437a7a8aee2990b1d2d";
+      return null;
     }
     return _currentUser.sessionId;
   }

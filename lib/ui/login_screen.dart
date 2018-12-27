@@ -23,7 +23,6 @@ class LoginFormState extends State<LoginScreen> {
     if (_formKey.currentState.validate()) {
       _loading = true;
       _formKey.currentState.save();
-      print("logging in $_userName");
       _showSnackBar("logging in...");
       AccountService().login(_userName, _password).then((dynamic result) {
         Account user = result;
@@ -74,7 +73,7 @@ class LoginFormState extends State<LoginScreen> {
                     return null;
                   },
                   keyboardType: TextInputType.emailAddress,
-                  decoration: new InputDecoration(labelText: "email address"),
+                  decoration: new InputDecoration(labelText: "email or username"),
                 ),
               ),
               new Padding(

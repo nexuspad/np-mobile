@@ -15,12 +15,15 @@ class EntryList<T extends NPEntry> {
   List<T> _entries;
   NPFolder _folder;
 
+  DateTime _expiration;
+
   EntryList();
 
   EntryList.fromJson(Map<String, dynamic> data) {
     _listSetting = ListSetting.fromJson(data['listSetting']);
     _entries = new List<T>();
     _folder = NPFolder.fromJson(data['folder']);
+    _expiration = DateTime.now().add(Duration(minutes: 30));
 
     for (var e in data['entries']) {
       var entryObj = EntryFactory.initFromJson(e);
@@ -33,6 +36,8 @@ class EntryList<T extends NPEntry> {
   ListSetting get listSetting => _listSetting;
   List<T> get entries => _entries;
   NPFolder get folder => _folder;
+  DateTime get expiration => _expiration;
+  set expiration(value) => _expiration = value;
 
   int entryCount() {
     if (_entries == null) {
@@ -52,9 +57,15 @@ class EntryList<T extends NPEntry> {
     return false;
   }
 
+  void set30MinutesExpiration({minutes: 29}) {
+    _expiration = DateTime.now().add(Duration(minutes: 29));
+  }
+
   bool isExpired() {
-    if (_listSetting == null) return true;
-    return _listSetting.expires;
+    if (_expiration != null && _expiration.isAfter(DateTime.now())) {
+      return false;
+    }
+    return true;
   }
 
   addEntries(List<NPEntry> entries) {

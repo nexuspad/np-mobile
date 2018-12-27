@@ -29,8 +29,8 @@ class TimelineKey {
 
   bool isInRange(DateTime left, DateTime right) {
     if (_type == TimelineType.datetime) {
-      if ((left.isBefore(_value) ||
-          left.isAtSameMomentAs(_value) && (right.isAfter(_value) || right.isAtSameMomentAs(_value)))) {
+      if ((left.isBefore(_value) || left.isAtSameMomentAs(_value)) &&
+          (right.isAfter(_value) || right.isAtSameMomentAs(_value))) {
         return true;
       }
     }

@@ -38,7 +38,6 @@ class OrganizeBloc {
     _currentSetting.listSetting.folderId = NPFolder.ROOT;
     _currentSetting.listSetting.pageId = 1;
     _currentSetting.listSetting.totalCount = 0;
-    _currentSetting.listSetting.expiration = null;
 
     if (moduleId == NPModule.CONTACT || moduleId == NPModule.CALENDAR) {
       _currentSetting.listSetting.includeEntriesInAllFolders = true;
@@ -66,7 +65,6 @@ class OrganizeBloc {
     _currentSetting.listSetting.folderId = folderId;
     _currentSetting.listSetting.totalCount = 0;
     _currentSetting.listSetting.pageId = 1;
-    _currentSetting.listSetting.expiration = null;
     _organizeSubject.sink.add(_currentSetting);
   }
 
@@ -74,6 +72,7 @@ class OrganizeBloc {
     if (dates[0] != null && dates[1] != null && dates[0].isBefore(dates[1])) {
       _currentSetting.listSetting.startDate = UIHelper.npDateStr(dates[0]);
       _currentSetting.listSetting.endDate = UIHelper.npDateStr(dates[1]);
+      // make the endDate to the end of the day
       _organizeSubject.sink.add(_currentSetting);
     }
   }
@@ -124,9 +123,8 @@ class OrganizeBloc {
   }
 
   /// this is just to update the state. no need to publish it.
-  updateSettingState(int totalCount, DateTime listingExpiration) {
+  updateSettingState(int totalCount) {
     _currentSetting.listSetting.totalCount = totalCount;
-    _currentSetting.listSetting.expiration = listingExpiration;
   }
 
   dispose() {

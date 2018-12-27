@@ -71,7 +71,7 @@ void main() {
     SharedPreferences.setMockInitialValues({});
     await AccountService().mock();
 
-    FolderService folderService = new FolderService(NPModule.BOOKMARK, AccountService().userId);
+    FolderService folderService = new FolderService(moduleId: NPModule.BOOKMARK, ownerId: AccountService().userId);
     await folderService.get().then((dynamic result) {
       FolderTree folderTree = result;
       folderTree.debug();
@@ -83,7 +83,7 @@ void main() {
     SharedPreferences.setMockInitialValues({});
     await AccountService().mock();
 
-    FolderService folderService = new FolderService(NPModule.DOC, AccountService().userId);
+    FolderService folderService = new FolderService(moduleId: NPModule.DOC, ownerId: AccountService().userId);
     await folderService.get();
     NPFolder folder = folderService.folderDetail(103);
     folder.folderName = 'dev 3';

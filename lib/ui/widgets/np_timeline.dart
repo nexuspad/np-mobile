@@ -99,26 +99,21 @@ class _CalendarWidgetState extends NPModuleListingState<NPTimelineWidget> {
   }
 
   ListTile _buildTile(NPEntry e, int index) {
-    Icon leadingIcon;
     var titleStyle;
 
     if (e.moduleId == NPModule.CALENDAR) {
       NPEvent event = e;
       if (event.startDateTime.isBefore(DateTime.now())) {
-        leadingIcon = Icon(FontAwesomeIcons.clock, color: Colors.grey);
         titleStyle = UIHelper.grayedEntryTitle(context);
 
       } else if (event.startDateTime.difference(DateTime.now()).inHours < 8) {
-        leadingIcon = Icon(FontAwesomeIcons.clock, color: Colors.orangeAccent);
         titleStyle = UIHelper.favoriteEntryTitle(context);
 
       } else {
-        leadingIcon = Icon(FontAwesomeIcons.clock, color: Colors.blueAccent);
         titleStyle = UIHelper.regularEntryTitle(context);
       }
     } else {
       if (e.pinned == true) {
-        leadingIcon = Icon(Icons.star);
       }
     }
     return new ListTile(

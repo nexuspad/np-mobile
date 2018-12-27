@@ -8,6 +8,7 @@ import 'package:np_mobile/datamodel/np_folder.dart';
 import 'package:np_mobile/datamodel/np_module.dart';
 import 'package:np_mobile/service/account_service.dart';
 import 'package:np_mobile/service/folder_service.dart';
+import 'package:np_mobile/service/list_service.dart';
 import 'package:np_mobile/ui/blocs/application_state_provider.dart';
 import 'package:np_mobile/ui/blocs/organize_bloc.dart';
 import 'package:np_mobile/ui/entry_edit_screen.dart';
@@ -109,7 +110,7 @@ class OrganizerScreen extends StatelessWidget {
         // anytime the builder sees new data in the stateStream, it will re-render the list widget
         if (snapshot.data != null) {
           ListSetting listSetting = snapshot.data.listSetting;
-          FolderService folderService = FolderService(listSetting.moduleId, listSetting.ownerId);
+          FolderService folderService = FolderService(moduleId: listSetting.moduleId, ownerId: listSetting.ownerId);
           NPFolder folder = folderService.folderDetail(listSetting.folderId);
           if (folder != null) {
             return Text(folder.folderName);
@@ -137,7 +138,7 @@ class OrganizerScreen extends StatelessWidget {
               child: IconButton(
                 icon: const Icon(FontAwesomeIcons.levelDownAlt),
                 onPressed: () {
-                  FolderService folderService = FolderService(listSetting.moduleId, listSetting.ownerId);
+                  FolderService folderService = FolderService(moduleId: listSetting.moduleId, ownerId: listSetting.ownerId);
                   NPFolder folder = folderService.folderDetail(listSetting.folderId);
                   if (folder != null && folder.parent != null) {
                     organizeBloc.changeFolder(folder.parent.folderId);
@@ -259,7 +260,7 @@ class OrganizerScreen extends StatelessWidget {
             onTap: () {},
           ),
           UIHelper.actionButton(context, "logout", () {
-            // code to logout
+            AppConfig().logout(context);
           }),
         ],
       ),

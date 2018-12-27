@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:np_mobile/app_config.dart';
+import 'package:np_mobile/service/np_error.dart';
 
 class RestClient {
   // next three lines makes this class a Singleton
@@ -17,7 +18,7 @@ class RestClient {
 
       if (statusCode < 200 || statusCode > 400 || json == null) {
         print("Error while fetching data with status code $statusCode");
-        return _errorResult(statusCode.toString());
+        return NPError.statusCode(statusCode);
       }
       return json.decode(res);
     });
@@ -37,6 +38,7 @@ class RestClient {
 
       if (statusCode < 200 || statusCode > 400 || json == null) {
         print("Error while posting data with status code $statusCode");
+        return NPError.statusCode(statusCode);
       }
       return json.decode(res);
     });
@@ -49,7 +51,8 @@ class RestClient {
       final int statusCode = response.statusCode;
 
       if (statusCode < 200 || statusCode > 400 || json == null) {
-        throw new Exception("Error while deleting data with status code $statusCode");
+        print("Error while deleting data with status code $statusCode");
+        return NPError.statusCode(statusCode);
       }
       return json.decode(res);
     });
@@ -65,9 +68,5 @@ class RestClient {
     }
     h['uuid'] = AppConfig().deviceId;
     return h;
-  }
-
-  Map<String, String> _errorResult(String errorCode) {
-    return {'errorCode': errorCode};
   }
 }

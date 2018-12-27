@@ -1,6 +1,9 @@
 import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:np_mobile/service/account_service.dart';
+import 'package:np_mobile/service/folder_service.dart';
+import 'package:np_mobile/service/list_service.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -44,6 +47,16 @@ class AppConfig {
     }
 
     return completer.future;
+  }
+
+  logout(context) {
+    AccountService().logout().whenComplete(() {
+      Navigator.pushReplacementNamed(context, '/');
+    }).whenComplete(() {
+      ListService().cleanup();
+      FolderService().cleanup();
+      Navigator.pushReplacementNamed(context, '/');
+    });
   }
 
   String _serviceHost;

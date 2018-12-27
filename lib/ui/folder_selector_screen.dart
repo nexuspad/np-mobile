@@ -57,7 +57,7 @@ class FolderSelectionState extends State<FolderSelectorScreen> {
         'calling folder service for module ${_currentRootFolder.moduleId} for owner: ${_currentRootFolder.owner.userId}');
     _loading = true;
 
-    _folderService = new FolderService(_currentRootFolder.moduleId, _currentRootFolder.owner.userId);
+    _folderService = new FolderService(moduleId: _currentRootFolder.moduleId, ownerId: _currentRootFolder.owner.userId);
     _folderService.get().then((dynamic result) {
       _folderTree = result;
       setState(() {
@@ -308,7 +308,7 @@ class FolderSelectionState extends State<FolderSelectorScreen> {
           } else if (_folderToMove != null) {
             _folderToMove.parent = NPFolder.copy(folder);
             _showSnackBar("updating...");
-            FolderService(_folderToMove.moduleId, _folderToMove.owner.userId)
+            FolderService(moduleId: _folderToMove.moduleId, ownerId: _folderToMove.owner.userId)
                 .save(_folderToMove, FolderUpdateAction.MOVE)
                 .then((updatedFolder) {
               _showSnackBar("updated...");
@@ -379,7 +379,7 @@ class FolderSelectionState extends State<FolderSelectorScreen> {
 
   _deleteFolder(NPFolder folder) {
     _showSnackBar("deleting...");
-    FolderService(folder.moduleId, folder.owner.userId).delete(folder).then((deletedFolder) {
+    FolderService(moduleId: folder.moduleId, ownerId: folder.owner.userId).delete(folder).then((deletedFolder) {
       Navigator.of(context).pop();
       _showSnackBar("deleted...");
       setState(() {});

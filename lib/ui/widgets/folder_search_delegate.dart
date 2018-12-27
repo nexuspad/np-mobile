@@ -102,7 +102,7 @@ class _SuggestionList extends StatelessWidget {
     SharedPreferences _pref = await SharedPreferences.getInstance();
     List historyStored = _pref.getStringList("FOLDER_SEARCH_HISTORY");
 
-    FolderService(_moduleId, _ownerId).getFolders().then((folders) {
+    FolderService(moduleId: _moduleId, ownerId: _ownerId).getFolders().then((folders) {
       Map<String, NPFolder> nameMap = new Map();
       folders.forEach((f) {
         nameMap[f.folderName] = f;
