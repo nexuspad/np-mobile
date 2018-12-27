@@ -129,10 +129,12 @@ class EntryService extends BaseService {
       if (result['errorCode'] != null) {
         completer.completeError(new NPError(cause: result['errorCode']));
       } else {
-        NPEntry deletedEntry = EntryFactory.initFromJson(result['entry']);
-        ListService.activeServicesForModule(deletedEntry.moduleId, deletedEntry.owner.userId)
-            .forEach((service) => service.deleteEntries(List.filled(1, deletedEntry)));
-        completer.complete(deletedEntry);
+        // use the entry object instead of the result from service call.
+        // this is because the result does not have complete information like folder. so there will be problem
+        // when deleting the entry from ListService.
+        ListService.activeServicesForModule(entry.moduleId, entry.owner.userId)
+            .forEach((service) => service.deleteEntries(List.filled(1, entry)));
+        completer.complete(entry);
       }
     }).catchError((error) {
       completer.completeError(error);

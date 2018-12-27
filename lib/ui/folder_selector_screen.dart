@@ -52,13 +52,16 @@ class FolderSelectionState extends State<FolderSelectorScreen> {
   @override
   void initState() {
     super.initState();
+    _loadFolders();
+  }
 
+  _loadFolders({refresh: false}) {
     print(
         'calling folder service for module ${_currentRootFolder.moduleId} for owner: ${_currentRootFolder.owner.userId}');
     _loading = true;
 
     _folderService = new FolderService(moduleId: _currentRootFolder.moduleId, ownerId: _currentRootFolder.owner.userId);
-    _folderService.get().then((dynamic result) {
+    _folderService.get(refresh: refresh).then((dynamic result) {
       _folderTree = result;
       setState(() {
         _loading = false;
@@ -125,7 +128,14 @@ class FolderSelectionState extends State<FolderSelectorScreen> {
           onPressed: () => Navigator.of(context).pop(null),
         ),
       ),
-      body: _folderTreeWidget(),
+      body: RefreshIndicator(
+        child: _folderTreeWidget(),
+        onRefresh: () async {
+          setState(() {
+            _loadFolders(refresh: true);
+          });
+        },
+      ),
     );
   }
 
@@ -312,6 +322,7 @@ class FolderSelectionState extends State<FolderSelectorScreen> {
                 .save(_folderToMove, FolderUpdateAction.MOVE)
                 .then((updatedFolder) {
               _showSnackBar("updated...");
+              Navigator.pop(context);
             }).catchError((error) {
               _showSnackBar("$error");
             });

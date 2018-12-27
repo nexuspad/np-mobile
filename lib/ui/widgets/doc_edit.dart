@@ -33,7 +33,7 @@ class DocEdit {
               maxLines: null,
               initialValue: doc.note,
               onSaved: (val) => doc.note = val,
-              decoration: new InputDecoration(labelText: "note", border: OutlineInputBorder()),
+              decoration: new InputDecoration(labelText: "note", border: UnderlineInputBorder()),
             ),
           ),
         ],

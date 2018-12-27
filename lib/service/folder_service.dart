@@ -37,15 +37,14 @@ class FolderService extends BaseService {
   int _ownerId;
   FolderTree _folderTree;
 
-  Future<dynamic> get() {
+  Future<dynamic> get({refresh: false}) {
     var completer = new Completer();
 
-    if (_folderTree != null) {
+    if (_folderTree != null && refresh == false) {
       print('use existing folder tree for module: $_moduleId owner: $_ownerId');
       completer.complete(_folderTree);
     } else {
-      RestClient _client = new RestClient();
-      _client
+      RestClient()
           .get(getFolderServiceEndPoint(_moduleId, _folderId, _ownerId), AccountService().sessionId)
           .then((dynamic result) {
         List<NPFolder> folders = new List();

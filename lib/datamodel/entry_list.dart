@@ -137,6 +137,7 @@ class EntryList<T extends NPEntry> {
     if (_entries == null) {
       return;
     }
+
     // if folders don't match, or not deleting un-pinned entry from ROOT, do not proceed.
     if (entry.folder.folderId != _folder.folderId) {
       if (!(_folder.folderId == NPFolder.ROOT && entry.pinned == false)) {

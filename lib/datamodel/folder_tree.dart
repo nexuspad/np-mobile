@@ -65,14 +65,20 @@ class FolderTree {
   /// update the _lookup and rebuild folder tree
   updateNode(NPFolder f) {
     _lookup[f.folderId] = f;
-    _root.subFolders = new List<NPFolder>();
+    _root.subFolders.clear();
+    _lookup.forEach((k, f) {
+      if (f.subFolders != null) f.subFolders.clear();
+    });
     _buildFolderTree(_root, _lookup.values.toList());
   }
 
   /// update the _lookup and rebuild folder tree
   deleteNode(NPFolder f) {
     _lookup.remove(f.folderId);
-    _root.subFolders = new List<NPFolder>();
+    _root.subFolders.clear();
+    _lookup.forEach((k, f) {
+      if (f.subFolders != null) f.subFolders.clear();
+    });
     _buildFolderTree(_root, _lookup.values.toList());
   }
 
@@ -89,7 +95,6 @@ class FolderTree {
 
     NPFolder theNode;
 
-    print('search folder id $folderId in ${startNode.folderId}');
     if (startNode.folderId == folderId) {
       theNode = startNode;
     } else {
