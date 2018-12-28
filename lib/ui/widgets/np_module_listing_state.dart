@@ -163,6 +163,7 @@ class NPModuleListingState<T extends BaseList> extends State<T> {
         } else if (selected == EntryMenu.delete) {
           EntryService().delete(e).then((deletedEntry) {
             setState(() {});
+            Scaffold.of(context).showSnackBar(new SnackBar(content: new Text('entry deleted')));
           });
         }
       },

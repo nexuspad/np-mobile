@@ -17,7 +17,7 @@ class FolderTree {
       _lookup[f.folderId] = f;
     }
 
-    folders.sort((a, b) => a.folderName.compareTo(b.folderName));
+    folders.sort((a, b) => a.folderName.toLowerCase().compareTo(b.folderName.toLowerCase()));
 
     int maxIteration = folders.length * folders.length;
     int iteration = 0;

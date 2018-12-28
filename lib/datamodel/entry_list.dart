@@ -22,7 +22,9 @@ class EntryList<T extends NPEntry> {
   EntryList.fromJson(Map<String, dynamic> data) {
     _listSetting = ListSetting.fromJson(data['listSetting']);
     _entries = new List<T>();
-    _folder = NPFolder.fromJson(data['folder']);
+    if (data['folder'] != null) {
+      _folder = NPFolder.fromJson(data['folder']);
+    }
     _expiration = DateTime.now().add(Duration(minutes: 30));
 
     for (var e in data['entries']) {
@@ -203,7 +205,12 @@ class EntryList<T extends NPEntry> {
       if (a.timelineKey == null || b.timelineKey == null) {
         return 0;
       } else {
-        return a.timelineKey.isBefore(b.timelineKey) ? -1 : 1;
+        int compareValue = a.timelineKey.compare(b.timelineKey);
+        if (compareValue == 0) {
+          return a.title.toLowerCase().compareTo(b.title.toLowerCase());
+        } else {
+          return compareValue;
+        }
       }
     });
   }

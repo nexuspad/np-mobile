@@ -108,8 +108,8 @@ class _SuggestionList extends StatelessWidget {
         nameMap[f.folderName] = f;
       });
 
-      List suggestedNames = nameMap.keys.toList();
-      suggestedNames.sort();
+      List<String> suggestedNames = nameMap.keys.toList();
+      suggestedNames.sort((String a, String b) => a.toLowerCase().compareTo(b.toLowerCase()));
 
       if (historyStored != null && historyStored.length > 0) {
         historyStored.forEach((name) {

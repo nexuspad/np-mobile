@@ -3,6 +3,7 @@ import 'package:np_mobile/datamodel/list_setting.dart';
 import 'package:np_mobile/datamodel/np_entry.dart';
 import 'package:np_mobile/datamodel/np_photo.dart';
 import 'package:np_mobile/ui/entry_view_screen.dart';
+import 'package:np_mobile/ui/message_helper.dart';
 import 'package:np_mobile/ui/ui_helper.dart';
 import 'package:np_mobile/ui/widgets/base_list.dart';
 import 'package:np_mobile/ui/widgets/entry_view_util.dart';
@@ -27,7 +28,7 @@ class _GridState extends NPModuleListingState<BaseList> {
       if (loading) {
         return Center(child: buildProgressIndicator());
       } else {
-        return Center(child: Text('empty', style: Theme.of(context).textTheme.display1));
+        return UIHelper.emptyContent(context, MessageHelper.EMPTY_LIST);
       }
     } else {
       final Orientation orientation = MediaQuery.of(context).orientation;

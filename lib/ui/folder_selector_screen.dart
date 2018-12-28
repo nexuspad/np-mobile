@@ -9,6 +9,7 @@ import 'package:np_mobile/service/folder_service.dart';
 import 'package:np_mobile/ui/blocs/application_state_provider.dart';
 import 'package:np_mobile/ui/blocs/organize_bloc.dart';
 import 'package:np_mobile/ui/folder_edit_screen.dart';
+import 'package:np_mobile/ui/message_helper.dart';
 import 'package:np_mobile/ui/ui_helper.dart';
 import 'package:np_mobile/ui/widgets/folder_search_delegate.dart';
 
@@ -140,24 +141,34 @@ class FolderSelectionState extends State<FolderSelectorScreen> {
   }
 
   Widget _folderTreeWidget() {
-    return Column(
-        // This makes each child fill the full width of the screen
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          _parentRow(),
-          Flexible(
-              child: ListView.separated(
-            padding: UIHelper.contentPadding(),
-            separatorBuilder: (context, index) => Divider(
-                  color: Colors.black12,
-                ),
-            itemCount: _currentRootFolder.subFolders != null ? _currentRootFolder.subFolders.length : 0,
-            itemBuilder: (context, index) {
-              return _folderTile(_currentRootFolder.subFolders[index]);
-            },
-          )),
-        ]);
+    if (_loading) {
+      return Center(child: buildProgressIndicator());
+    } else {
+      Widget childFolderWidget;
+      if (_currentRootFolder.subFolders != null && _currentRootFolder.subFolders.length == 0) {
+        childFolderWidget = UIHelper.emptyContent(context, MessageHelper.NO_SUBFOLDERS);
+      } else {
+        childFolderWidget = ListView.separated(
+          padding: UIHelper.contentPadding(),
+          separatorBuilder: (context, index) => Divider(
+                color: Colors.black12,
+              ),
+          itemCount: _currentRootFolder.subFolders != null ? _currentRootFolder.subFolders.length : 0,
+          itemBuilder: (context, index) {
+            return _folderTile(_currentRootFolder.subFolders[index]);
+          },
+        );
+      }
+
+      return Column(
+          // This makes each child fill the full width of the screen
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _parentRow(),
+            Flexible(child: childFolderWidget),
+          ]);
+    }
   }
 
   Widget _parentRow() {

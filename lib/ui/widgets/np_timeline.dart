@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:np_mobile/datamodel/list_setting.dart';
 import 'package:np_mobile/datamodel/np_entry.dart';
 import 'package:np_mobile/datamodel/np_event.dart';
@@ -12,6 +11,8 @@ import 'package:np_mobile/ui/ui_helper.dart';
 import 'package:np_mobile/ui/widgets/base_list.dart';
 import 'package:np_mobile/ui/widgets/date_range_picker.dart';
 import 'package:np_mobile/ui/widgets/entry_view_util.dart';
+import 'package:np_mobile/ui/widgets/event_edit.dart';
+import 'package:np_mobile/ui/widgets/event_view.dart';
 import 'package:np_mobile/ui/widgets/np_module_listing_state.dart';
 
 class NPTimelineWidget extends BaseList {
@@ -23,6 +24,8 @@ class NPTimelineWidget extends BaseList {
 }
 
 class _CalendarWidgetState extends NPModuleListingState<NPTimelineWidget> {
+  final todoFormKey = GlobalKey<FormState>();
+
   void initState() {
     super.initState();
   }
@@ -35,11 +38,11 @@ class _CalendarWidgetState extends NPModuleListingState<NPTimelineWidget> {
       // This makes each child fill the full width of the screen
       crossAxisAlignment: CrossAxisAlignment.stretch,
       mainAxisSize: MainAxisSize.min,
-      children: <Widget>[_dateRangeBar(organizeBloc), Expanded(child: _eventListView())],
+      children: <Widget>[_timeAndInputBar(organizeBloc), Expanded(child: _eventListView())],
     );
   }
 
-  Widget _dateRangeBar(OrganizeBloc organizeBloc) {
+  Widget _timeAndInputBar(OrganizeBloc organizeBloc) {
     return StreamBuilder(
       stream: organizeBloc.stateStream,
       builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
@@ -50,12 +53,22 @@ class _CalendarWidgetState extends NPModuleListingState<NPTimelineWidget> {
           startYmd = snapshot.data.listSetting.startDate;
           endYmd = snapshot.data.listSetting.endDate;
         }
-        return DateRangePicker(
+
+        List<Widget> widgets = new List();
+        widgets.add(DateRangePicker(
           startDate: DateTime.parse(startYmd),
           endDate: DateTime.parse(endYmd),
           dateRangeSelected: (List<DateTime> dates) {
             organizeBloc.changeDateRange(dates);
           },
+        ));
+
+        widgets.add(EventEdit.quickTodo(context, todoFormKey, NPEvent.newInFolder(organizeBloc.getFolder()), () {
+          setState(() {
+          });
+        }));
+        return Column(
+          children: widgets,
         );
       },
     );
@@ -104,7 +117,11 @@ class _CalendarWidgetState extends NPModuleListingState<NPTimelineWidget> {
     if (e.moduleId == NPModule.CALENDAR) {
       NPEvent event = e;
       if (event.startDateTime.isBefore(DateTime.now())) {
-        titleStyle = UIHelper.grayedEntryTitle(context);
+        if (event.localStartDate == UIHelper.npDateStr(DateTime.now())) {
+          titleStyle = UIHelper.regularEntryTitle(context);
+        } else {
+          titleStyle = UIHelper.grayedEntryTitle(context);
+        }
 
       } else if (event.startDateTime.difference(DateTime.now()).inHours < 8) {
         titleStyle = UIHelper.favoriteEntryTitle(context);
@@ -133,10 +150,16 @@ class _CalendarWidgetState extends NPModuleListingState<NPTimelineWidget> {
       ),
       subtitle: EntryViewUtil.inList(e, context),
       onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => EntryViewScreen(entryList, index)),
-        );
+        if (e.note == null || e.note.isEmpty) {
+          showDialog(context: context, builder: (BuildContext context) {
+            return EventView.dialog(context, e);
+          });
+        } else {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => EntryViewScreen(entryList, index)),
+          );
+        }
       },
       enabled: true,
     );

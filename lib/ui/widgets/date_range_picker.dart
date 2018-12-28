@@ -97,9 +97,9 @@ class _DateRangePickerState extends State<DateRangePicker> {
     } else {
       menuItems.add(PopupMenuButton<RangeMenu>(
         onSelected: (RangeMenu selected) {
-          if (selected == RangeMenu.week) {
+          if (selected == RangeMenu.today) {
             _startDate = DateTime.now();
-            _endDate = DateTime.now().add(Duration(days: 7));
+            _endDate = DateTime.now().add(Duration(days: 1));
             widget.dateRangeSelected(<DateTime>[_startDate, _endDate]);
           } else if (selected == RangeMenu.week) {
             _startDate = UIHelper.firstDayOfWeek(aDate: DateTime.now());

@@ -29,9 +29,27 @@ class EventView {
     );
   }
 
+  static Widget dialog(context, NPEvent event) {
+    return SimpleDialog(
+      contentPadding: UIHelper.contentPadding(),
+      title: new Text(event.title),
+      children: _eventContent(context, event),
+    );
+  }
+
   static SafeArea fullPage(NPEvent event, BuildContext context) {
+    List<Widget> eventContent = _eventContent(context, event);
+    eventContent.insert(0, Text(event.title, style: Theme.of(context).textTheme.headline));
+
+    if (event.note != null) {
+      eventContent.add(SingleChildScrollView(child: new Text(event.note)));
+    }
+
+    return SafeArea(child: ListView(shrinkWrap: true, padding: UIHelper.contentPadding(), children: eventContent));
+  }
+
+  static List<Widget> _eventContent(context, NPEvent event) {
     List<Widget> eventContent = new List();
-    eventContent.add(Text(event.title, style: Theme.of(context).textTheme.headline));
 
     List<Widget> timeInfo = new List();
     timeInfo.add(Expanded(
@@ -53,12 +71,7 @@ class EventView {
     }
 
     eventContent.add(Row(children: timeInfo));
-
-    if (event.note != null) {
-      eventContent.add(SingleChildScrollView(child: new Text(event.note)));
-    }
-
-    return SafeArea(child: ListView(shrinkWrap: true, padding: UIHelper.contentPadding(), children: eventContent));
+    return eventContent;
   }
 
   static String startDateTimeInfo(NPEvent event, BuildContext context) {

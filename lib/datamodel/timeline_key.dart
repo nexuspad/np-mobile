@@ -13,18 +13,21 @@ class TimelineKey {
     }
   }
 
-  bool isBefore(TimelineKey otherKey) {
+  int compare(TimelineKey otherKey) {
     if (otherKey == null || _type != otherKey._type) {
-      return true;
+      return 0;
     }
 
     if (_type == TimelineType.datetime) {
       DateTime dt1 = _value;
       DateTime dt2 = otherKey.value;
-      return dt1.isBefore(dt2);
+      if (dt1.isAtSameMomentAs(dt2)) {
+        return 0;
+      }
+      return dt1.isBefore(dt2) ? -1 : 1;
     }
 
-    return false;
+    return 0;
   }
 
   bool isInRange(DateTime left, DateTime right) {

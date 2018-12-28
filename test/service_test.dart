@@ -6,10 +6,14 @@ import 'package:np_mobile/app_config.dart';
 import 'package:np_mobile/datamodel/UploadFileWrapper.dart';
 import 'package:np_mobile/datamodel/list_setting.dart';
 import 'package:np_mobile/datamodel/np_doc.dart';
+import 'package:np_mobile/datamodel/np_event.dart';
 import 'package:np_mobile/datamodel/np_folder.dart';
+import 'package:np_mobile/datamodel/np_user.dart';
 import 'package:np_mobile/service/FolderServiceData.dart';
 import 'package:np_mobile/service/UploadWorker.dart';
+import 'package:np_mobile/service/entry_service.dart';
 import 'package:np_mobile/service/upload_service.dart';
+import 'package:np_mobile/ui/ui_helper.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:np_mobile/service/rest_client.dart';
@@ -95,6 +99,16 @@ void main() {
       print(error);
     });
   });
+
+  test('test update entry service', () async {
+    SharedPreferences.setMockInitialValues({});
+    await AccountService().mock();
+    await EntryService().save(_mockEvent(AccountService().acctOwner)).then((updatedEntry) {
+    }).catchError((error) {
+      print(error);
+    });
+  });
+
   test('test upload service', () async {
     SharedPreferences.setMockInitialValues({});
     await AccountService().mock();
@@ -156,4 +170,18 @@ void main() {
 //      print(error);
 //    });
   });
+}
+
+_mockEvent(owner) {
+  NPEvent event = new NPEvent.newInFolder(_mockFolder(NPModule.CALENDAR, NPFolder.ROOT, owner));
+  event.entryId = 'rplbA';
+  event.title = 'service test 2';
+  event.localEndDate = UIHelper.npDateStr(DateTime.now());
+  event.timezone = 'EST';
+  event.note = 'has some notes';
+  return event;
+}
+
+_mockFolder(int moduleId, int folderId, NPUser owner) {
+  return new NPFolder(moduleId, folderId, owner);
 }

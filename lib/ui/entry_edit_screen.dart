@@ -3,6 +3,7 @@ import 'package:np_mobile/app_config.dart';
 import 'package:np_mobile/datamodel/np_entry.dart';
 import 'package:np_mobile/datamodel/np_module.dart';
 import 'package:np_mobile/service/entry_service.dart';
+import 'package:np_mobile/ui/message_helper.dart';
 import 'package:np_mobile/ui/ui_helper.dart';
 import 'package:np_mobile/ui/widgets/bookmark_edit.dart';
 import 'package:np_mobile/ui/widgets/contact_edit.dart';
@@ -30,12 +31,15 @@ class _EntryFormState extends State<EntryEditScreen> {
   _submit() {
     if (_formKey.currentState.validate()) {
       _formKey.currentState.save();
-      _showSnackBar("saving...");
-      EntryService().save(_entry).then((updatedEntry) {
-        _showSnackBar("saved...");
+      scaffoldKey.currentState.showSnackBar(
+          new SnackBar(content: new Text(MessageHelper.savingEntry(_entry.moduleId))));
+      EntryService().save(_entry).then((updatedEntryOrEntries) {
+        scaffoldKey.currentState.showSnackBar(
+            new SnackBar(content: new Text(MessageHelper.entrySaved(_entry.moduleId))));
         Navigator.of(context).pop(null);
       }).catchError((error) {
-        _showSnackBar("$error");
+        print(error);
+        scaffoldKey.currentState.showSnackBar(new SnackBar(content: new Text(error)));
         AppConfig().logout(context);
       });
     }
@@ -95,10 +99,5 @@ class _EntryFormState extends State<EntryEditScreen> {
         return UIHelper.emptySpace();
     }
     return null;
-  }
-
-  void _showSnackBar(String text) {
-    scaffoldKey.currentState.hideCurrentSnackBar();
-    scaffoldKey.currentState.showSnackBar(new SnackBar(content: new Text(text)));
   }
 }

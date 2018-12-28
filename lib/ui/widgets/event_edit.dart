@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:np_mobile/datamodel/np_event.dart';
+import 'package:np_mobile/datamodel/np_module.dart';
+import 'package:np_mobile/service/entry_service.dart';
+import 'package:np_mobile/ui/message_helper.dart';
 import 'package:np_mobile/ui/ui_helper.dart';
 import 'package:np_mobile/ui/widgets/date_time_picker.dart';
 
@@ -64,6 +67,59 @@ class EventEdit {
               decoration: new InputDecoration(labelText: "note", border: OutlineInputBorder()),
             ),
           ),
+        ],
+      ),
+    );
+  }
+
+  static Widget quickTodo(BuildContext context, GlobalKey<FormState> formKey, NPEvent blankEvent, Function submissionCallback) {
+    return Form(
+      key: formKey,
+      child: Row(
+        children: <Widget>[
+          Expanded(
+            child: Padding(
+              padding: UIHelper.contentPadding(),
+              child: TextFormField(
+                initialValue: '',
+                autofocus: false,
+                onSaved: (value) {
+                  blankEvent.title = value;
+                },
+                validator: (val) {
+                  if (val.length < 1) {
+                    return null;
+                  }
+                  return null;
+                },
+                decoration: new InputDecoration(labelText: "quick to-do today", border: UnderlineInputBorder()),
+              ),
+            ),
+          ),
+          IconButton(
+            icon: Icon(Icons.add_circle),
+            onPressed: () {
+              if (formKey.currentState.validate()) {
+                formKey.currentState.save();
+
+                var currentState = Scaffold.of(context);
+                if (currentState != null) {
+                  currentState.showSnackBar(
+                      new SnackBar(content: new Text(MessageHelper.savingEntry(NPModule.CALENDAR))));
+                }
+                EntryService().save(blankEvent).then((updatedEntryOrEntries) {
+                  if (currentState != null) {
+                    currentState.showSnackBar(
+                        new SnackBar(content: new Text(MessageHelper.entrySaved(NPModule.CALENDAR))));
+                  }
+                  submissionCallback();
+                  formKey.currentState.reset();
+                }).catchError((error) {
+                  print(error);
+                });
+              }
+            },
+          )
         ],
       ),
     );

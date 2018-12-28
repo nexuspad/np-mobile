@@ -64,6 +64,9 @@ class NPEvent extends NPEntry {
         endDateTimeISO8601 += 'T' + _localEndTime + _timezoneOffset;
       }
       _endDateTime = DateTime.parse(endDateTimeISO8601);
+    } else if (_localEndTime != null) {
+      String endDateTimeISO8601 = _localStartDate + 'T' + _localEndTime + _timezoneOffset;
+      _endDateTime = DateTime.parse(endDateTimeISO8601);
     }
   }
 
@@ -97,6 +100,7 @@ class NPEvent extends NPEntry {
   DateTime get endDateTime => _endDateTime;
   int get recurId => _recurId;
   String get timezone => _timezone;
+  set timezone(value) => _timezone = value;
 
   @override
   TimelineKey get timelineKey {
