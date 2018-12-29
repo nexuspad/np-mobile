@@ -25,7 +25,8 @@ class EntryList<T extends NPEntry> {
     if (data['folder'] != null) {
       _folder = NPFolder.fromJson(data['folder']);
     }
-    _expiration = DateTime.now().add(Duration(minutes: 30));
+
+    set30MinutesExpiration();
 
     for (var e in data['entries']) {
       var entryObj = EntryFactory.initFromJson(e);

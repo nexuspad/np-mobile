@@ -3,6 +3,7 @@ import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:np_mobile/datamodel/np_folder.dart';
 import 'package:np_mobile/service/FolderServiceData.dart';
 import 'package:np_mobile/service/folder_service.dart';
+import 'package:np_mobile/ui/message_helper.dart';
 import 'package:np_mobile/ui/ui_helper.dart';
 
 class FolderEditScreen extends StatefulWidget {
@@ -17,7 +18,7 @@ class FolderEditScreen extends StatefulWidget {
 
 class _FolderFormState extends State<FolderEditScreen> {
   final _formKey = GlobalKey<FormState>();
-  final scaffoldKey = new GlobalKey<ScaffoldState>();
+  final scaffoldKey = UIHelper.initGlobalScaffold();
 
   Color currentColor;
 
@@ -118,14 +119,14 @@ class _FolderFormState extends State<FolderEditScreen> {
   _submit(NPFolder folder) {
     if (_formKey.currentState.validate()) {
       _formKey.currentState.save();
-      _showSnackBar("saving...");
+      UIHelper.showMessageOnSnackBar(text: MessageHelper.savingFolder());
       FolderService(moduleId: widget._folder.moduleId, ownerId: widget._folder.owner.userId)
           .save(folder, FolderUpdateAction.UPDATE)
           .then((updatedEntry) {
-        _showSnackBar("saved...");
+        UIHelper.showMessageOnSnackBar(text: MessageHelper.folderSaved());
         Navigator.of(context).pop(null);
       }).catchError((error) {
-        _showSnackBar("$error");
+        UIHelper.showMessageOnSnackBar(text: error.toString());
       });
     }
   }
@@ -145,10 +146,5 @@ class _FolderFormState extends State<FolderEditScreen> {
       fillColor: Colors.white,
       padding: const EdgeInsets.all(10.0),
     );
-  }
-
-  void _showSnackBar(String text) {
-    scaffoldKey.currentState.hideCurrentSnackBar();
-    scaffoldKey.currentState.showSnackBar(new SnackBar(content: new Text(text)));
   }
 }

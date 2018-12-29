@@ -7,6 +7,8 @@ import 'package:np_mobile/datamodel/np_module.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class UIHelper {
+  static GlobalKey<ScaffoldState> _globalScaffold;
+
   static final npDateFormatter = new DateFormat('yyyy-MM-dd');
   static final npTimeFormatter = new DateFormat('yyyy-MM-dd');
 
@@ -171,5 +173,23 @@ class UIHelper {
   static DateTime firstDayOfMonth(DateTime aDate) {
     String ymd = UIHelper.npDateStr(aDate);
     return DateTime.parse(ymd.substring(0, 8) + '01');
+  }
+
+  static GlobalKey<ScaffoldState> initGlobalScaffold() {
+    _globalScaffold = new GlobalKey<ScaffoldState>();
+    return _globalScaffold;
+  }
+
+  static void showMessageOnSnackBar({BuildContext context, String text}) {
+    if (context != null) {
+      var currentState = Scaffold.of(context);
+      if (currentState != null) {
+        currentState.hideCurrentSnackBar();
+        currentState.showSnackBar(new SnackBar(content: new Text(text)));
+      }
+    } else if (_globalScaffold != null && _globalScaffold.currentState != null) {
+      _globalScaffold.currentState.hideCurrentSnackBar();
+      _globalScaffold.currentState.showSnackBar(new SnackBar(content: new Text(text)));
+    }
   }
 }

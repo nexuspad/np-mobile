@@ -20,7 +20,7 @@ class EntryEditScreen extends StatefulWidget {
 
 class _EntryFormState extends State<EntryEditScreen> {
   final _formKey = GlobalKey<FormState>();
-  final scaffoldKey = new GlobalKey<ScaffoldState>();
+  final scaffoldKey = UIHelper.initGlobalScaffold();
 
   NPEntry _entry;
 
@@ -31,15 +31,13 @@ class _EntryFormState extends State<EntryEditScreen> {
   _submit() {
     if (_formKey.currentState.validate()) {
       _formKey.currentState.save();
-      scaffoldKey.currentState.showSnackBar(
-          new SnackBar(content: new Text(MessageHelper.savingEntry(_entry.moduleId))));
+      UIHelper.showMessageOnSnackBar(text: MessageHelper.savingEntry(_entry.moduleId));
       EntryService().save(_entry).then((updatedEntryOrEntries) {
-        scaffoldKey.currentState.showSnackBar(
-            new SnackBar(content: new Text(MessageHelper.entrySaved(_entry.moduleId))));
+        UIHelper.showMessageOnSnackBar(text: MessageHelper.entrySaved(_entry.moduleId));
         Navigator.of(context).pop(null);
       }).catchError((error) {
         print(error);
-        scaffoldKey.currentState.showSnackBar(new SnackBar(content: new Text(error)));
+        UIHelper.showMessageOnSnackBar(text: error.toString());
         AppConfig().logout(context);
       });
     }

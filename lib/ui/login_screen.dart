@@ -13,7 +13,7 @@ class LoginScreen extends StatefulWidget {
 
 class LoginFormState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
-  final scaffoldKey = new GlobalKey<ScaffoldState>();
+  final scaffoldKey = UIHelper.initGlobalScaffold();
 
   String _userName;
   String _password;
@@ -23,11 +23,11 @@ class LoginFormState extends State<LoginScreen> {
     if (_formKey.currentState.validate()) {
       _loading = true;
       _formKey.currentState.save();
-      _showSnackBar("logging in...");
+      UIHelper.showMessageOnSnackBar(text: 'logging in...');
       AccountService().login(_userName, _password).then((dynamic result) {
         Account user = result;
         if (user.sessionId != null) {
-          _showSnackBar("you are in!");
+          UIHelper.showMessageOnSnackBar(text: 'you are logged in');
           Navigator.pushReplacementNamed(context, 'organize');
         }
         setState(() {
@@ -35,7 +35,7 @@ class LoginFormState extends State<LoginScreen> {
         });
       }).catchError((error) {
         if (error is NPError) {
-          _showSnackBar(error.errorCode);
+          UIHelper.showMessageOnSnackBar(text: error.toString());
         }
         setState(() {
           _loading = false;
@@ -116,10 +116,5 @@ class LoginFormState extends State<LoginScreen> {
                 ),
               ))),
     );
-  }
-
-  void _showSnackBar(String text) {
-    scaffoldKey.currentState.hideCurrentSnackBar();
-    scaffoldKey.currentState.showSnackBar(new SnackBar(content: new Text(text)));
   }
 }

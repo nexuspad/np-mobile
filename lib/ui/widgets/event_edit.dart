@@ -102,16 +102,10 @@ class EventEdit {
               if (formKey.currentState.validate()) {
                 formKey.currentState.save();
 
-                var currentState = Scaffold.of(context);
-                if (currentState != null) {
-                  currentState.showSnackBar(
-                      new SnackBar(content: new Text(MessageHelper.savingEntry(NPModule.CALENDAR))));
-                }
+                UIHelper.showMessageOnSnackBar(context: context, text: MessageHelper.savingEntry(NPModule.CALENDAR));
+
                 EntryService().save(blankEvent).then((updatedEntryOrEntries) {
-                  if (currentState != null) {
-                    currentState.showSnackBar(
-                        new SnackBar(content: new Text(MessageHelper.entrySaved(NPModule.CALENDAR))));
-                  }
+                  UIHelper.showMessageOnSnackBar(context: context, text: MessageHelper.entrySaved(NPModule.CALENDAR));
                   submissionCallback();
                   formKey.currentState.reset();
                 }).catchError((error) {

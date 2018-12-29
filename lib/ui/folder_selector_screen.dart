@@ -28,7 +28,7 @@ class FolderSelectorScreen extends StatefulWidget {
 }
 
 class FolderSelectionState extends State<FolderSelectorScreen> {
-  final scaffoldKey = new GlobalKey<ScaffoldState>();
+  final scaffoldKey = UIHelper.initGlobalScaffold();
 
   bool _loading;
   NPFolder _currentRootFolder;
@@ -319,23 +319,23 @@ class FolderSelectionState extends State<FolderSelectorScreen> {
         ),
         UIHelper.actionButton(context, 'move', () {
           if (_entryToMove != null) {
-            _showSnackBar("updating...");
+            UIHelper.showMessageOnSnackBar(text: MessageHelper.movingEntry(_entryToMove.moduleId));
             EntryService().move(_entryToMove, folder).then((updatedEntry) {
-              _showSnackBar("updated...");
+              UIHelper.showMessageOnSnackBar(text: MessageHelper.entryMoved(_entryToMove.moduleId));
               Navigator.pop(context);
             }).catchError((error) {
-              _showSnackBar("$error");
+              UIHelper.showMessageOnSnackBar(text: error.toString());
             });
           } else if (_folderToMove != null) {
             _folderToMove.parent = NPFolder.copy(folder);
-            _showSnackBar("updating...");
+            UIHelper.showMessageOnSnackBar(text: MessageHelper.movingFolder());
             FolderService(moduleId: _folderToMove.moduleId, ownerId: _folderToMove.owner.userId)
                 .save(_folderToMove, FolderUpdateAction.MOVE)
                 .then((updatedFolder) {
-              _showSnackBar("updated...");
+              UIHelper.showMessageOnSnackBar(text: MessageHelper.folderMoved());
               Navigator.pop(context);
             }).catchError((error) {
-              _showSnackBar("$error");
+              UIHelper.showMessageOnSnackBar(text: error.toString());
             });
           }
         }),
@@ -400,13 +400,13 @@ class FolderSelectionState extends State<FolderSelectorScreen> {
   }
 
   _deleteFolder(NPFolder folder) {
-    _showSnackBar("deleting...");
+    UIHelper.showMessageOnSnackBar(text: MessageHelper.deletingFolder());
     FolderService(moduleId: folder.moduleId, ownerId: folder.owner.userId).delete(folder).then((deletedFolder) {
       Navigator.of(context).pop();
-      _showSnackBar("deleted...");
+      UIHelper.showMessageOnSnackBar(text: MessageHelper.folderDeleted());
       setState(() {});
     }).catchError((error) {
-      _showSnackBar("$error");
+      UIHelper.showMessageOnSnackBar(text: error.toString());
     });
   }
 
@@ -420,10 +420,5 @@ class FolderSelectionState extends State<FolderSelectorScreen> {
         ),
       ),
     );
-  }
-
-  void _showSnackBar(String text) {
-    scaffoldKey.currentState.hideCurrentSnackBar();
-    scaffoldKey.currentState.showSnackBar(new SnackBar(content: new Text(text)));
   }
 }

@@ -9,6 +9,7 @@ import 'package:np_mobile/service/np_error.dart';
 import 'package:np_mobile/ui/blocs/application_state_provider.dart';
 import 'package:np_mobile/ui/entry_edit_screen.dart';
 import 'package:np_mobile/ui/folder_selector_screen.dart';
+import 'package:np_mobile/ui/message_helper.dart';
 import 'package:np_mobile/ui/ui_helper.dart';
 import 'package:np_mobile/ui/widgets/base_list.dart';
 
@@ -163,7 +164,7 @@ class NPModuleListingState<T extends BaseList> extends State<T> {
         } else if (selected == EntryMenu.delete) {
           EntryService().delete(e).then((deletedEntry) {
             setState(() {});
-            Scaffold.of(context).showSnackBar(new SnackBar(content: new Text('entry deleted')));
+            UIHelper.showMessageOnSnackBar(context: context, text: MessageHelper.entryDeleted(e.moduleId));
           });
         }
       },
