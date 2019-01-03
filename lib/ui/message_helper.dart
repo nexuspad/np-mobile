@@ -1,11 +1,41 @@
+import 'dart:async';
+import 'dart:convert';
+import 'package:flutter/services.dart' show rootBundle;
+
+import 'package:flutter/material.dart';
 import 'package:np_mobile/datamodel/np_module.dart';
 
 class MessageHelper {
-  static const String STARTING = 'starting...';
-  static const String NO_IMPLEMENTATION = 'no implementation';
   static const String EMPTY_LIST = 'empty';
   static const String NO_SUBFOLDERS = 'no child folders';
   static const String NOTHING_SELECTED = 'nothing selected';
+
+  static Map<String, dynamic> _content;
+
+  static Future loadContent(context) {
+    var completer = new Completer();
+
+    rootBundle.loadString("assets/data/content.json").then((contentInString) {
+      _content = json.decode(contentInString);
+      completer.complete();
+    }).catchError((error) {
+      print(error);
+      completer.completeError(error);
+    });
+
+    return completer.future;
+  }
+
+  static String getCmsValue(String cmsKey) {
+    if (_content == null) {
+      return 'CONTENT_ERROR';
+    }
+    if (_content.containsKey(cmsKey.toLowerCase())) {
+      return _content[cmsKey.toLowerCase()];
+    } else {
+      return 'NO_CONTENT!';
+    }
+  }
 
   static String savingEntry(int moduleId) {
     return concat(['saving', NPModule.entryName(moduleId)]);

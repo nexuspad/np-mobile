@@ -25,6 +25,9 @@ class NPUser {
 
   int get userId => _userId;
   String get email => _email;
+  set email(value) => _email = value;
   String get userName => _userName;
+  set userName(value) => _userName = value;
   String get displayName => _displayName;
+  set displayName(value) => _displayName = value;
 }

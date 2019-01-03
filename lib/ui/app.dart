@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:np_mobile/ui/account_screen.dart';
-import 'package:np_mobile/ui/entry_edit_screen.dart';
-import 'package:np_mobile/ui/folder_selector_screen.dart';
 import 'package:np_mobile/ui/photo_uploader_screen.dart';
-import 'package:np_mobile/ui/ui_helper.dart';
+import 'package:np_mobile/ui/register_screen.dart';
 import 'landing_screen.dart';
 import 'login_screen.dart';
 import 'organizer_screen.dart';
@@ -19,6 +17,7 @@ class App extends StatelessWidget {
           '/': (context) => LandingScreen(),
           'account': (context) => AccountScreen(),
           'login': (context) => LoginScreen(),
+          'register': (context) => RegisterScreen(),
           'organize': (context) => OrganizerScreen(),
           'photoUploader': (context) => PhotoUploaderScreen(context),
         },

@@ -1,8 +1,9 @@
-import 'package:np_mobile/datamodel/event_reminder.dart';
+import 'package:np_mobile/app_config.dart';
 import 'package:np_mobile/datamodel/np_entry.dart';
 import 'package:np_mobile/datamodel/np_folder.dart';
 import 'package:np_mobile/datamodel/np_module.dart';
 import 'package:np_mobile/datamodel/recurrence.dart';
+import 'package:np_mobile/datamodel/reminder.dart';
 import 'package:np_mobile/datamodel/timeline_key.dart';
 import 'package:np_mobile/ui/ui_helper.dart';
 
@@ -20,14 +21,16 @@ class NPEvent extends NPEntry {
   String _timezoneOffset;
 
   Recurrence _recurrence;
-  EventReminder _reminder;
+  Reminder _reminder;
 
   @override
   NPEvent.newInFolder(NPFolder inFolder) : super.newInFolder(inFolder) {
     moduleId = NPModule.EVENT;
     _startDateTime = DateTime.now();
     _localStartDate = UIHelper.npDateStr(_startDateTime);
-    _timezone = DateTime.now().timeZoneName;
+    _timezone = AppConfig().timezoneId;
+    _recurrence = new Recurrence();
+    _reminder = new Reminder(inFolder.owner.email);
   }
 
   NPEvent.copy(NPEvent event) : super.copy(event) {
@@ -39,6 +42,8 @@ class NPEvent extends NPEntry {
     _localEndTime = event.localEndTime;
     _timezone = event.timezone;
     _timezoneOffset = event._timezoneOffset;
+    _recurrence = Recurrence.copy(event.recurrence);
+    _reminder = Reminder.copy(event.reminder);
   }
 
   NPEvent.fromJson(Map<String, dynamic> data) : super.fromJson(data) {
@@ -84,6 +89,16 @@ class NPEvent extends NPEntry {
     }
     data['timezone'] = _timezone;
 
+    if (_recurrence != null) {
+      data['recurrence'] = _recurrence.toJson();
+    }
+
+    if (_reminder != null) {
+      List<dynamic> reminders = new List();
+      reminders.add(_reminder.toJson());
+      data['eventReminders'] = reminders;
+    }
+
     return data;
   }
 
@@ -101,6 +116,12 @@ class NPEvent extends NPEntry {
   int get recurId => _recurId;
   String get timezone => _timezone;
   set timezone(value) => _timezone = value;
+
+  Recurrence get recurrence => _recurrence;
+  set recurrence(value) => _recurrence = value;
+
+  Reminder get reminder => _reminder;
+  set reminder(value) => _reminder = value;
 
   @override
   TimelineKey get timelineKey {

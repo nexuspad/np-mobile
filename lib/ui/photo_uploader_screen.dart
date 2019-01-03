@@ -10,8 +10,6 @@ import 'package:np_mobile/service/list_service.dart';
 import 'package:np_mobile/ui/blocs/application_state_provider.dart';
 import 'package:np_mobile/ui/message_helper.dart';
 import 'package:np_mobile/ui/ui_helper.dart';
-import 'package:path/path.dart';
-import 'package:video_player/video_player.dart';
 
 class PhotoUploaderScreen extends StatefulWidget {
   PhotoUploaderScreen(BuildContext context) : _folder = ApplicationStateProvider.forOrganize(context).getFolder();

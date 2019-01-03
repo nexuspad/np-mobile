@@ -3,6 +3,7 @@ import 'package:np_mobile/app_config.dart';
 import 'package:np_mobile/datamodel/entry_list.dart';
 import 'package:np_mobile/datamodel/list_setting.dart';
 import 'package:np_mobile/datamodel/np_entry.dart';
+import 'package:np_mobile/datamodel/np_module.dart';
 import 'package:np_mobile/service/entry_service.dart';
 import 'package:np_mobile/service/list_service.dart';
 import 'package:np_mobile/service/np_error.dart';
@@ -168,24 +169,32 @@ class NPModuleListingState<T extends BaseList> extends State<T> {
           });
         }
       },
-      itemBuilder: (BuildContext context) => <PopupMenuEntry<EntryMenu>>[
-            const PopupMenuItem<EntryMenu>(
-              value: EntryMenu.favorite,
-              child: Text('favorite'),
-            ),
-            const PopupMenuItem<EntryMenu>(
-              value: EntryMenu.update,
-              child: Text('update'),
-            ),
-            const PopupMenuItem<EntryMenu>(
-              value: EntryMenu.move,
-              child: Text('move'),
-            ),
-            const PopupMenuItem<EntryMenu>(
-              value: EntryMenu.delete,
-              child: Text('delete'),
-            ),
-          ],
+      itemBuilder: (BuildContext context) {
+        List<PopupMenuEntry<EntryMenu>> menuItems = <PopupMenuEntry<EntryMenu>>[
+          const PopupMenuItem<EntryMenu>(
+            value: EntryMenu.favorite,
+            child: Text('favorite'),
+          ),
+          const PopupMenuItem<EntryMenu>(
+            value: EntryMenu.update,
+            child: Text('update'),
+          ),
+          const PopupMenuItem<EntryMenu>(
+            value: EntryMenu.move,
+            child: Text('move'),
+          ),
+          const PopupMenuItem<EntryMenu>(
+            value: EntryMenu.delete,
+            child: Text('delete'),
+          ),
+        ];
+
+        // remove the update option for photos
+        if (e.moduleId == NPModule.PHOTO) {
+          menuItems.removeAt(1);
+        }
+        return menuItems;
+      }
     );
   }
 

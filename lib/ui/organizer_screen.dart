@@ -91,7 +91,8 @@ class OrganizerScreen extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => EntryEditScreen(context, EntryFactory.newInFolder(organizeBloc.getFolder())),
+                    builder: (context) =>
+                        EntryEditScreen(context, EntryFactory.newInFolder(NPFolder.copy(organizeBloc.getFolder()))),
                   ),
                 );
               }
@@ -137,7 +138,8 @@ class OrganizerScreen extends StatelessWidget {
               child: IconButton(
                 icon: const Icon(FontAwesomeIcons.levelDownAlt),
                 onPressed: () {
-                  FolderService folderService = FolderService(moduleId: listSetting.moduleId, ownerId: listSetting.ownerId);
+                  FolderService folderService =
+                      FolderService(moduleId: listSetting.moduleId, ownerId: listSetting.ownerId);
                   NPFolder folder = folderService.folderDetail(listSetting.folderId);
                   if (folder != null && folder.parent != null) {
                     organizeBloc.changeFolder(folder.parent.folderId);

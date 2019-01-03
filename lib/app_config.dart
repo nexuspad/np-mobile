@@ -12,6 +12,7 @@ class AppConfig {
   static AppConfig _instance = new AppConfig.internal();
   AppConfig.internal();
 
+  String _timezoneId;
   SharedPreferences _prefs;
   bool _isSmallScreen = false;
 
@@ -25,6 +26,8 @@ class AppConfig {
 
   Future<dynamic> env() async {
     var completer = new Completer();
+
+    _timezoneId = DateTime.now().timeZoneName;
 
     _serviceHost = "https://lab.nexuspad.com/api";
 
@@ -65,6 +68,9 @@ class AppConfig {
   String get serviceHost => _serviceHost;
   set serviceHost(value) => _serviceHost = value;
   String get deviceId => _deviceId;
+
+  String get timezoneId => _timezoneId;
+  set timezoneId(value) => _timezoneId = value;
 
   bool get isSmallScreen => _isSmallScreen;
   checkScreenSize(context) {

@@ -52,20 +52,31 @@ class EventView {
     List<Widget> eventContent = new List();
 
     List<Widget> timeInfo = new List();
-    timeInfo.add(Expanded(
-        child: Align(
-            alignment: Alignment.topLeft,
-            child: new Text(
-              startDateTimeInfo(event, context),
-              textAlign: TextAlign.left,
-            ))));
 
     if (range(event)) {
+      timeInfo.add(Text('from'));
+      timeInfo.add(Expanded(
+          child: Align(
+              alignment: Alignment.topLeft,
+              child: new Text(
+                startDateTimeInfo(event, context),
+                textAlign: TextAlign.left,
+              ))));
+
+      timeInfo.add(Text('to'));
       timeInfo.add(Expanded(
           child: Align(
               alignment: Alignment.topLeft,
               child: new Text(
                 endDateTimeInfo(event, context),
+                textAlign: TextAlign.left,
+              ))));
+    } else {
+      timeInfo.add(Expanded(
+          child: Align(
+              alignment: Alignment.topLeft,
+              child: new Text(
+                startDateTimeInfo(event, context),
                 textAlign: TextAlign.left,
               ))));
     }

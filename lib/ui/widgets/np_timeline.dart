@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:np_mobile/datamodel/list_setting.dart';
 import 'package:np_mobile/datamodel/np_entry.dart';
 import 'package:np_mobile/datamodel/np_event.dart';
+import 'package:np_mobile/datamodel/np_folder.dart';
 import 'package:np_mobile/datamodel/np_module.dart';
 import 'package:np_mobile/ui/blocs/application_state_provider.dart';
 import 'package:np_mobile/ui/blocs/organize_bloc.dart';
@@ -63,7 +64,7 @@ class _CalendarWidgetState extends NPModuleListingState<NPTimelineWidget> {
           },
         ));
 
-        widgets.add(EventEdit.quickTodo(context, todoFormKey, NPEvent.newInFolder(organizeBloc.getFolder()), () {
+        widgets.add(EventEdit.quickTodo(context, todoFormKey, NPEvent.newInFolder(NPFolder.copy(organizeBloc.getFolder())), () {
           setState(() {
           });
         }));

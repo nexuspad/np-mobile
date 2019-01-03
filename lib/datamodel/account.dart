@@ -23,9 +23,25 @@ class Account extends NPUser {
 
   Map<String, dynamic> toJson() {
     Map data = super.toJson();
+
+    if (email != null) {
+      data['email'] = email;
+    }
+    if (userName != null) {
+      data['userName'] = userName;
+    }
+    if (displayName != null) {
+      data['displayName'] = displayName;
+    }
+
     if (_auth != null) {
       data['auth'] = _auth.toJson();
     }
+
+    if (_preference != null) {
+      data['preference'] = _preference.toJson();
+    }
+
     return data;
   }
 
@@ -35,4 +51,9 @@ class Account extends NPUser {
   String get sessionId => _sessionId;
   AuthInfo get auth => _auth;
   Preference get preference => _preference;
+  set preference(value) => _preference = value;
+
+  String toString() {
+    return toJson().toString();
+  }
 }

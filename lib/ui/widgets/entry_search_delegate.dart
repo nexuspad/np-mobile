@@ -47,8 +47,11 @@ class EntrySearchDelegate extends SearchDelegate<String> {
     SharedPreferences.getInstance().then((pref) {
       List<String> historyStored = pref.getStringList("SEARCH_HISTORY");
       if (historyStored != null) {
+        historyStored.remove(query);
         historyStored.insert(0, query);
-        historyStored.removeLast();
+        if (historyStored.length > 10) {
+          historyStored.removeLast();
+        }
       } else {
         historyStored = new List<String>();
         historyStored.add(query);

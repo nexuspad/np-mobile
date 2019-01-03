@@ -110,11 +110,19 @@ class UIHelper {
     return npDateFormatter.format(dateTime);
   }
 
+  static String localDateDisplay(context, DateTime dateTime) {
+    return DateFormat.yMMMd(Localizations.localeOf(context).toString()).format(dateTime.toLocal());
+  }
+
   static String npTimeStr(TimeOfDay timeOfDay) {
     if (timeOfDay.minute < 10) {
       return '${timeOfDay.hour}:0${timeOfDay.minute}';
     }
     return '${timeOfDay.hour}:${timeOfDay.minute}';
+  }
+
+  static String localDateTimeDisplay(context, DateTime dateTime) {
+    return DateFormat.yMMMd(Localizations.localeOf(context).toString()).add_Hm().format(dateTime.toLocal());
   }
 
   static RaisedButton actionButton(BuildContext context, String text, Function onSubmit) {

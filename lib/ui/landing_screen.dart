@@ -18,6 +18,7 @@ class LandingScreenState extends State<LandingScreen> {
   @override
   void initState() {
     super.initState();
+
     AccountService().init().then((result) {
       setState(() {
         Account acct = result;
@@ -40,19 +41,24 @@ class LandingScreenState extends State<LandingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    AppConfig().checkScreenSize(context);
-    UIHelper.init(context);
-    if (_authenticated) {
-      return Scaffold(
-        appBar: AppBar(
-          title: Text('NexusApp'),
-          backgroundColor: UIHelper.blackCanvas(),
-          automaticallyImplyLeading: false,
-        ),
-        body: UIHelper.loadingContent(context, MessageHelper.STARTING),
-      );
-    } else {
-      return LoginScreen();
-    }
+    return FutureBuilder<dynamic>(
+      future: MessageHelper.loadContent(context),
+      builder: (context, snapshot) {
+        AppConfig().checkScreenSize(context);
+        UIHelper.init(context);
+        if (_authenticated) {
+          return Scaffold(
+            appBar: AppBar(
+              title: Text('NexusApp'),
+              backgroundColor: UIHelper.blackCanvas(),
+              automaticallyImplyLeading: false,
+            ),
+            body: UIHelper.loadingContent(context, MessageHelper.getCmsValue('starting')),
+          );
+        } else {
+          return LoginScreen();
+        }
+      },
+    );
   }
 }

@@ -28,21 +28,6 @@ class _EntryFormState extends State<EntryEditScreen> {
     _entry = entry;
   }
 
-  _submit() {
-    if (_formKey.currentState.validate()) {
-      _formKey.currentState.save();
-      UIHelper.showMessageOnSnackBar(text: MessageHelper.savingEntry(_entry.moduleId));
-      EntryService().save(_entry).then((updatedEntryOrEntries) {
-        UIHelper.showMessageOnSnackBar(text: MessageHelper.entrySaved(_entry.moduleId));
-        Navigator.of(context).pop(null);
-      }).catchError((error) {
-        print(error);
-        UIHelper.showMessageOnSnackBar(text: error.toString());
-        AppConfig().logout(context);
-      });
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     String title = NPModule.entryName(_entry.folder.moduleId);
@@ -88,7 +73,10 @@ class _EntryFormState extends State<EntryEditScreen> {
           setState(() {});
         });
       case NPModule.CALENDAR:
-        return EventEdit.form(context, _formKey, _entry);
+        return EventEdit.form(context, _formKey, _entry, () {
+          setState(() {
+          });
+        });
       case NPModule.DOC:
         return DocEdit.form(context, _formKey, _entry);
       case NPModule.BOOKMARK:
@@ -97,5 +85,20 @@ class _EntryFormState extends State<EntryEditScreen> {
         return UIHelper.emptySpace();
     }
     return null;
+  }
+
+  _submit() {
+    if (_formKey.currentState.validate()) {
+      _formKey.currentState.save();
+      UIHelper.showMessageOnSnackBar(text: MessageHelper.savingEntry(_entry.moduleId));
+      EntryService().save(_entry).then((updatedEntryOrEntries) {
+        UIHelper.showMessageOnSnackBar(text: MessageHelper.entrySaved(_entry.moduleId));
+        Navigator.of(context).pop(null);
+      }).catchError((error) {
+        print(error);
+        UIHelper.showMessageOnSnackBar(text: error.toString());
+        AppConfig().logout(context);
+      });
+    }
   }
 }

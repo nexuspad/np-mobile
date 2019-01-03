@@ -1,0 +1,16 @@
+{
+  "starting": "starting...",
+  "no_implementation": "no implementation",
+  "empty_list": "empty",
+  "no_subfolders": "no child folders",
+  "nothing_selected": "nothing selected",
+  "from": "from",
+  "to": "to",
+  "norepeat": "no repeat",
+  "daily": "repeat every day",
+  "weekly": "repeat every week",
+  "monthly": "repeat every month",
+  "yearly": "repeat every year",
+  "day": "days",
+  "minute": "minutes"
+}

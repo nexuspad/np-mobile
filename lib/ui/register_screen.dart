@@ -4,29 +4,29 @@ import 'package:np_mobile/service/np_error.dart';
 import 'package:np_mobile/service/account_service.dart';
 import 'package:np_mobile/ui/ui_helper.dart';
 
-class LoginScreen extends StatefulWidget {
+class RegisterScreen extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
-    return LoginFormState();
+    return RegisterFormState();
   }
 }
 
-class LoginFormState extends State<LoginScreen> {
+class RegisterFormState extends State<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
   final scaffoldKey = UIHelper.initGlobalScaffold();
 
-  String _userName;
+  String _email;
   String _password;
   bool _loading = false;
 
   @override
   Widget build(BuildContext context) {
-    var loginBtn = new Container(
-      child: UIHelper.actionButton(context, "login", () {_submit();}),
+    var registerBtn = new Container(
+      child: UIHelper.actionButton(context, "register", () {_submit();}),
       margin: new EdgeInsets.only(top: 20.0),
     );
 
-    var loginForm = new Column(
+    var registerForm = new Column(
       children: <Widget>[
         new Form(
           key: _formKey,
@@ -35,19 +35,18 @@ class LoginFormState extends State<LoginScreen> {
               new Padding(
                 padding: UIHelper.contentPadding(),
                 child: new TextFormField(
-                  onSaved: (val) => _userName = val,
+                  onSaved: (val) => _email = val,
                   validator: (val) {
                     String emailValidationRule =
                         r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
                     RegExp regExp = new RegExp(emailValidationRule);
-//                    if (!regExp.hasMatch(val)) {
-                    if (val.length < 1) {
-                      return 'invalid username';
+                    if (!regExp.hasMatch(val)) {
+                      return 'invalid email';
                     }
                     return null;
                   },
                   keyboardType: TextInputType.emailAddress,
-                  decoration: new InputDecoration(labelText: "email or username"),
+                  decoration: new InputDecoration(labelText: "email"),
                 ),
               ),
               new Padding(
@@ -60,32 +59,37 @@ class LoginFormState extends State<LoginScreen> {
                     if (val.length == 0) {
                       return 'invalid password';
                     }
+                    _password = val;
                     return null;
                   },
                   obscureText: true,
                   decoration: new InputDecoration(labelText: "password"),
                 ),
               ),
+              new Padding(
+                padding: UIHelper.contentPadding(),
+                child: new TextFormField(
+                  validator: (val) {
+                    if (val.length == 0 || val != _password) {
+                      return 'password not confirmed';
+                    }
+                    return null;
+                  },
+                  obscureText: true,
+                  decoration: new InputDecoration(labelText: "confirm password"),
+                ),
+              ),
             ],
           ),
         ),
-        _loading ? new CircularProgressIndicator() : loginBtn
+        _loading ? new CircularProgressIndicator() : registerBtn
       ],
       crossAxisAlignment: CrossAxisAlignment.center,
     );
 
     return new Scaffold(
       appBar: AppBar(
-        title: Text('login to NexusApp'),
-        actions: <Widget>[
-          FlatButton(
-            child: Text('register'),
-            textColor: Colors.white,
-            onPressed: () {
-              Navigator.pushNamed(context, 'register');
-            },
-          )
-        ],
+        title: Text('register'),
         backgroundColor: UIHelper.blackCanvas(),
       ),
       key: scaffoldKey,
@@ -95,7 +99,7 @@ class LoginFormState extends State<LoginScreen> {
               child: ConstrainedBox(
                 constraints: BoxConstraints(),
                 child: IntrinsicHeight(
-                  child: new Center(child: loginForm),
+                  child: new Center(child: registerForm),
                 ),
               ))),
     );
@@ -105,16 +109,16 @@ class LoginFormState extends State<LoginScreen> {
     if (_formKey.currentState.validate()) {
       _loading = true;
       _formKey.currentState.save();
-      UIHelper.showMessageOnSnackBar(text: 'logging in...');
-      AccountService().login(_userName, _password).then((dynamic result) {
+      UIHelper.showMessageOnSnackBar(text: 'registering...');
+      AccountService().register(_email, _password).then((dynamic result) {
         Account user = result;
-        if (user.sessionId != null) {
-          UIHelper.showMessageOnSnackBar(text: 'you are logged in');
-          Navigator.pushReplacementNamed(context, 'organize');
-        }
         setState(() {
           _loading = false;
         });
+        if (user.sessionId != null) {
+          UIHelper.showMessageOnSnackBar(text: 'success');
+          Navigator.pushReplacementNamed(context, 'organize');
+        }
       }).catchError((error) {
         if (error is NPError) {
           UIHelper.showMessageOnSnackBar(text: error.toString());

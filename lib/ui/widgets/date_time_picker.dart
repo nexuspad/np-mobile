@@ -60,7 +60,6 @@ class _DateTimePickerState extends State<DateTimePicker> {
 
   Future<void> _bringUpTimePicker(BuildContext context) async {
     final TimeOfDay picked = await showTimePicker(context: context, initialTime: _initialTimeInPicker());
-
     if (picked != null) {
       setState(() {
         _theTime = picked;

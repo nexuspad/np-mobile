@@ -94,6 +94,27 @@ class AccountService extends BaseService {
     return completer.future;
   }
 
+  register(email, password) async {
+    var completer = new Completer();
+
+    RestClient()
+        .postJson(getAccountServiceEndPoint("register"),
+        json.encode(UserServiceData.newRegistration(email, password, AppConfig().deviceId, AppConfig().timezoneId)), "", AppConfig().deviceId)
+        .then((dynamic result) {
+      if (result['errorCode'] != null) {
+        completer.completeError(new NPError(cause: result['errorCode']));
+      } else {
+        _currentUser = Account.fromJson(result['user']);
+        _saveSessionIdLocally();
+        completer.complete(_currentUser);
+      }
+    }).catchError((error) {
+      completer.completeError(error);
+    });
+
+    return completer.future;
+  }
+
   Future<dynamic> logout() async {
     var completer = new Completer();
 

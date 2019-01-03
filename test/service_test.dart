@@ -9,6 +9,8 @@ import 'package:np_mobile/datamodel/np_doc.dart';
 import 'package:np_mobile/datamodel/np_event.dart';
 import 'package:np_mobile/datamodel/np_folder.dart';
 import 'package:np_mobile/datamodel/np_user.dart';
+import 'package:np_mobile/datamodel/recurrence.dart';
+import 'package:np_mobile/datamodel/reminder.dart';
 import 'package:np_mobile/service/FolderServiceData.dart';
 import 'package:np_mobile/service/UploadWorker.dart';
 import 'package:np_mobile/service/entry_service.dart';
@@ -103,7 +105,7 @@ void main() {
   test('test update entry service', () async {
     SharedPreferences.setMockInitialValues({});
     await AccountService().mock();
-    await EntryService().save(_mockEvent(AccountService().acctOwner)).then((updatedEntry) {
+    await EntryService().save(_mockRecurringEvent(AccountService().acctOwner)).then((updatedEntry) {
     }).catchError((error) {
       print(error);
     });
@@ -179,6 +181,27 @@ _mockEvent(owner) {
   event.localEndDate = UIHelper.npDateStr(DateTime.now());
   event.timezone = 'EST';
   event.note = 'has some notes';
+  return event;
+}
+
+_mockRecurringEvent(owner) {
+  NPEvent event = new NPEvent.newInFolder(_mockFolder(NPModule.CALENDAR, NPFolder.ROOT, owner));
+  event.title = 'test recurring event with reminder';
+  event.localStartDate = UIHelper.npDateStr(DateTime.now());
+  event.timezone = 'EST';
+  event.note = 'has some notes';
+
+  Recurrence recurrence = new Recurrence();
+  recurrence.pattern = Pattern.DAILY;
+  recurrence.interval = 1;
+  recurrence.recurrenceTimes = 3;
+  event.recurrence = recurrence;
+
+  Reminder reminder = new Reminder("ren_liu@hotmail.com");
+  reminder.timeUnit = ReminderTimeUnit.MINUTE;
+  reminder.timeValue = 60;
+  event.reminder = reminder;
+
   return event;
 }
 
