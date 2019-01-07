@@ -34,6 +34,9 @@ class OrganizeBloc {
   }
 
   changeModule(moduleId) {
+    if (moduleId == null) {
+      moduleId = NPModule.DOC;
+    }
     _currentSetting.listSetting.moduleId = moduleId;
     _currentSetting.listSetting.folderId = NPFolder.ROOT;
     _currentSetting.listSetting.pageId = 1;

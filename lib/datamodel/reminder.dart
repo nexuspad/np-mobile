@@ -9,7 +9,9 @@ class Reminder {
   ReminderTimeUnit _timeUnit;
   int _timeValue;
 
-  Reminder(email) {
+  Reminder() {}
+
+  Reminder.emailReminder(email) {
     _deliverAddress = email;
     _deliverType = DeliverType.EMAIL;
     _timeUnit = ReminderTimeUnit.MINUTE;
@@ -17,12 +19,20 @@ class Reminder {
   }
 
   Reminder.fromJson(Map<String, dynamic> data) {
-    _eventId = data['eventId'];
-    _reminderId = data['reminderId'];
-    _deliverType = data['deliverType'];
-    _deliverAddress = data['deliverAddress'];
-    _timeUnit = data['unit'];
-    _timeValue = data['unitCount'];
+    if (data['deliverType'] != null && data['deliverAddress'] != null && data['unit'] != null) {
+      _eventId = data['eventId'];
+      _reminderId = data['reminderId'];
+
+      String type = data['deliverType'];
+      _deliverType = DeliverType.values.firstWhere((e) => e.toString().split(".").last == type.toUpperCase());
+
+      _deliverAddress = data['deliverAddress'];
+
+      String unit = data['unit'];
+      _timeUnit = ReminderTimeUnit.values.firstWhere((e) => e.toString().split(".").last == unit.toUpperCase());
+
+      _timeValue = data['unitCount'];
+    }
   }
 
   Reminder.copy(Reminder otherOne) {
@@ -51,6 +61,7 @@ class Reminder {
   int get reminderId => _reminderId;
   set reminderId(value) => _reminderId = value;
   DeliverType get deliverType => _deliverType;
+  set deliverType(value) => _deliverType = value;
   String get deliverAddress => _deliverAddress;
   set deliverAddress(value) => _deliverAddress = value;
   ReminderTimeUnit get timeUnit => _timeUnit;

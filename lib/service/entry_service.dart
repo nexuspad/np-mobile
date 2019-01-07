@@ -1,9 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:np_mobile/app_config.dart';
+import 'package:np_mobile/datamodel/EntryListFactory.dart';
 import 'package:np_mobile/datamodel/entry_factory.dart';
 import 'package:np_mobile/datamodel/entry_list.dart';
 import 'package:np_mobile/datamodel/np_entry.dart';
+import 'package:np_mobile/datamodel/np_event.dart';
 import 'package:np_mobile/datamodel/np_folder.dart';
 import 'package:np_mobile/service/list_service.dart';
 import 'package:np_mobile/service/np_error.dart';
@@ -47,11 +49,16 @@ class EntryService extends BaseService {
           ListService.activeServicesForModule(updatedEntry.moduleId, updatedEntry.owner.userId)
               .forEach((service) => service.updateEntries(List.filled(1, updatedEntry)));
           completer.complete(updatedEntry);
-
         } else if (result['entryList'] != null) {
-          EntryList entryList = EntryList.fromJson(result['entryList']);
-          ListService.activeServicesForModule(entryList.listSetting.moduleId, entry.owner.userId)
-              .forEach((service) => service.updateEntries(entryList.entries));
+          EntryList entryList = EntryListFactory.initFromJson(result['entryList']);
+          ListService.activeServicesForModule(entryList.listSetting.moduleId, entry.owner.userId).forEach((service) {
+            if (entry is NPEvent) {
+              NPEvent event = entry;
+              if (event.isRecurring()) {
+              }
+            }
+            service.updateEntries(entryList.entries);
+          });
           completer.complete(entryList);
         }
       }

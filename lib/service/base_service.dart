@@ -9,7 +9,7 @@ class BaseService {
   }
 
   String getFolderDetailEndPoint(moduleId, folderId) {
-    return AppConfig().serviceHost + _setModuleBase(moduleId) + '/folder/$folderId';
+    return AppConfig().serviceHost + setModuleBase(moduleId) + '/folder/$folderId';
   }
 
   String getListEndPoint(
@@ -30,7 +30,7 @@ class BaseService {
   }
 
   String getEntryEndPoint({moduleId = NPModule.UNASSIGNED, String entryId, String attribute, ownerId = 0}) {
-    String url = _setModuleBase(moduleId);
+    String url = setModuleBase(moduleId);
     if (entryId != null) {
       url = AppConfig().serviceHost + url + '/' + entryId;
     } else {
@@ -90,7 +90,7 @@ class BaseService {
     return "";
   }
 
-  String _setModuleBase(int moduleId) {
+  String setModuleBase(int moduleId) {
     switch (moduleId) {
       case NPModule.CONTACT:
         return '/contact';

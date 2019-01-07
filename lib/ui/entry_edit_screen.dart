@@ -3,6 +3,8 @@ import 'package:np_mobile/app_config.dart';
 import 'package:np_mobile/datamodel/np_entry.dart';
 import 'package:np_mobile/datamodel/np_module.dart';
 import 'package:np_mobile/service/entry_service.dart';
+import 'package:np_mobile/service/event_service.dart';
+import 'package:np_mobile/service/np_error.dart';
 import 'package:np_mobile/ui/message_helper.dart';
 import 'package:np_mobile/ui/ui_helper.dart';
 import 'package:np_mobile/ui/widgets/bookmark_edit.dart';
@@ -91,13 +93,24 @@ class _EntryFormState extends State<EntryEditScreen> {
     if (_formKey.currentState.validate()) {
       _formKey.currentState.save();
       UIHelper.showMessageOnSnackBar(text: MessageHelper.savingEntry(_entry.moduleId));
-      EntryService().save(_entry).then((updatedEntryOrEntries) {
+
+      Future<dynamic> future;
+
+      if (_entry.moduleId == NPModule.CALENDAR) {
+        future = EventService().saveEvent(event: _entry);
+      } else {
+        future = EntryService().save(_entry);
+      }
+
+      future.then((updatedEntryOrEntries) {
         UIHelper.showMessageOnSnackBar(text: MessageHelper.entrySaved(_entry.moduleId));
         Navigator.of(context).pop(null);
       }).catchError((error) {
-        print(error);
         UIHelper.showMessageOnSnackBar(text: error.toString());
-        AppConfig().logout(context);
+        print('error saving entry: $error');
+        if (error is NPError && error.errorCode == NPError.INVALID_SESSION) {
+          AppConfig().logout(context);
+        }
       });
     }
   }

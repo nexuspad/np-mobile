@@ -14,10 +14,20 @@ class Recurrence {
   }
 
   Recurrence.fromJson(Map<String, dynamic> data) {
-    _pattern = data['pattern'];
-    _interval = data['interval'];
-    _recurrenceTimes = data['recurrenceTimes'];
-    _endDate = DateTime.parse(data['endDate']);
+    if (data['pattern'] != null) {
+      String pattern = data['pattern'];
+      _pattern = Pattern.values.firstWhere((e) => e.toString().split(".").last == pattern.toUpperCase());
+      _interval = data['interval'];
+      _recurrenceTimes = data['recurrenceTimes'];
+
+      if (data['endDate'] != null) {
+        try {
+          _endDate = DateTime.parse(data['endDate']);
+        } catch (e) {
+          print('invalid recurrence end date: ${data['endDate']}');
+        }
+      }
+    }
   }
 
   Recurrence.copy(Recurrence otherOne) {

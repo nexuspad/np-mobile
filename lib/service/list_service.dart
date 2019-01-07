@@ -1,6 +1,8 @@
 import 'dart:async';
 
+import 'package:np_mobile/datamodel/EntryListFactory.dart';
 import 'package:np_mobile/datamodel/entry_list.dart';
+import 'package:np_mobile/datamodel/event_list.dart';
 import 'package:np_mobile/datamodel/list_setting.dart';
 import 'package:np_mobile/datamodel/np_entry.dart';
 import 'package:np_mobile/service/account_service.dart';
@@ -95,9 +97,9 @@ class ListService extends BaseService {
       }
       RestClient().get(url, AccountService().sessionId).then((dynamic result) {
         if (_entryList == null) {
-          _entryList = new EntryList.fromJson(result['entryList']);
+          _entryList = EntryListFactory.initFromJson(result['entryList']);
         } else {
-          EntryList entryListNewPage = new EntryList.fromJson(result['entryList']);
+          EntryList entryListNewPage = EntryListFactory.initFromJson(result['entryList']);
           _entryList.mergeList(entryListNewPage);
         }
         _entryList.set30MinutesExpiration();
@@ -130,6 +132,14 @@ class ListService extends BaseService {
 
   deleteEntries(List<NPEntry> entries) {
     _entryList.deleteEntries(entries);
+  }
+
+  deleteAllRecurringEvents(String entryId) {
+    if (_entryList is EventList) {
+      (_entryList as EventList).deleteAllRecurring(entryId);
+    } else {
+      print('!!!! not correct event list type');
+    }
   }
 
   cleanup() {

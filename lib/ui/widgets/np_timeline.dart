@@ -89,7 +89,7 @@ class _CalendarWidgetState extends NPModuleListingState<NPTimelineWidget> {
       if (loading) {
         return Center(child: buildProgressIndicator());
       } else {
-        return UIHelper.emptyContent(context, MessageHelper.EMPTY_LIST);
+        return UIHelper.emptyContent(context, MessageHelper.getCmsValue("no_event"));
       }
     } else {
 

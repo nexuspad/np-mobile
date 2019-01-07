@@ -1,15 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/services.dart' show rootBundle;
-
-import 'package:flutter/material.dart';
 import 'package:np_mobile/datamodel/np_module.dart';
 
 class MessageHelper {
-  static const String EMPTY_LIST = 'empty';
-  static const String NO_SUBFOLDERS = 'no child folders';
-  static const String NOTHING_SELECTED = 'nothing selected';
-
   static Map<String, dynamic> _content;
 
   static Future loadContent(context) {
@@ -35,6 +29,10 @@ class MessageHelper {
     } else {
       return 'NO_CONTENT!';
     }
+  }
+
+  static folderNavigatorTitle(int moduleId) {
+    return concat([NPModule.entryName(moduleId), 'folders']);
   }
 
   static String savingEntry(int moduleId) {

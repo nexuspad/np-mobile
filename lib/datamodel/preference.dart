@@ -5,9 +5,7 @@ class Preference {
   String _locale;
   String _timezone;
 
-  Preference() {
-    _lastAccessedModule = NPModule.DOC;
-  }
+  Preference();
 
   Preference.fromJson(Map<String, dynamic> data) {
     if (data['viewPreferences'] != null && data['viewPreferences']['lastVisit'] != null) {

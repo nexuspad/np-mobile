@@ -7,7 +7,6 @@ class NPContact extends NPEntry {
   String _lastName;
   String _middleName;
   String _fullName;
-  String _displayName;
   String _businessName;
   Map _address;
   List<Map> _emails;
@@ -21,8 +20,9 @@ class NPContact extends NPEntry {
   NPContact.copy(NPContact contact) : super.copy(contact) {
     _firstName = contact.firstName;
     _lastName = contact.lastName;
-    _middleName = contact._middleName;
-    _businessName = contact._businessName;
+    _middleName = contact.middleName;
+    _fullName = contact.fullName;
+    _businessName = contact.businessName;
     if (contact.address != null)
       _address = new Map.from(contact.address);
     if (contact.emails != null)
@@ -37,9 +37,10 @@ class NPContact extends NPEntry {
     _middleName = data['middleName'];
     _businessName = data['businessName'];
     _fullName = data['fullName'];
-    _displayName = data['addressbookDisplayName'];
 
-    _address = data['address'];
+    if (data['address'] != null) {
+      _address = data['address'];
+    }
 
     if (data['emails'] != null && data['emails'] is List) {
       _emails = new List();
@@ -66,7 +67,9 @@ class NPContact extends NPEntry {
     data['lastName'] = _lastName ?? '';
     data['middleName'] = _middleName ?? '';
     data['businessName'] = _businessName ?? '';
-    data['address'] = _address ?? '';
+    if (_address != null) {
+      data['address'] = _address;
+    }
     data['phones'] = _phones ?? [];
     data['emails'] = _emails ?? [];
     return data;
@@ -81,7 +84,6 @@ class NPContact extends NPEntry {
   String get businessName => _businessName;
   set businessName(value) => _businessName = value;
   String get fullName => _fullName;
-  String get displayName => _displayName;
   List get emails => _emails;
   set emails(value) => _emails = value;
   List get phones => _phones;

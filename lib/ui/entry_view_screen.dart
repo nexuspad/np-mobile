@@ -49,6 +49,7 @@ class _EntryViewScreenState extends State<EntryViewScreen> {
           )
       ).toList();
     } else {
+      print('>>>>> ${widget._entryList.entries[0]}');
       pages = widget._entryList.entries.map((entry) => EntryViewWidget(key: Key(entry.entryId), entry: entry)).toList();
     }
 
@@ -69,6 +70,27 @@ class _EntryViewScreenState extends State<EntryViewScreen> {
       backgroundDecoration = BoxDecoration(color: UIHelper.blackCanvas());
     }
 
+    Widget entryViewWidget;
+    if (pages.length > 0) {
+      entryViewWidget = SizedBox.expand(
+        child: DecoratedBox(decoration: backgroundDecoration,
+            child: new Stack(
+              children: <Widget>[
+                new PageView.builder(
+                  physics: new AlwaysScrollableScrollPhysics(),
+                  controller: _controller,
+                  onPageChanged: (index) {
+                    _index = index;
+                  },
+                  itemBuilder: (BuildContext context, int index) {
+                    return pages[index % pages.length];
+                  },
+                ),
+              ],
+            )),
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: Text(''),
@@ -79,23 +101,7 @@ class _EntryViewScreenState extends State<EntryViewScreen> {
           onPressed: () => Navigator.of(context).pop(null),
         ),
       ),
-      body: SizedBox.expand(
-        child: DecoratedBox(decoration: backgroundDecoration,
-          child: new Stack(
-          children: <Widget>[
-            new PageView.builder(
-              physics: new AlwaysScrollableScrollPhysics(),
-              controller: _controller,
-              onPageChanged: (index) {
-                _index = index;
-              },
-              itemBuilder: (BuildContext context, int index) {
-                return pages[index % pages.length];
-              },
-            ),
-          ],
-        )),
-      ),
+      body: entryViewWidget,
     );
   }
 

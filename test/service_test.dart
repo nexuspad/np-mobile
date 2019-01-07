@@ -105,7 +105,8 @@ void main() {
   test('test update entry service', () async {
     SharedPreferences.setMockInitialValues({});
     await AccountService().mock();
-    await EntryService().save(_mockRecurringEvent(AccountService().acctOwner)).then((updatedEntry) {
+    await EntryService().save(_mockEvent(AccountService().acctOwner)).then((updatedEntry) {
+      print(updatedEntry);
     }).catchError((error) {
       print(error);
     });
@@ -176,8 +177,7 @@ void main() {
 
 _mockEvent(owner) {
   NPEvent event = new NPEvent.newInFolder(_mockFolder(NPModule.CALENDAR, NPFolder.ROOT, owner));
-  event.entryId = 'rplbA';
-  event.title = 'service test 2';
+  event.title = 'service test 100';
   event.localEndDate = UIHelper.npDateStr(DateTime.now());
   event.timezone = 'EST';
   event.note = 'has some notes';
@@ -197,7 +197,7 @@ _mockRecurringEvent(owner) {
   recurrence.recurrenceTimes = 3;
   event.recurrence = recurrence;
 
-  Reminder reminder = new Reminder("ren_liu@hotmail.com");
+  Reminder reminder = new Reminder.emailReminder("ren_liu@hotmail.com");
   reminder.timeUnit = ReminderTimeUnit.MINUTE;
   reminder.timeValue = 60;
   event.reminder = reminder;

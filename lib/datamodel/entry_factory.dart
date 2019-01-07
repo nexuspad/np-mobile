@@ -23,8 +23,8 @@ class EntryFactory {
         return new NPPhoto.newInFolder(folder);
     }
     return null;
-
   }
+
   static NPEntry initFromJson(Map<String, dynamic> data) {
     switch (data['moduleId']) {
       case NPModule.CONTACT:

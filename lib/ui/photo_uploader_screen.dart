@@ -47,7 +47,7 @@ class _PhotoUploaderScreenState extends State<PhotoUploaderScreen> {
         )
       ]),
       body: _selectedFiles.length == 0
-          ? UIHelper.emptyContent(context, MessageHelper.NOTHING_SELECTED)
+          ? UIHelper.emptyContent(context, MessageHelper.getCmsValue("no_selection"))
           : _photoList(context),
       floatingActionButton: _actionMenuItems(),
     );

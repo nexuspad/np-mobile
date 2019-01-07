@@ -30,10 +30,11 @@ class NPEvent extends NPEntry {
     _localStartDate = UIHelper.npDateStr(_startDateTime);
     _timezone = AppConfig().timezoneId;
     _recurrence = new Recurrence();
-    _reminder = new Reminder(inFolder.owner.email);
+    _reminder = new Reminder();
   }
 
   NPEvent.copy(NPEvent event) : super.copy(event) {
+    _recurId = event.recurId;
     _startDateTime = event.startDateTime;
     _endDateTime = event.endDateTime;
     _localStartDate = event.localStartDate;
@@ -42,8 +43,14 @@ class NPEvent extends NPEntry {
     _localEndTime = event.localEndTime;
     _timezone = event.timezone;
     _timezoneOffset = event._timezoneOffset;
-    _recurrence = Recurrence.copy(event.recurrence);
-    _reminder = Reminder.copy(event.reminder);
+
+    if (event._recurrence != null) {
+      _recurrence = Recurrence.copy(event.recurrence);
+    }
+
+    if (event.reminder != null) {
+      _reminder = Reminder.copy(event.reminder);
+    }
   }
 
   NPEvent.fromJson(Map<String, dynamic> data) : super.fromJson(data) {
@@ -73,6 +80,19 @@ class NPEvent extends NPEntry {
       String endDateTimeISO8601 = _localStartDate + 'T' + _localEndTime + _timezoneOffset;
       _endDateTime = DateTime.parse(endDateTimeISO8601);
     }
+
+    if (data['recurrence'] != null) {
+      _recurrence = Recurrence.fromJson(data['recurrence']);
+    }
+
+    if (data['eventReminder'] != null) {
+      _reminder = Reminder.fromJson(data['eventReminder']);
+    }
+  }
+
+  bool keyMatches(NPEntry otherEntry) {
+    NPEvent e = otherEntry;
+    return super.keyMatches(e) && _recurId == e.recurId;
   }
 
   Map<String, dynamic> toJson() {
@@ -100,6 +120,13 @@ class NPEvent extends NPEntry {
     }
 
     return data;
+  }
+
+  bool isRecurring() {
+    if (_recurrence != null && _recurrence.pattern != Pattern.NOREPEAT) {
+      return true;
+    }
+    return false;
   }
 
   String get localStartDate => _localStartDate;

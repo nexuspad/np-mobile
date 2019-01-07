@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:np_mobile/service/account_service.dart';
 import 'package:np_mobile/service/folder_service.dart';
 import 'package:np_mobile/service/list_service.dart';
+import 'package:np_mobile/ui/ui_helper.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -14,6 +15,8 @@ class AppConfig {
 
   String _timezoneId;
   SharedPreferences _prefs;
+
+  double screenheight;
   bool _isSmallScreen = false;
 
   Future<dynamic> test() {
@@ -54,11 +57,11 @@ class AppConfig {
 
   logout(context) {
     AccountService().logout().whenComplete(() {
-      Navigator.pushReplacementNamed(context, '/');
+      UIHelper.goToLogin(context);
     }).whenComplete(() {
       ListService().cleanup();
       FolderService().cleanup();
-      Navigator.pushReplacementNamed(context, '/');
+      UIHelper.goToLogin(context);
     });
   }
 

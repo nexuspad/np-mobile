@@ -12,5 +12,9 @@
   "monthly": "repeat every month",
   "yearly": "repeat every year",
   "day": "days",
-  "minute": "minutes"
+  "minute": "minutes",
+  "no_selection": "no selection",
+  "no_content": "no content on this page",
+  "no_event": "no event",
+  "no_subfolder": "no sub-folders"
 }

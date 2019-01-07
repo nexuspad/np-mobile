@@ -1,4 +1,5 @@
 import 'package:np_mobile/datamodel/np_folder.dart';
+import 'package:np_mobile/datamodel/np_module.dart';
 import 'package:np_mobile/datamodel/np_user.dart';
 import 'package:np_mobile/datamodel/timeline_key.dart';
 

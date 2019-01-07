@@ -93,7 +93,7 @@ class NPModuleListingState<T extends BaseList> extends State<T> {
       setState(() {
         loading = false;
       });
-      print(error);
+      print('error retrieving list: $error');
       if (error is NPError && error.errorCode == NPError.INVALID_SESSION) {
         AppConfig().logout(context);
       }

@@ -24,7 +24,7 @@ class LandingScreenState extends State<LandingScreen> {
         Account acct = result;
         if (acct.sessionId == null) {
           _authenticated = false;
-          Navigator.pushReplacementNamed(context, 'login');
+          UIHelper.goToLogin(context);
         } else {
           _authenticated = true;
           final organizeBloc = ApplicationStateProvider.forOrganize(context);
@@ -35,7 +35,7 @@ class LandingScreenState extends State<LandingScreen> {
       });
     }).catchError((error) {
       print('cannot init account $error');
-      Navigator.pushReplacementNamed(context, 'login');
+      UIHelper.goToLogin(context);
     });
   }
 

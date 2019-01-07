@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:np_mobile/datamodel/list_setting.dart';
 import 'package:np_mobile/datamodel/np_entry.dart';
+import 'package:np_mobile/datamodel/np_module.dart';
 import 'package:np_mobile/ui/entry_view_screen.dart';
 import 'package:np_mobile/ui/message_helper.dart';
 import 'package:np_mobile/ui/widgets/base_list.dart';
 import 'package:np_mobile/ui/ui_helper.dart';
+import 'package:np_mobile/ui/widgets/contact_view.dart';
 import 'package:np_mobile/ui/widgets/entry_view_util.dart';
 import 'package:np_mobile/ui/widgets/np_module_listing_state.dart';
 
@@ -27,7 +29,7 @@ class _ListState extends NPModuleListingState<NPListWidget> {
       if (loading) {
         return Center(child: buildProgressIndicator());
       } else {
-        return UIHelper.emptyContent(context, MessageHelper.EMPTY_LIST);
+        return UIHelper.emptyContent(context, MessageHelper.getCmsValue("no_content"));
       }
     } else {
       ListView listView = ListView.separated(
@@ -67,10 +69,14 @@ class _ListState extends NPModuleListingState<NPListWidget> {
       ),
       subtitle: EntryViewUtil.inList(e, context),
       onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => EntryViewScreen(entryList, index)),
-        );
+//        if (e.moduleId == NPModule.CONTACT) {
+//          ContactView.dialog(context, e);
+//        } else {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => EntryViewScreen(entryList, index)),
+          );
+//        }
       },
       enabled: true,
     );

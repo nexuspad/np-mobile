@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:np_mobile/datamodel/np_event.dart';
 import 'package:np_mobile/datamodel/np_module.dart';
+import 'package:np_mobile/datamodel/np_user.dart';
 import 'package:np_mobile/datamodel/recurrence.dart';
 import 'package:np_mobile/datamodel/reminder.dart';
-import 'package:np_mobile/service/entry_service.dart';
+import 'package:np_mobile/service/event_service.dart';
 import 'package:np_mobile/ui/message_helper.dart';
 import 'package:np_mobile/ui/ui_helper.dart';
 import 'package:np_mobile/ui/widgets/date_time_picker.dart';
@@ -69,7 +70,7 @@ class EventEdit {
       ),
     ];
 
-    formFields.addAll(_reminder(context, event.reminder));
+    formFields.addAll(_reminder(context, event.reminder, event.owner, setStateCallback));
     formFields.addAll(_recurrence(context, event.recurrence, setStateCallback));
 
     return new Form(
@@ -158,54 +159,85 @@ class EventEdit {
     return recurrenceFields;
   }
 
-  static List<Widget> _reminder(BuildContext context, Reminder reminder) {
+  static List<Widget> _reminder(BuildContext context, Reminder reminder, NPUser owner, Function setStateCallback) {
+    bool enabled = reminder != null && reminder.deliverType != null;
+
     List<Widget> reminderFields = <Widget>[
       Padding(
         padding: UIHelper.contentPadding(),
         child: Row(
           children: <Widget>[
-            Expanded(
-              child: TextFormField(
-                  keyboardType: TextInputType.emailAddress,
-                  initialValue: reminder.deliverAddress,
-                  onSaved: (val) => reminder.deliverAddress = val,
-                  decoration: new InputDecoration(labelText: "reminder email", border: UnderlineInputBorder())),
-            ),
+            Text('reminder'),
+            Switch(
+              value: enabled,
+              onChanged: (bool value) {
+                if (value == false) {
+                  reminder.deliverType = null;
+                } else {
+                  if (owner.email != null) {
+                    reminder.deliverAddress = owner.email;
+                  }
+                  reminder.deliverType = DeliverType.EMAIL;
+                  reminder.timeUnit = ReminderTimeUnit.MINUTE;
+                  reminder.timeValue = 30;
+                }
+                setStateCallback();
+              },
+            )
           ],
         ),
       ),
-      Padding(
-        padding: UIHelper.contentPadding(),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            Flexible(
-              child: TextFormField(
-                  keyboardType: TextInputType.number,
-                  initialValue: reminder.timeValue.toString(),
-                  onSaved: (val) => reminder.timeValue = int.parse(val),
-                  decoration: new InputDecoration(labelText: "", border: UnderlineInputBorder())),
-            ),
-            Flexible(
-              child: DropdownButton<String>(
-                items: ReminderTimeUnit.values.map((ReminderTimeUnit value) {
-                  String valueInStr = value.toString().split(".").last;
-                  return new DropdownMenuItem<String>(
-                    value: valueInStr,
-                    child: new Text(MessageHelper.getCmsValue(valueInStr)),
-                  );
-                }).toList(),
-                value: reminder.timeUnit.toString().split('.').last,
-                onChanged: (value) {
-                  reminder.timeUnit = value;
-                },
-              ),
-            ),
-            Text('before it starts'),
-          ],
-        ),
-      )
     ];
+
+    if (enabled) {
+      reminderFields.addAll(<Widget>[
+        Padding(
+          padding: UIHelper.contentPadding(),
+          child: Row(
+            children: <Widget>[
+              Expanded(
+                child: TextFormField(
+                    keyboardType: TextInputType.emailAddress,
+                    initialValue: reminder.deliverAddress,
+                    onSaved: (val) => reminder.deliverAddress = val,
+                    decoration: new InputDecoration(labelText: "reminder email", border: UnderlineInputBorder())),
+              ),
+            ],
+          ),
+        ),
+        Padding(
+          padding: UIHelper.contentPadding(),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Flexible(
+                child: TextFormField(
+                    keyboardType: TextInputType.number,
+                    initialValue: reminder.timeValue.toString(),
+                    onSaved: (val) => reminder.timeValue = int.parse(val),
+                    decoration: new InputDecoration(labelText: "", border: UnderlineInputBorder())),
+              ),
+              Flexible(
+                child: DropdownButton<String>(
+                  items: ReminderTimeUnit.values.map((ReminderTimeUnit value) {
+                    String valueInStr = value.toString().split(".").last;
+                    return new DropdownMenuItem<String>(
+                      value: valueInStr,
+                      child: new Text(MessageHelper.getCmsValue(valueInStr)),
+                    );
+                  }).toList(),
+                  value: reminder.timeUnit.toString().split('.').last,
+                  onChanged: (value) {
+                    reminder.timeUnit = value;
+                  },
+                ),
+              ),
+              Text('before it starts'),
+            ],
+          ),
+        )
+      ]);
+    }
 
     return reminderFields;
   }
@@ -243,7 +275,7 @@ class EventEdit {
 
                 UIHelper.showMessageOnSnackBar(context: context, text: MessageHelper.savingEntry(NPModule.CALENDAR));
 
-                EntryService().save(blankEvent).then((updatedEntryOrEntries) {
+                EventService().saveEvent(event: blankEvent).then((updatedEntryOrEntries) {
                   UIHelper.showMessageOnSnackBar(context: context, text: MessageHelper.entrySaved(NPModule.CALENDAR));
                   submissionCallback();
                   formKey.currentState.reset();

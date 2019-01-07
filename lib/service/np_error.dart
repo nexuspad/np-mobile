@@ -10,6 +10,7 @@ class NPError implements Exception {
       _errorCode = INVALID_SESSION;
     } else {
       _errorCode = SERVICE_ERROR;
+      _detail = statusCode.toString();
     }
   }
 
@@ -24,6 +25,6 @@ class NPError implements Exception {
 
   @override
   String toString() {
-    return '[$_errorCode] $_detail';
+    return '<$_errorCode> $_detail';
   }
 }

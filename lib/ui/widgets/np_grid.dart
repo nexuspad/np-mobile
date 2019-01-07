@@ -28,7 +28,7 @@ class _GridState extends NPModuleListingState<BaseList> {
       if (loading) {
         return Center(child: buildProgressIndicator());
       } else {
-        return UIHelper.emptyContent(context, MessageHelper.EMPTY_LIST);
+        return UIHelper.emptyContent(context, MessageHelper.getCmsValue("noContent"));
       }
     } else {
       final Orientation orientation = MediaQuery.of(context).orientation;

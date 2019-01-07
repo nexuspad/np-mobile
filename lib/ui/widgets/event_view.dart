@@ -81,7 +81,7 @@ class EventView {
               ))));
     }
 
-    eventContent.add(Row(children: timeInfo));
+    eventContent.add(ListTile(title: Row(children: timeInfo)));
     return eventContent;
   }
 

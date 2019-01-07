@@ -17,7 +17,8 @@ class UIHelper {
   static var _pinnedTitle;
 
   static init(context) {
-    _grayedTitle = Theme.of(context).textTheme.title.copyWith(fontWeight: FontWeight.normal, fontSize: 19, color: Colors.grey);
+    _grayedTitle =
+        Theme.of(context).textTheme.title.copyWith(fontWeight: FontWeight.normal, fontSize: 19, color: Colors.grey);
     _regularTitle = Theme.of(context).textTheme.title.copyWith(fontWeight: FontWeight.normal, fontSize: 19);
     _pinnedTitle = Theme.of(context).textTheme.title;
   }
@@ -71,13 +72,17 @@ class UIHelper {
   }
 
   static Widget emptyContent(context, text) {
-    return Center(
-        child: Text(text, textAlign: TextAlign.center, style: Theme.of(context).textTheme.display1)
+    double top = MediaQuery.of(context).size.height/3;
+    return ListView(
+      padding: EdgeInsets.only(top: top),
+      children: <Widget>[
+        Center(child: Text(text, textAlign: TextAlign.center, style: Theme.of(context).textTheme.body2)),
+      ],
     );
   }
 
   static Widget loadingContent(context, String text) {
-    return Center(child: Text(text, style: Theme.of(context).textTheme.display1));
+    return Center(child: Text(text, style: Theme.of(context).textTheme.body2));
   }
 
   static Widget progressIndicator() {
@@ -111,6 +116,9 @@ class UIHelper {
   }
 
   static String localDateDisplay(context, DateTime dateTime) {
+    if (dateTime == null) {
+      return "select a date";
+    }
     return DateFormat.yMMMd(Localizations.localeOf(context).toString()).format(dateTime.toLocal());
   }
 
@@ -199,5 +207,9 @@ class UIHelper {
       _globalScaffold.currentState.hideCurrentSnackBar();
       _globalScaffold.currentState.showSnackBar(new SnackBar(content: new Text(text)));
     }
+  }
+
+  static void goToLogin(BuildContext context) {
+    Navigator.pushNamedAndRemoveUntil(context, 'login', (Route<dynamic> route) => false);
   }
 }

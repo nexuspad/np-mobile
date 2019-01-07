@@ -247,6 +247,7 @@ class ContactEdit {
         Expanded(
           child: TextFormField(
             initialValue: address['streetAddress'],
+            onSaved: (val) => address['streetAddress'] = val,
             decoration: new InputDecoration(labelText: "street address", border: UnderlineInputBorder()),
           ),
         ),
@@ -260,18 +261,21 @@ class ContactEdit {
         Expanded(
           child: TextFormField(
             initialValue: address['city'],
+            onSaved: (val) => address['city'] = val,
             decoration: new InputDecoration(labelText: "city", border: UnderlineInputBorder()),
           ),
         ),
         Expanded(
           child: TextFormField(
             initialValue: address['postalCode'],
+            onSaved: (val) => address['postalCode'] = val,
             decoration: new InputDecoration(labelText: "postal code", border: UnderlineInputBorder()),
           ),
         ),
         Expanded(
           child: TextFormField(
             initialValue: address['province'],
+            onSaved: (val) => address['province'] = val,
             decoration: new InputDecoration(labelText: "state/province", border: UnderlineInputBorder()),
           ),
         ),

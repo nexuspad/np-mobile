@@ -95,7 +95,9 @@ class FolderSelectionState extends State<FolderSelectorScreen> {
     return Scaffold(
       key: scaffoldKey,
       appBar: AppBar(
-        title: _entryToMove != null || _folderToMove != null ? Text('select folder to move into') : Text('open folder'),
+        title: _entryToMove != null || _folderToMove != null
+            ? Text('select folder to move into')
+            : Text(MessageHelper.folderNavigatorTitle(_currentRootFolder.moduleId)),
         backgroundColor: _forMoving() ? UIHelper.blueCanvas() : UIHelper.blackCanvas(),
         actions: <Widget>[
           IconButton(
@@ -146,7 +148,7 @@ class FolderSelectionState extends State<FolderSelectorScreen> {
     } else {
       Widget childFolderWidget;
       if (_currentRootFolder.subFolders != null && _currentRootFolder.subFolders.length == 0) {
-        childFolderWidget = UIHelper.emptyContent(context, MessageHelper.NO_SUBFOLDERS);
+        childFolderWidget = UIHelper.emptyContent(context, MessageHelper.getCmsValue("no_subfolder"));
       } else {
         childFolderWidget = ListView.separated(
           padding: UIHelper.contentPadding(),
