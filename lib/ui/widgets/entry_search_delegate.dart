@@ -1,12 +1,10 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:np_mobile/datamodel/list_setting.dart';
 import 'package:np_mobile/datamodel/np_module.dart';
+import 'package:np_mobile/ui/search_suggestion_helper.dart';
 import 'package:np_mobile/ui/ui_helper.dart';
 import 'package:np_mobile/ui/widgets/np_grid.dart';
 import 'package:np_mobile/ui/widgets/np_list.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class EntrySearchDelegate extends SearchDelegate<String> {
   ListSetting _listSetting;
@@ -36,7 +34,7 @@ class EntrySearchDelegate extends SearchDelegate<String> {
     _data = new List();
     final Iterable<String> suggestions = query.isEmpty ? _history : _data.where((String s) => s.startsWith(query));
 
-    return _SuggestionList(query, (String suggestion) {
+    return _SuggestionList(_listSetting.moduleId, query, (String suggestion) {
       query = suggestion;
       showResults(context);
     });
@@ -44,24 +42,7 @@ class EntrySearchDelegate extends SearchDelegate<String> {
 
   @override
   Widget buildResults(BuildContext context) {
-    SharedPreferences.getInstance().then((pref) {
-      List<String> historyStored = pref.getStringList("SEARCH_HISTORY");
-      if (historyStored != null) {
-        historyStored.remove(query);
-        historyStored.insert(0, query);
-        if (historyStored.length > 10) {
-          historyStored.removeLast();
-        }
-      } else {
-        historyStored = new List<String>();
-        historyStored.add(query);
-      }
-      pref.setStringList("SEARCH_HISTORY", historyStored);
-
-    }).catchError((error) {
-      print('cannot store to shared preference' + error);
-    });
-
+    SearchSuggestionHelper.saveQuery(SearchType.ENTRY, _listSetting.moduleId, query);
     if (_listSetting.moduleId != NPModule.PHOTO) {
       return NPListWidget(ListSetting.forSearchModule(_listSetting.moduleId, query));
     } else {
@@ -93,10 +74,11 @@ class EntrySearchDelegate extends SearchDelegate<String> {
 }
 
 class _SuggestionList extends StatefulWidget {
+  final int _moduleId;
   final String _query;
   final ValueChanged<String> _onSelected;
 
-  _SuggestionList(query, onSelected) : _query = query, _onSelected = onSelected;
+  _SuggestionList(moduleId, query, onSelected) : _moduleId = moduleId, _query = query, _onSelected = onSelected;
 
   @override
   State<StatefulWidget> createState() {
@@ -105,24 +87,14 @@ class _SuggestionList extends StatefulWidget {
 }
 
 class _SuggestionListState extends State<_SuggestionList> {
-  Future _historySuggestion() async {
-    var completer = new Completer();
-
-    SharedPreferences _pref = await SharedPreferences.getInstance();
-    List<String> historyStored = _pref.getStringList("SEARCH_HISTORY");
-
-    completer.complete(historyStored);
-    return completer.future;
-  }
-
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<dynamic>(
-      future: _historySuggestion(),
+      future: SearchSuggestionHelper.searchHistory(SearchType.ENTRY, widget._moduleId),
       builder: (context, snapshot) {
         if (snapshot.hasError) print(snapshot.error);
         if (snapshot.hasData) {
-          List<String> suggestions = snapshot.data;
+          List<dynamic> suggestions = snapshot.data;
           return ListView.builder(
             itemCount: suggestions.length,
             itemBuilder: (BuildContext context, int i) {
@@ -143,66 +115,6 @@ class _SuggestionListState extends State<_SuggestionList> {
                   title: Text(suggestion),
                   onTap: () {
                     widget._onSelected(suggestion);
-                  },
-                );
-              }
-            },
-          );
-        } else {
-          return UIHelper.emptySpace();
-        }
-      },
-    );
-  }
-
-}
-
-class _SuggestionList1 extends StatelessWidget {
-  _SuggestionList1(query, onSelected)
-      : _query = query,
-        _onSelected = onSelected;
-
-  final String _query;
-  final ValueChanged<String> _onSelected;
-
-  Future _historySuggestion() async {
-    var completer = new Completer();
-
-    SharedPreferences _pref = await SharedPreferences.getInstance();
-    List<String> historyStored = _pref.getStringList("SEARCH_HISTORY");
-
-    completer.complete(historyStored);
-    return completer.future;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return FutureBuilder<dynamic>(
-      future: _historySuggestion(),
-      builder: (context, snapshot) {
-        if (snapshot.hasError) print(snapshot.error);
-        if (snapshot.hasData) {
-          List<String> suggestions = snapshot.data;
-          return ListView.builder(
-            itemCount: suggestions.length,
-            itemBuilder: (BuildContext context, int i) {
-              final String suggestion = suggestions[i];
-              bool includeSuggestion = false;
-              if (suggestion.length > _query.length) {
-                if (suggestion.indexOf(_query) != -1) {
-                  includeSuggestion = true;
-                }
-              } else {
-                if (_query.indexOf(suggestion) != -1) {
-                  includeSuggestion = true;
-                }
-              }
-              if (includeSuggestion) {
-                return ListTile(
-                  leading: const Icon(Icons.history),
-                  title: Text(suggestion),
-                  onTap: () {
-                    _onSelected(suggestion);
                   },
                 );
               }

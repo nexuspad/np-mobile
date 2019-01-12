@@ -82,7 +82,7 @@ class UIHelper {
   }
 
   static Widget loadingContent(context, String text) {
-    return Center(child: Text(text, style: Theme.of(context).textTheme.body2));
+    return Center(child: Text(text, style: TextStyle(fontSize: 20.0)));
   }
 
   static Widget progressIndicator() {

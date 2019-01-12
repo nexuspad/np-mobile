@@ -1,13 +1,12 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:np_mobile/datamodel/np_entry.dart';
 import 'package:np_mobile/datamodel/np_folder.dart';
 import 'package:np_mobile/service/entry_service.dart';
 import 'package:np_mobile/service/folder_service.dart';
 import 'package:np_mobile/ui/blocs/application_state_provider.dart';
+import 'package:np_mobile/ui/search_suggestion_helper.dart';
 import 'package:np_mobile/ui/ui_helper.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class FolderSearchDelegate extends SearchDelegate<String> {
   int _moduleId;
@@ -38,6 +37,8 @@ class FolderSearchDelegate extends SearchDelegate<String> {
     final organizeBloc = ApplicationStateProvider.forOrganize(context);
 
     return _SuggestionList(_moduleId, _ownerId, query, (NPFolder selectedFolder) {
+      SearchSuggestionHelper.saveQuery(SearchType.FOLDER, _moduleId, selectedFolder.folderName);
+
       // perform action on selected folder
       if (_itemToMove != null) {
         if (_itemToMove is NPEntry) {
@@ -99,8 +100,7 @@ class _SuggestionList extends StatelessWidget {
   Future _suggestions() async {
     var completer = new Completer();
 
-    SharedPreferences _pref = await SharedPreferences.getInstance();
-    List historyStored = _pref.getStringList("FOLDER_SEARCH_HISTORY");
+    List historyStored = await SearchSuggestionHelper.searchHistory(SearchType.FOLDER, _moduleId);
 
     FolderService(moduleId: _moduleId, ownerId: _ownerId).getFolders().then((folders) {
       Map<String, NPFolder> nameMap = new Map();

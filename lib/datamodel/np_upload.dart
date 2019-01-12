@@ -14,6 +14,7 @@ class NPUpload extends NPEntry {
   String _fileName;
   String _fileType;
   int _fileSize;
+  String _downloadLink;
   bool _image;
   NPEntry _parentEntry;
 
@@ -24,6 +25,7 @@ class NPUpload extends NPEntry {
     _fileName = data['fileName'];
     _fileType = data['fileType'];
     _fileSize = data['fileSize'];
+    _downloadLink = data['downloadLink'];
     _image = data['image'];
 
     if (data['parentEntry'] != null) {
@@ -71,6 +73,7 @@ class NPUpload extends NPEntry {
   String get fileName => _fileName;
   String get fileType => _fileType;
   int get fileSize => _fileSize;
+  String get downloadLink => _downloadLink;
   Map get cloudConfig => _cloudConfig;
   bool get image => _image;
   NPEntry get parentEntry => _parentEntry;

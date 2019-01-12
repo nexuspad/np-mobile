@@ -3,6 +3,7 @@ import 'package:np_mobile/app_config.dart';
 import 'package:np_mobile/datamodel/entry_list.dart';
 import 'package:np_mobile/datamodel/list_setting.dart';
 import 'package:np_mobile/datamodel/np_entry.dart';
+import 'package:np_mobile/datamodel/np_folder.dart';
 import 'package:np_mobile/datamodel/np_module.dart';
 import 'package:np_mobile/service/entry_service.dart';
 import 'package:np_mobile/service/list_service.dart';
@@ -69,8 +70,13 @@ class NPModuleListingState<T extends BaseList> extends State<T> {
     ListSetting listQuery;
 
     if (listSetting.startDate != null && listSetting.endDate != null) {
-      listQuery = ListSetting.forTimelineQuery(listSetting.moduleId, listSetting.folderId,
-          listSetting.includeEntriesInAllFolders, listSetting.ownerId, listSetting.startDate, listSetting.endDate);
+      if (listSetting.folderId == NPFolder.ROOT) {
+        listQuery = ListSetting.forTimelineQuery(listSetting.moduleId, listSetting.folderId,
+            listSetting.includeEntriesInAllFolders, listSetting.ownerId, listSetting.startDate, listSetting.endDate);
+      } else {
+        listQuery = ListSetting.forTimelineQuery(listSetting.moduleId, listSetting.folderId,
+            false, listSetting.ownerId, listSetting.startDate, listSetting.endDate);
+      }
     } else {
       listQuery = ListSetting.forPageQuery(listSetting.moduleId, listSetting.folderId,
           listSetting.includeEntriesInAllFolders, listSetting.ownerId, listSetting.pageId);
@@ -193,6 +199,12 @@ class NPModuleListingState<T extends BaseList> extends State<T> {
         if (e.moduleId == NPModule.PHOTO) {
           menuItems.removeAt(1);
         }
+
+        // remove the pin menu for contact and events
+        if (e.moduleId == NPModule.CONTACT || e.moduleId == NPModule.CALENDAR) {
+          menuItems.removeAt(0);
+        }
+
         return menuItems;
       }
     );

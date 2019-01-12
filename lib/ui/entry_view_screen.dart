@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:np_mobile/datamodel/entry_list.dart';
+import 'package:np_mobile/datamodel/np_entry.dart';
 import 'package:np_mobile/datamodel/np_module.dart';
+import 'package:np_mobile/service/entry_service.dart';
 import 'package:np_mobile/service/list_service.dart';
 import 'package:np_mobile/ui/entry_edit_screen.dart';
 import 'package:np_mobile/ui/folder_selector_screen.dart';
+import 'package:np_mobile/ui/message_helper.dart';
 import 'package:np_mobile/ui/ui_helper.dart';
 import 'package:np_mobile/ui/widgets/base_list.dart';
 import 'package:np_mobile/ui/widgets/entry_view_widget.dart';
@@ -62,6 +65,10 @@ class _EntryViewScreenState extends State<EntryViewScreen> {
         onPressed: () => _moveEntry(),
         icon: Icon(Icons.folder),
       ),
+      IconButton(
+        onPressed: () => _deleteEntry(),
+        icon: Icon(Icons.delete),
+      ),
     ];
 
     var backgroundDecoration = BoxDecoration(color: Colors.white);
@@ -70,9 +77,9 @@ class _EntryViewScreenState extends State<EntryViewScreen> {
       backgroundDecoration = BoxDecoration(color: UIHelper.blackCanvas());
     }
 
-    Widget entryViewWidget;
+    Widget entryViewPages;
     if (pages.length > 0) {
-      entryViewWidget = SizedBox.expand(
+      entryViewPages = SizedBox.expand(
         child: DecoratedBox(decoration: backgroundDecoration,
             child: new Stack(
               children: <Widget>[
@@ -101,7 +108,7 @@ class _EntryViewScreenState extends State<EntryViewScreen> {
           onPressed: () => Navigator.of(context).pop(null),
         ),
       ),
-      body: entryViewWidget,
+      body: entryViewPages,
     );
   }
 
@@ -120,6 +127,14 @@ class _EntryViewScreenState extends State<EntryViewScreen> {
         builder: (context) => FolderSelectorScreen(context: context, itemToMove: _entryList.entries[_index],),
       ),
     );
+  }
+
+  _deleteEntry() {
+    NPEntry e = _entryList.entries[_index];
+    EntryService().delete(e).then((deletedEntry) {
+      setState(() {});
+      UIHelper.showMessageOnSnackBar(context: context, text: MessageHelper.entryDeleted(e.moduleId));
+    });
   }
 
   _getMoreData() {
