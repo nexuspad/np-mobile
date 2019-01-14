@@ -16,6 +16,8 @@ class UIHelper {
   static var _regularTitle;
   static var _pinnedTitle;
 
+  static double _mediumFontSize = 20.0;
+
   static init(context) {
     _grayedTitle =
         Theme.of(context).textTheme.title.copyWith(fontWeight: FontWeight.normal, fontSize: 19, color: Colors.grey);
@@ -49,7 +51,7 @@ class UIHelper {
     MediaQueryData queryData = MediaQuery.of(context);
     print('size: ${queryData.size.shortestSide}');
     // Theme.of(context).textTheme.body1
-    return TextStyle(fontSize: 22.0);
+    return TextStyle(fontSize: _mediumFontSize);
   }
 
   static grayedEntryTitle(context) {
@@ -72,17 +74,17 @@ class UIHelper {
   }
 
   static Widget emptyContent(context, text) {
-    double top = MediaQuery.of(context).size.height/3;
+    double top = MediaQuery.of(context).size.height / 3;
     return ListView(
       padding: EdgeInsets.only(top: top),
       children: <Widget>[
-        Center(child: Text(text, textAlign: TextAlign.center, style: Theme.of(context).textTheme.body2)),
+        Center(child: Text(text, textAlign: TextAlign.center, style: TextStyle(fontSize: _mediumFontSize))),
       ],
     );
   }
 
   static Widget loadingContent(context, String text) {
-    return Center(child: Text(text, style: TextStyle(fontSize: 20.0)));
+    return Center(child: Text(text, style: TextStyle(fontSize: _mediumFontSize)));
   }
 
   static Widget progressIndicator() {
@@ -101,6 +103,10 @@ class UIHelper {
 
   static Widget formSpacer() {
     return const SizedBox(width: 8.0, height: 8.0);
+  }
+
+  static Widget divider() {
+    return new Padding(padding: EdgeInsets.all(8.0), child: new Divider());
   }
 
   static launchUrl(String url) async {
@@ -198,14 +204,21 @@ class UIHelper {
 
   static void showMessageOnSnackBar({BuildContext context, String text}) {
     if (context != null) {
-      var currentState = Scaffold.of(context);
-      if (currentState != null) {
-        currentState.hideCurrentSnackBar();
-        currentState.showSnackBar(new SnackBar(content: new Text(text)));
+      try {
+        var currentState = Scaffold.of(context);
+        if (currentState != null) {
+          currentState.hideCurrentSnackBar();
+          currentState.showSnackBar(new SnackBar(content: new Text(text)));
+        }
+      } catch (error) {
+        // nothing to do here.
       }
     } else if (_globalScaffold != null && _globalScaffold.currentState != null) {
       _globalScaffold.currentState.hideCurrentSnackBar();
-      _globalScaffold.currentState.showSnackBar(new SnackBar(content: new Text(text)));
+      _globalScaffold.currentState.showSnackBar(new SnackBar(
+        content: new Text(text),
+        duration: Duration(seconds: 3),
+      ));
     }
   }
 

@@ -52,7 +52,6 @@ class _EntryViewScreenState extends State<EntryViewScreen> {
           )
       ).toList();
     } else {
-      print('>>>>> ${widget._entryList.entries[0]}');
       pages = widget._entryList.entries.map((entry) => EntryViewWidget(key: Key(entry.entryId), entry: entry)).toList();
     }
 
@@ -131,9 +130,9 @@ class _EntryViewScreenState extends State<EntryViewScreen> {
 
   _deleteEntry() {
     NPEntry e = _entryList.entries[_index];
+    UIHelper.showMessageOnSnackBar(context: context, text: MessageHelper.deleting(e.moduleId));
     EntryService().delete(e).then((deletedEntry) {
       setState(() {});
-      UIHelper.showMessageOnSnackBar(context: context, text: MessageHelper.entryDeleted(e.moduleId));
     });
   }
 

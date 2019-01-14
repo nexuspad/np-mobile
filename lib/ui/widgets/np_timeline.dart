@@ -26,6 +26,7 @@ class NPTimelineWidget extends BaseList {
 
 class _CalendarWidgetState extends NPModuleListingState<NPTimelineWidget> {
   final todoFormKey = GlobalKey<FormState>();
+  NPEvent _quickToDoEvent;
 
   void initState() {
     super.initState();
@@ -64,7 +65,11 @@ class _CalendarWidgetState extends NPModuleListingState<NPTimelineWidget> {
           },
         ));
 
-        widgets.add(EventEdit.quickTodo(context, todoFormKey, NPEvent.newInFolder(NPFolder.copy(organizeBloc.getFolder())), () {
+        if (_quickToDoEvent == null) {
+          _quickToDoEvent = NPEvent.newInFolder(NPFolder.copy(organizeBloc.getFolder()));
+        }
+
+        widgets.add(EventEdit.quickTodo(context, todoFormKey, _quickToDoEvent, () {
           setState(() {
           });
         }));

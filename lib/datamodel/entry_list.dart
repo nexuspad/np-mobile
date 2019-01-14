@@ -14,6 +14,7 @@ class EntryList<T extends NPEntry> {
   ListSetting _listSetting;
   List<T> _entries;
   NPFolder _folder;
+  List<String> _groupNamesByKey;
 
   DateTime _expiration;
 
@@ -37,6 +38,7 @@ class EntryList<T extends NPEntry> {
   }
 
   ListSetting get listSetting => _listSetting;
+  List<String> get groupNamesByKey => _groupNamesByKey;
   List<T> get entries => _entries;
   NPFolder get folder => _folder;
   DateTime get expiration => _expiration;
@@ -87,11 +89,16 @@ class EntryList<T extends NPEntry> {
     }
 
     // skip this if entry folder doesn't match, or entry is not pinned to ROOT folder.
-    if (entry.folder.folderId != _folder.folderId) {
-      if (!(_folder.folderId == NPFolder.ROOT && entry.pinned)) {
-        return;
+    if (_listSetting.includeEntriesInAllFolders == false) {
+      if (entry.folder.folderId != _folder.folderId) {
+        if (!(_folder.folderId == NPFolder.ROOT && entry.pinned)) {
+          return;
+        }
       }
     }
+
+    print('....${entry.sortKey}');
+
     var moduleObj;
     switch (entry.moduleId) {
       case NPModule.CONTACT:
@@ -134,6 +141,7 @@ class EntryList<T extends NPEntry> {
     entries.forEach((e) {
       _deleteEntry(e);
     });
+    _sortEntries();
   }
 
   _deleteEntry(NPEntry entry) {
@@ -197,7 +205,11 @@ class EntryList<T extends NPEntry> {
     if (_listSetting.isTimeLine()) {
       _sortEntriesByTimeline();
     } else {
-      _sortEntriesByUpdateTime();
+      if (_listSetting.moduleId == NPModule.CONTACT) {
+        _sortEntriesByKey();
+      } else {
+        _sortEntriesByUpdateTime();
+      }
     }
   }
 
@@ -227,5 +239,52 @@ class EntryList<T extends NPEntry> {
 
       return (a.updateTime.isBefore(b.updateTime) ? 1 : (a.updateTime.isAfter(b.updateTime) ? -1 : 0));
     });
+  }
+
+  _sortEntriesByKey() {
+    bool hasPinned = false;
+    bool hasInvalidSortKey = false;
+    _groupNamesByKey = new List();
+
+    _entries.sort((NPEntry a, NPEntry b) {
+      if (a.pinned && !b.pinned) {
+        hasPinned = true;
+        return -1;
+      }
+      if (!a.pinned && b.pinned) {
+        hasPinned = true;
+        return 1;
+      }
+
+      if (a.sortKey == null && b.sortKey == null) {
+        return 0;
+      } else {
+        if (a.sortKey == null) {
+          return 1;
+        } else if (b.sortKey == null) {
+          return -1;
+        } else {
+          return a.sortKey.compareTo(b.sortKey);
+        }
+      }
+    });
+
+    _entries.forEach((e) {
+      String name = e.sortKey[0].toUpperCase();
+      if (!_groupNamesByKey.contains(name)) {
+        _groupNamesByKey.add(name);
+      }
+    });
+
+    _groupNamesByKey.sort();
+    if (hasPinned) {
+      _groupNamesByKey.insert(0, NPEntry.PINNED_GROUP_NAME);
+    }
+
+    if (hasInvalidSortKey) {
+      _groupNamesByKey.add("");
+    }
+
+    print(_groupNamesByKey);
   }
 }

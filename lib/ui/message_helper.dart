@@ -51,6 +51,10 @@ class MessageHelper {
     return concat([NPModule.entryName(moduleId), 'moved']);
   }
 
+  static String deleting(int moduleId) {
+    return 'deleting...';
+  }
+
   static String entryDeleted(int moduleId) {
     return concat([NPModule.entryName(moduleId), 'deleted']);
   }

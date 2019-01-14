@@ -6,6 +6,7 @@
   "nothing_selected": "nothing selected",
   "from": "from",
   "to": "to",
+  "quick_todo": "add to my to-do list",
   "norepeat": "no repeat",
   "daily": "repeat every day",
   "weekly": "repeat every week",
@@ -16,5 +17,6 @@
   "no_selection": "no selection",
   "no_content": "no content on this page",
   "no_event": "no event",
-  "no_subfolder": "no sub-folders"
+  "no_subfolder": "no sub-folders",
+  "favorite": "favorite"
 }

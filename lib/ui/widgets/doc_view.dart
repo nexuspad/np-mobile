@@ -16,6 +16,7 @@ class DocView {
   static ListView fullPage(NPDoc doc, BuildContext context) {
     List<Widget> docContent = new List();
     docContent.add(Text(doc.title, style: Theme.of(context).textTheme.headline));
+    docContent.add(UIHelper.divider());
     if (doc.note != null && doc.note.length > 0) {
       if (doc.format == TextFormat.html) {
         docContent.add(SingleChildScrollView(

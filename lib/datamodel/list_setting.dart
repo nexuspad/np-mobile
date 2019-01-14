@@ -29,6 +29,10 @@ class ListSetting {
       _folderId = data['folders'][0];
     }
 
+    if (data['includeEntriesInAllFolders'] != null) {
+      _includeEntriesInAllFolders = data['includeEntriesInAllFolders'];
+    }
+
     if (data['owner'] != null) {
       _ownerId = data['owner']['userId'];
     }

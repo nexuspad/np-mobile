@@ -13,6 +13,7 @@ import 'package:np_mobile/ui/blocs/organize_bloc.dart';
 import 'package:np_mobile/ui/entry_edit_screen.dart';
 import 'package:np_mobile/ui/folder_selector_screen.dart';
 import 'package:np_mobile/ui/ui_helper.dart';
+import 'package:np_mobile/ui/widgets/np_grouped_list.dart';
 import 'package:np_mobile/ui/widgets/np_timeline.dart';
 import 'package:np_mobile/ui/widgets/np_grid.dart';
 import 'package:np_mobile/ui/widgets/np_list.dart';
@@ -171,7 +172,9 @@ class OrganizerScreen extends StatelessWidget {
         if (snapshot.data != null) {
           ListSetting listSetting = snapshot.data.listSetting;
           print('>>>>>>>>>>>>>>>> stream data received $listSetting');
-          if (listSetting.moduleId == NPModule.PHOTO) {
+          if (listSetting.moduleId == NPModule.CONTACT) {
+            return new NPGroupedListWidget(listSetting);
+          } else if (listSetting.moduleId == NPModule.PHOTO) {
             return new NPGridWidget(listSetting);
           } else if (listSetting.moduleId == NPModule.CALENDAR) {
             return new NPTimelineWidget(listSetting);

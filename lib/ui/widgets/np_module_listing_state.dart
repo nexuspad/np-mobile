@@ -201,7 +201,7 @@ class NPModuleListingState<T extends BaseList> extends State<T> {
         }
 
         // remove the pin menu for contact and events
-        if (e.moduleId == NPModule.CONTACT || e.moduleId == NPModule.CALENDAR) {
+        if (e.moduleId == NPModule.CALENDAR) {
           menuItems.removeAt(0);
         }
 

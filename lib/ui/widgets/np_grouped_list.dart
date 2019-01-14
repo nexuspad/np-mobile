@@ -10,19 +10,19 @@ import 'package:np_mobile/ui/widgets/contact_view.dart';
 import 'package:np_mobile/ui/widgets/entry_view_util.dart';
 import 'package:np_mobile/ui/widgets/np_module_listing_state.dart';
 
-class NPListWidget extends BaseList {
-  NPListWidget(ListSetting setting) : super(setting) {
-    print('====> new NPListWidget construction for setting [$listSetting]');
+class NPGroupedListWidget extends BaseList {
+  NPGroupedListWidget(ListSetting setting) : super(setting) {
+    print('====> new NPGroupedListWidget construction for setting [$listSetting]');
   }
 
   @override
   State<StatefulWidget> createState() {
     print('create new state');
-    return _ListState();
+    return _GroupedListState();
   }
 }
 
-class _ListState extends NPModuleListingState<NPListWidget> {
+class _GroupedListState extends NPModuleListingState<NPGroupedListWidget> {
   @override
   Widget build(BuildContext context) {
     if (entryList == null || entryList.entryCount() == 0) {
@@ -32,27 +32,59 @@ class _ListState extends NPModuleListingState<NPListWidget> {
         return UIHelper.emptyContent(context, MessageHelper.getCmsValue("no_content"));
       }
     } else {
+      List<dynamic> items = new List();
+
+      int startingIndex = 0;
+      int length = entryList.entries.length;
+
+      for (String name in entryList.groupNamesByKey) {
+        items.add(name);
+        for (int i = startingIndex; i<length; i++) {
+          if (entryList.entries[i].groupName == name) {
+            items.add(i);
+          } else {
+            startingIndex = i;
+            break;
+          }
+        }
+      }
+
       ListView listView = ListView.separated(
         separatorBuilder: (context, index) => Divider(
               color: Colors.black12,
             ),
-        itemCount: entryList.entryCount() + 1,
+        itemCount: items.length,
         itemBuilder: (context, index) {
-          if (index == entryList.entryCount()) {
-            return buildProgressIndicator();
+          if (items[index] is String) {
+            return _buildGroupNameTile(items[index]);
           } else {
-            NPEntry e = entryList.entries[index];
-            return _buildTile(e, index);
+            NPEntry e = entryList.entries[items[index]];
+            return _buildEntryTile(e, items[index]);
           }
         },
-        controller: scrollController,
         physics: const AlwaysScrollableScrollPhysics(),
       );
       return listView;
     }
   }
 
-  ListTile _buildTile(NPEntry e, int index) {
+  ListTile _buildGroupNameTile(String name) {
+    return new ListTile(
+      title: new Row(
+        children: <Widget>[
+          new Expanded(
+            child: new Text(
+              name == NPEntry.PINNED_GROUP_NAME ? MessageHelper.getCmsValue("favorite") : name,
+              style: UIHelper.favoriteEntryTitle(context),
+            ),
+          ),
+        ],
+      ),
+      enabled: false,
+    );
+  }
+
+  ListTile _buildEntryTile(NPEntry e, int index) {
     return new ListTile(
       title: new Row(
         children: <Widget>[
@@ -61,7 +93,7 @@ class _ListState extends NPModuleListingState<NPListWidget> {
               e.title ?? 'no title',
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: e.pinned ? UIHelper.favoriteEntryTitle(context) : UIHelper.regularEntryTitle(context),
+              style: UIHelper.regularEntryTitle(context),
             ),
           ),
           entryPopMenu(context, e),

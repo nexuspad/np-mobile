@@ -139,6 +139,11 @@ class NPEvent extends NPEntry {
   set localEndTime(value) => _localEndTime = value;
 
   DateTime get startDateTime => _startDateTime;
+  set startDateTime(value) {
+    _startDateTime = value;
+    _localStartDate = UIHelper.npDateStr(_startDateTime);
+  }
+
   DateTime get endDateTime => _endDateTime;
   int get recurId => _recurId;
   String get timezone => _timezone;

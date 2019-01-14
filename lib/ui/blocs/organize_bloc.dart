@@ -80,7 +80,7 @@ class OrganizeBloc {
     }
   }
 
-  changeActiveEntry(NPEntry entry) {
+  updateActiveEntry(NPEntry entry) {
     _currentSetting._activeEntry = entry;
   }
 

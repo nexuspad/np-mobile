@@ -4,6 +4,8 @@ import 'package:np_mobile/datamodel/np_user.dart';
 import 'package:np_mobile/datamodel/timeline_key.dart';
 
 class NPEntry {
+  static const PINNED_GROUP_NAME = '.';
+
   int _moduleId;
   NPFolder _folder;
 
@@ -13,6 +15,7 @@ class NPEntry {
   List<String> _tags;
   String _colorCode;
   bool _pinned;
+  String _sortKey;
   DateTime _updateTime;
 
   NPUser _owner;
@@ -36,6 +39,7 @@ class NPEntry {
       _tags = List.from(otherEntry._tags);
     }
     _colorCode = otherEntry.colorCode;
+    _sortKey = otherEntry.sortKey;
     _pinned = otherEntry.pinned;
     _owner = NPUser.copy(otherEntry.owner);
     _updateTime = otherEntry.updateTime;
@@ -46,6 +50,7 @@ class NPEntry {
         _title = data['title'],
         _note = data['note'],
         _pinned = data['pinned'],
+        _sortKey = data['sortKey'] == null ? ' ' : data['sortKey'],
         _updateTime = DateTime.parse(data['updateTime']),
         _moduleId = data['moduleId'] {
 
@@ -101,6 +106,17 @@ class NPEntry {
 
   bool get pinned => _pinned;
   set pinned(value) => _pinned = value;
+
+  String get sortKey => _sortKey;
+  String get groupName {
+    if (_pinned) {
+      return PINNED_GROUP_NAME;
+    } else if (_sortKey != null && _sortKey.length > 0) {
+      return _sortKey[0].toUpperCase();
+    } else {
+      return "";
+    }
+  }
 
   DateTime get updateTime => _updateTime;
 

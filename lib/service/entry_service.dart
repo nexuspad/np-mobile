@@ -7,6 +7,7 @@ import 'package:np_mobile/datamodel/entry_list.dart';
 import 'package:np_mobile/datamodel/np_entry.dart';
 import 'package:np_mobile/datamodel/np_event.dart';
 import 'package:np_mobile/datamodel/np_folder.dart';
+import 'package:np_mobile/datamodel/np_module.dart';
 import 'package:np_mobile/service/list_service.dart';
 import 'package:np_mobile/service/np_error.dart';
 import 'package:np_mobile/service/account_service.dart';
@@ -71,15 +72,24 @@ class EntryService extends BaseService {
 
   Future<dynamic> togglePin(NPEntry entry) {
     var completer = new Completer();
+
     _updateAttribute(entry: entry, attribute: UpdateAttribute.pin).then((result) {
       NPEntry updatedEntry = result;
       if (updatedEntry.pinned) {
         ListService.activeServicesForModule(updatedEntry.moduleId, updatedEntry.owner.userId)
             .forEach((service) => service.updateEntries(List.filled(1, updatedEntry)));
       } else {
-        if (updatedEntry.folder.folderId != NPFolder.ROOT) {
-          ListService(moduleId: entry.moduleId, folderId: NPFolder.ROOT, ownerId: entry.owner.userId)
-              .deleteEntries(List.filled(1, updatedEntry));
+        if (updatedEntry.moduleId == NPModule.CONTACT) {
+          ListService.activeServicesForModule(updatedEntry.moduleId, updatedEntry.owner.userId)
+              .forEach((service) => service.updateEntries(List.filled(1, updatedEntry)));
+        } else {
+          if (updatedEntry.folder.folderId != NPFolder.ROOT) {
+            ListService(moduleId: entry.moduleId, folderId: NPFolder.ROOT, ownerId: entry.owner.userId)
+                .deleteEntries(List.filled(1, updatedEntry));
+          } else {
+            ListService.activeServicesForModule(updatedEntry.moduleId, updatedEntry.owner.userId)
+                .forEach((service) => service.updateEntries(List.filled(1, updatedEntry)));
+          }
         }
       }
       completer.complete(updatedEntry);

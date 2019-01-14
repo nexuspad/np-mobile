@@ -15,7 +15,11 @@ class BaseService {
   String getListEndPoint(
       {moduleId, folderId = NPFolder.ROOT, includeAllFolders = false, pageId = 1, startDate, endDate, ownerId = 0}) {
     if (startDate != null && endDate != null) {
-      return AppConfig().serviceHost + _setList(moduleId) + "?folder_id=all&start_date=$startDate&end_date=$endDate";
+      if (includeAllFolders) {
+        return AppConfig().serviceHost + _setList(moduleId) + "?folder_id=all&start_date=$startDate&end_date=$endDate";
+      } else {
+        return AppConfig().serviceHost + _setList(moduleId) + "?folder_id=$folderId&start_date=$startDate&end_date=$endDate";
+      }
     } else {
       if (includeAllFolders) {
         return AppConfig().serviceHost + _setList(moduleId) + "?folder_id=all&page=$pageId";

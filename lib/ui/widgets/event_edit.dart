@@ -249,6 +249,7 @@ class EventEdit {
       child: Row(
         children: <Widget>[
           Expanded(
+            flex: 6,
             child: Padding(
               padding: UIHelper.contentPadding(),
               child: TextFormField(
@@ -263,8 +264,29 @@ class EventEdit {
                   }
                   return null;
                 },
-                decoration: new InputDecoration(labelText: "quick to-do today", border: UnderlineInputBorder()),
+                decoration: new InputDecoration(labelText: MessageHelper.getCmsValue("quick_todo"), border: UnderlineInputBorder()),
               ),
+            ),
+          ),
+          Flexible(
+            child: InkWell(
+              child: new Text(
+                UIHelper.localDateDisplay(context, blankEvent.startDateTime),
+                textAlign: TextAlign.left,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+              onTap: () async {
+                final DateTime picked = await showDatePicker(
+                    context: context,
+                    initialDate: blankEvent.startDateTime,
+                    firstDate: DateTime.now().subtract(Duration(days: 28)),
+                    lastDate: DateTime(2050));
+                if (picked != null) {
+                  blankEvent.startDateTime = picked;
+                  submissionCallback();
+                }
+              },
             ),
           ),
           IconButton(
