@@ -38,7 +38,7 @@ class BookmarkEdit {
               maxLines: null,
               initialValue: bookmark.note,
               onSaved: (val) => bookmark.note = val,
-              decoration: new InputDecoration(labelText: "note", border: OutlineInputBorder()),
+              decoration: new InputDecoration(labelText: "note", border: UnderlineInputBorder()),
             ),
           ),
         ],

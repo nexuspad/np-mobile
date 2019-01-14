@@ -58,7 +58,7 @@ class ContactEdit {
         maxLines: null,
         initialValue: contact.note,
         onSaved: (val) => contact.note = val,
-        decoration: new InputDecoration(labelText: "note", border: OutlineInputBorder()),
+        decoration: new InputDecoration(labelText: "note", border: UnderlineInputBorder()),
       ),
     ));
 

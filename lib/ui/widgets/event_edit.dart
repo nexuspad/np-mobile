@@ -82,6 +82,9 @@ class EventEdit {
   }
 
   static List<Widget> _recurrence(BuildContext context, Recurrence recurrence, Function setStateCallback) {
+    if (recurrence == null) {
+      recurrence = new Recurrence();
+    }
     List<Widget> recurrenceFields = <Widget>[
       Padding(
         padding: UIHelper.contentPadding(),
