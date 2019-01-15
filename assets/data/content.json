@@ -1,6 +1,7 @@
 {
   "starting": "starting...",
   "no_implementation": "no implementation",
+  "no_html_editor": "currently cannot edit html formatted note",
   "empty_list": "empty",
   "no_subfolders": "no child folders",
   "nothing_selected": "nothing selected",

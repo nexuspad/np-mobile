@@ -129,10 +129,13 @@ class UIHelper {
   }
 
   static String npTimeStr(TimeOfDay timeOfDay) {
-    if (timeOfDay.minute < 10) {
-      return '${timeOfDay.hour}:0${timeOfDay.minute}';
+    int hour;
+    if (timeOfDay.period == DayPeriod.pm && timeOfDay.hour < 12) {
+      hour = timeOfDay.hour + 12;
+    } else {
+      hour = timeOfDay.hour;
     }
-    return '${timeOfDay.hour}:${timeOfDay.minute}';
+    return hour.toString().padLeft(2, '0') + ':' + timeOfDay.minute.toString().padLeft(2, '0');
   }
 
   static String localDateTimeDisplay(context, DateTime dateTime) {
