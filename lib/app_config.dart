@@ -16,7 +16,8 @@ class AppConfig {
   String _timezoneId;
   SharedPreferences _prefs;
 
-  double screenheight;
+  double _screenWidth;
+  double _screenHeight;
   bool _isSmallScreen = false;
 
   Future<dynamic> test() {
@@ -32,7 +33,7 @@ class AppConfig {
 
     _timezoneId = DateTime.now().timeZoneName;
 
-    _serviceHost = "https://lab.nexuspad.com/api";
+    _serviceHost = "https://api.nexuspad.com/api";
 
     if (_deviceId != null && _deviceId.isNotEmpty) {
       completer.complete(_instance);
@@ -75,12 +76,15 @@ class AppConfig {
   String get timezoneId => _timezoneId;
   set timezoneId(value) => _timezoneId = value;
 
+  double get screenWidth => _screenWidth;
+  double get screenHeight => _screenHeight;
+
   bool get isSmallScreen => _isSmallScreen;
+
   checkScreenSize(context) {
-    double width = MediaQuery.of(context).size.width;
-    double height = MediaQuery.of(context).size.height;
-    print('< device size: $width $height >');
-    if (width <= 400) {
+    _screenWidth = MediaQuery.of(context).size.width;
+    _screenHeight = MediaQuery.of(context).size.height;
+    if (_screenWidth <= 400) {
       _isSmallScreen = true;
     }
   }

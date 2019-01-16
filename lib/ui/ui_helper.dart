@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
+import 'package:np_mobile/app_config.dart';
 import 'package:np_mobile/datamodel/np_module.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -74,12 +75,24 @@ class UIHelper {
   }
 
   static Widget emptyContent(context, text) {
-    double top = MediaQuery.of(context).size.height / 3;
-    return ListView(
+    double top = 150;
+    if (AppConfig().screenHeight != null) {
+      top = AppConfig().screenHeight / 3;
+    } else {
+      try {
+        top = MediaQuery.of(context).size.height / 3;
+      } catch (error) {
+        print('UIHelper.emptyContent: $error');
+      }
+    }
+
+    return Padding(
       padding: EdgeInsets.only(top: top),
-      children: <Widget>[
-        Center(child: Text(text, textAlign: TextAlign.center, style: TextStyle(fontSize: _mediumFontSize))),
-      ],
+      child: Column(
+        children: <Widget>[
+          Center(child: Text(text, textAlign: TextAlign.center, style: TextStyle(fontSize: _mediumFontSize)))
+        ],
+      ),
     );
   }
 
@@ -211,7 +224,7 @@ class UIHelper {
         var currentState = Scaffold.of(context);
         if (currentState != null) {
           currentState.hideCurrentSnackBar();
-          currentState.showSnackBar(new SnackBar(content: new Text(text)));
+          currentState.showSnackBar(new SnackBar(content: new Text(text), duration: Duration(seconds: 3)));
         }
       } catch (error) {
         // nothing to do here.

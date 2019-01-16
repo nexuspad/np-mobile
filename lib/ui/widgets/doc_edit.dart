@@ -5,7 +5,8 @@ import 'package:np_mobile/ui/ui_helper.dart';
 
 class DocEdit {
   static Widget form(BuildContext context, GlobalKey<FormState> formKey, NPDoc doc) {
-    if (doc.format != TextFormat.plain) {
+    if (doc.format == null || doc.format != TextFormat.plain) {
+      print('....................${doc.format}');
       return UIHelper.emptyContent(context, MessageHelper.getCmsValue("no_html_editor"));
     }
     return new Form(
