@@ -35,10 +35,11 @@ dev_dependencies:
     sdk: flutter
   flutter_launcher_icons: "^0.7.0"
 
+# flutter packages pub run flutter_launcher_icons:main
 flutter_icons:
   android: true
   ios: true
-  image_path: "assets/icon/np-logo.png"
+  image_path: "assets/icon/np-logo-dark-bg.png"
   adaptive_icon_background: "#343a40"
 
 # The following section is specific to Flutter.
