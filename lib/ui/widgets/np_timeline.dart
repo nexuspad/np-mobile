@@ -65,7 +65,11 @@ class _CalendarWidgetState extends NPModuleListingState<NPTimelineWidget> {
           },
         ));
 
-        if (_quickToDoEvent == null) {
+        // the quick to-do form can update the start date in the event object, so we don't want to
+        // re-create the event object when the state is updated.
+        // however, we do need to make sure when folder is changed, the event object is updated.
+        // so yeah, the logic is quirky here.
+        if (_quickToDoEvent == null || _quickToDoEvent.folder.folderId != organizeBloc.getFolder().folderId) {
           _quickToDoEvent = NPEvent.newInFolder(NPFolder.copy(organizeBloc.getFolder()));
         }
 
