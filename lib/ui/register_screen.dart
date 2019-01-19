@@ -22,7 +22,7 @@ class RegisterFormState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     var registerBtn = new Container(
-      child: UIHelper.actionButton(context, "register", () {_submit();}),
+      child: UIHelper.actionButton(context, "create account", () {_submit();}),
       margin: new EdgeInsets.only(top: 20.0),
     );
 
@@ -109,7 +109,7 @@ class RegisterFormState extends State<RegisterScreen> {
     if (_formKey.currentState.validate()) {
       _loading = true;
       _formKey.currentState.save();
-      UIHelper.showMessageOnSnackBar(text: 'registering...');
+      UIHelper.showMessageOnSnackBar(text: 'creating account...');
       AccountService().register(_email, _password).then((dynamic result) {
         Account user = result;
         setState(() {

@@ -79,7 +79,7 @@ class LoginFormState extends State<LoginScreen> {
         title: Text('login to NexusApp'),
         actions: <Widget>[
           FlatButton(
-            child: Text('register'),
+            child: Text('create account'),
             textColor: Colors.white,
             onPressed: () {
               Navigator.pushNamed(context, 'register');

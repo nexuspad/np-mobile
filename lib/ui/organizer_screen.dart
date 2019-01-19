@@ -190,6 +190,8 @@ class OrganizerScreen extends StatelessWidget {
   Widget _buildActionButton(context) {
     return FloatingActionButton(
       child: const Icon(Icons.folder),
+      foregroundColor: Colors.blue,
+      backgroundColor: Colors.white,
       onPressed: () {
         Navigator.push(
           context,
