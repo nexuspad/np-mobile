@@ -265,7 +265,7 @@ class OrganizerScreen extends StatelessWidget {
             title: Text(AccountService().acctOwner.preference.timezone),
             onTap: () {},
           ),
-          UIHelper.actionButton(context, "logout", () {
+          UIHelper.actionButton(context, "log out", () {
             AppConfig().logout(context);
           }),
         ],

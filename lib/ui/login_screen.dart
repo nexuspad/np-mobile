@@ -22,7 +22,7 @@ class LoginFormState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     var loginBtn = new Container(
-      child: UIHelper.actionButton(context, "login", () {_submit();}),
+      child: UIHelper.actionButton(context, "log in", () {_submit();}),
       margin: new EdgeInsets.only(top: 20.0),
     );
 
@@ -76,7 +76,7 @@ class LoginFormState extends State<LoginScreen> {
 
     return new Scaffold(
       appBar: AppBar(
-        title: Text('login to NexusApp'),
+        title: Text('log in to NexusApp'),
         actions: <Widget>[
           FlatButton(
             child: Text('create account'),
