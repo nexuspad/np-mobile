@@ -89,7 +89,7 @@ class RegisterFormState extends State<RegisterScreen> {
 
     return new Scaffold(
       appBar: AppBar(
-        title: Text('register'),
+        title: Text('create an account'),
         backgroundColor: UIHelper.blackCanvas(),
       ),
       key: scaffoldKey,
