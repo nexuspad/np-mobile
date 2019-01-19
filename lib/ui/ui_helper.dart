@@ -17,7 +17,7 @@ class UIHelper {
   static var _regularTitle;
   static var _pinnedTitle;
 
-  static double _mediumFontSize = 20.0;
+  static double mediumFontSize = 20.0;
 
   static init(context) {
     _grayedTitle =
@@ -52,7 +52,7 @@ class UIHelper {
     MediaQueryData queryData = MediaQuery.of(context);
     print('size: ${queryData.size.shortestSide}');
     // Theme.of(context).textTheme.body1
-    return TextStyle(fontSize: _mediumFontSize);
+    return TextStyle(fontSize: mediumFontSize);
   }
 
   static grayedEntryTitle(context) {
@@ -74,30 +74,22 @@ class UIHelper {
     return const EdgeInsets.all(10.0);
   }
 
+  // this should only be used in list, grid, etc
+  // the ListView is to ensure scroll/refresh will work.
+  // this error might happen if used anywhere else:
+  // -> RenderViewport does not support returning intrinsic dimensions.
   static Widget emptyContent(context, text) {
-    double top = 150;
-    if (AppConfig().screenHeight != null) {
-      top = AppConfig().screenHeight / 3;
-    } else {
-      try {
-        top = MediaQuery.of(context).size.height / 3;
-      } catch (error) {
-        print('UIHelper.emptyContent: $error');
-      }
-    }
-
-    return Padding(
+    double top = MediaQuery.of(context).size.height / 3;
+    return ListView(
       padding: EdgeInsets.only(top: top),
-      child: Column(
-        children: <Widget>[
-          Center(child: Text(text, textAlign: TextAlign.center, style: TextStyle(fontSize: _mediumFontSize)))
-        ],
-      ),
+      children: <Widget>[
+        Center(child: Text(text, textAlign: TextAlign.center, style: TextStyle(fontSize: mediumFontSize))),
+      ],
     );
   }
 
   static Widget loadingContent(context, String text) {
-    return Center(child: Text(text, style: TextStyle(fontSize: _mediumFontSize)));
+    return Center(child: Text(text, style: TextStyle(fontSize: mediumFontSize)));
   }
 
   static Widget progressIndicator() {
@@ -197,7 +189,7 @@ class UIHelper {
   }
 
   static folderTreeNode() {
-    return Transform.rotate(angle: -math.pi / 4, child: Icon(FontAwesomeIcons.chevronLeft));
+    return Transform.rotate(angle: -math.pi / 4, child: Icon(FontAwesomeIcons.chevronLeft, size: 28,));
   }
 
   static DateTime firstDayOfWeek({DateTime aDate, int startOfWeek: DateTime.sunday}) {

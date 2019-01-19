@@ -28,7 +28,7 @@ class _GridState extends NPModuleListingState<BaseList> {
       if (loading) {
         return Center(child: buildProgressIndicator());
       } else {
-        return UIHelper.emptyContent(context, MessageHelper.getCmsValue("noContent"));
+        return UIHelper.emptyContent(context, MessageHelper.getCmsValue("no_content"));
       }
     } else {
       final Orientation orientation = MediaQuery.of(context).orientation;
@@ -121,7 +121,7 @@ class GridItem extends StatelessWidget {
             child: GridTileBar(
               backgroundColor: Colors.black45,
               title: _GridTitleText(entry.title),
-              subtitle: _GridTitleText(entry.note),
+//              subtitle: _GridTitleText(entry.note),
               trailing: Icon(
                 icon,
                 color: Colors.white,

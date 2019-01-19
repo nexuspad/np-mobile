@@ -246,7 +246,7 @@ class FolderSelectionState extends State<FolderSelectorScreen> {
     if (folder.folderId != NPFolder.ROOT) {
       if (_currentRootFolder.folderId == folder.folderId) {
         items.add(new IconButton(
-          icon: Icon(FontAwesomeIcons.levelUpAlt),
+          icon: Icon(FontAwesomeIcons.levelUpAlt, size:20),
           tooltip: 'go up',
           onPressed: () {
             setState(() {
@@ -298,7 +298,7 @@ class FolderSelectionState extends State<FolderSelectorScreen> {
           items.insert(
               1,
               new IconButton(
-                icon: Icon(FontAwesomeIcons.chevronCircleDown),
+                icon: Icon(FontAwesomeIcons.chevronCircleDown, size:20),
                 tooltip: 'open child folders',
                 onPressed: () {
                   setState(() {

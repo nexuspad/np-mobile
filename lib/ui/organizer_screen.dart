@@ -137,7 +137,7 @@ class OrganizerScreen extends StatelessWidget {
             return Transform.rotate(
               angle: -math.pi,
               child: IconButton(
-                icon: const Icon(FontAwesomeIcons.levelDownAlt),
+                icon: const Icon(FontAwesomeIcons.levelDownAlt, size: 20,),
                 onPressed: () {
                   FolderService folderService =
                       FolderService(moduleId: listSetting.moduleId, ownerId: listSetting.ownerId);

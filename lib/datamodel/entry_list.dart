@@ -284,7 +284,5 @@ class EntryList<T extends NPEntry> {
     if (hasInvalidSortKey) {
       _groupNamesByKey.add("");
     }
-
-    print(_groupNamesByKey);
   }
 }

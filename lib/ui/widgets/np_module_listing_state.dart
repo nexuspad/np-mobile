@@ -70,6 +70,7 @@ class NPModuleListingState<T extends BaseList> extends State<T> {
     ListSetting listQuery;
 
     if (listSetting.startDate != null && listSetting.endDate != null) {
+      // for timeline view (including calendar view), if a folder is specified, query using the folder id only.
       if (listSetting.folderId == NPFolder.ROOT) {
         listQuery = ListSetting.forTimelineQuery(listSetting.moduleId, listSetting.folderId,
             listSetting.includeEntriesInAllFolders, listSetting.ownerId, listSetting.startDate, listSetting.endDate);
@@ -78,8 +79,13 @@ class NPModuleListingState<T extends BaseList> extends State<T> {
             false, listSetting.ownerId, listSetting.startDate, listSetting.endDate);
       }
     } else {
-      listQuery = ListSetting.forPageQuery(listSetting.moduleId, listSetting.folderId,
-          listSetting.includeEntriesInAllFolders, listSetting.ownerId, listSetting.pageId);
+      if (listSetting.includeEntriesInAllFolders == true && listSetting.folderId == NPFolder.ROOT) {
+        listQuery = ListSetting.forPageQuery(listSetting.moduleId, listSetting.folderId,
+            listSetting.includeEntriesInAllFolders, listSetting.ownerId, listSetting.pageId);
+      } else {
+        listQuery = ListSetting.forPageQuery(listSetting.moduleId, listSetting.folderId,
+            false, listSetting.ownerId, listSetting.pageId);
+      }
     }
 
     if (listSetting.hasSearchQuery()) {
