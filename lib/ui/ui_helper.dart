@@ -70,6 +70,10 @@ class UIHelper {
     return _pinnedTitle;
   }
 
+  static noPadding() {
+    return const EdgeInsets.all(0.0);
+  }
+
   static contentPadding() {
     return const EdgeInsets.all(10.0);
   }

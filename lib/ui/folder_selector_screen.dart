@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:np_mobile/app_config.dart';
 import 'package:np_mobile/datamodel/folder_tree.dart';
 import 'package:np_mobile/datamodel/np_entry.dart';
 import 'package:np_mobile/datamodel/np_folder.dart';
@@ -151,7 +152,7 @@ class FolderSelectionState extends State<FolderSelectorScreen> {
         childFolderWidget = UIHelper.emptyContent(context, MessageHelper.getCmsValue("no_subfolder"));
       } else {
         childFolderWidget = ListView.separated(
-          padding: UIHelper.contentPadding(),
+          padding: AppConfig().isSmallScreen ? UIHelper.noPadding() : UIHelper.contentPadding(),
           separatorBuilder: (context, index) => Divider(
                 color: Colors.black12,
               ),
