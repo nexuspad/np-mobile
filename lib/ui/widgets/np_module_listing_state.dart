@@ -182,10 +182,11 @@ class NPModuleListingState<T extends BaseList> extends State<T> {
         }
       },
       itemBuilder: (BuildContext context) {
+        var pinnedText = e.pinned ? Text('unfavorite') : Text('favorite');
         List<PopupMenuEntry<EntryMenu>> menuItems = <PopupMenuEntry<EntryMenu>>[
-          const PopupMenuItem<EntryMenu>(
+          PopupMenuItem<EntryMenu>(
             value: EntryMenu.favorite,
-            child: Text('favorite'),
+            child: pinnedText,
           ),
           const PopupMenuItem<EntryMenu>(
             value: EntryMenu.update,
@@ -206,7 +207,7 @@ class NPModuleListingState<T extends BaseList> extends State<T> {
           menuItems.removeAt(1);
         }
 
-        // remove the pin menu for contact and events
+        // remove the pin menu for events
         if (e.moduleId == NPModule.CALENDAR) {
           menuItems.removeAt(0);
         }

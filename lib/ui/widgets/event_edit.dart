@@ -293,7 +293,7 @@ class EventEdit {
             ),
           ),
           IconButton(
-            icon: Icon(Icons.add_circle),
+            icon: Icon(Icons.add_circle, color: Colors.blue,),
             onPressed: () {
               if (formKey.currentState.validate()) {
                 formKey.currentState.save();

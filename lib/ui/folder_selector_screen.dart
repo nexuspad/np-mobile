@@ -200,7 +200,15 @@ class FolderSelectionState extends State<FolderSelectorScreen> {
       topWidget = Row(children: _titleAndActionItems(titleItems, _currentRootFolder));
     }
 
-    return Padding(padding: EdgeInsets.only(top: 15.0, left: 25.0, right: 20.0), child: topWidget);
+    var padding = EdgeInsets.only(top: 10.0, bottom: 10.0, left: 25.0, right: 20.0);
+    if (AppConfig().isSmallScreen) {
+      padding = EdgeInsets.only(top: 10.0, bottom: 10.0, left: 10.0, right: 20.0);
+    }
+
+    return Container(
+      color: Colors.black12,
+      child: Padding(padding: padding, child: topWidget),
+    );
   }
 
   ListTile _folderTile(NPFolder folder) {
