@@ -243,6 +243,19 @@ class OrganizerScreen extends StatelessWidget {
   }
 
   Drawer _drawer(context) {
+    var timezoneTile = ListTile(
+      title: Text(AppConfig().timezoneId),
+      onTap: () {},
+    );
+
+    if (AccountService().acctOwner.preference.timezone != AppConfig().timezoneId) {
+      timezoneTile = ListTile(
+        title: Text(AppConfig().timezoneId),
+        subtitle: Text('this is different from account preference'),
+        onTap: () {},
+      );
+    }
+
     return Drawer(
       // Add a ListView to the drawer. This ensures the user can scroll
       // through the options in the Drawer if there isn't enough vertical
@@ -261,10 +274,7 @@ class OrganizerScreen extends StatelessWidget {
             title: Text(AccountService().acctOwner.preference.locale),
             onTap: () {},
           ),
-          ListTile(
-            title: Text(AccountService().acctOwner.preference.timezone),
-            onTap: () {},
-          ),
+          timezoneTile,
           UIHelper.actionButton(context, "log out", () {
             AppConfig().logout(context);
           }),

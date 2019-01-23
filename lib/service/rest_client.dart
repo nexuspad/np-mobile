@@ -67,6 +67,7 @@ class RestClient {
       h['utoken'] = sessionId;
     }
     h['uuid'] = AppConfig().deviceId;
+
     return h;
   }
 }
