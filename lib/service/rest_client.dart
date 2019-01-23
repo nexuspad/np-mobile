@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:np_mobile/app_config.dart';
+import 'package:np_mobile/app_manager.dart';
 import 'package:np_mobile/service/np_error.dart';
 
 class RestClient {
@@ -66,7 +66,7 @@ class RestClient {
     if (sessionId != null) {
       h['utoken'] = sessionId;
     }
-    h['uuid'] = AppConfig().deviceId;
+    h['uuid'] = AppManager().deviceId;
 
     return h;
   }

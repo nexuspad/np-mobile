@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:np_mobile/app_config.dart';
+import 'package:np_mobile/app_manager.dart';
 import 'package:np_mobile/datamodel/entry_factory.dart';
 import 'package:np_mobile/datamodel/entry_list.dart';
 import 'package:np_mobile/datamodel/event_list.dart';
@@ -29,7 +29,7 @@ class EventService extends EntryService {
     }
 
     RestClient()
-        .postJson(url, json.encode(EntryServiceData(event)), AccountService().sessionId, AppConfig().deviceId)
+        .postJson(url, json.encode(EntryServiceData(event)), AccountService().sessionId, AppManager().deviceId)
         .then((dynamic result) {
       if (result['errorCode'] != null) {
         completer.completeError(new NPError(cause: result['errorCode']));
@@ -70,7 +70,7 @@ class EventService extends EntryService {
       url = getEventEndPoint(entryId: event.entryId, recurId: event.recurId, ownerId: event.owner.userId);
     }
 
-    RestClient().delete(url, AccountService().sessionId, AppConfig().deviceId).then((dynamic result) {
+    RestClient().delete(url, AccountService().sessionId, AppManager().deviceId).then((dynamic result) {
       if (result['errorCode'] != null) {
         completer.completeError(new NPError(cause: result['errorCode']));
       } else {
@@ -97,12 +97,12 @@ class EventService extends EntryService {
   String getEventEndPoint({String entryId, int recurId, String attribute, ownerId = 0}) {
     String url = setModuleBase(NPModule.CALENDAR);
     if (entryId != null) {
-      url = AppConfig().serviceHost + url + '/' + entryId;
+      url = AppManager().serviceHost + url + '/' + entryId;
       if (recurId != null && recurId > 0) {
         url += "/$recurId";
       }
     } else {
-      url = AppConfig().serviceHost + url;
+      url = AppManager().serviceHost + url;
     }
     if (attribute != null && attribute.isNotEmpty) {
       url = url + '/$attribute';

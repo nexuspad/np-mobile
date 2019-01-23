@@ -2,7 +2,7 @@ import "dart:async";
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:np_mobile/app_config.dart';
+import 'package:np_mobile/app_manager.dart';
 import 'package:np_mobile/datamodel/UploadFileWrapper.dart';
 import 'package:np_mobile/datamodel/list_setting.dart';
 import 'package:np_mobile/datamodel/np_doc.dart';

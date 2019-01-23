@@ -5,7 +5,7 @@ import 'package:async/async.dart';
 import 'package:http/http.dart' as http;
 import 'package:np_mobile/service/entry_service_data.dart';
 import 'package:path/path.dart';
-import 'package:np_mobile/app_config.dart';
+import 'package:np_mobile/app_manager.dart';
 import 'package:np_mobile/datamodel/entry_factory.dart';
 import 'package:np_mobile/datamodel/np_entry.dart';
 import 'package:np_mobile/datamodel/np_folder.dart';
@@ -58,7 +58,7 @@ class UploadService extends BaseService {
     String url = getUploadPlaceholder(uploadEntry.parentEntry.moduleId);
 
     RestClient()
-        .postJson(url, json.encode(EntryServiceData(uploadEntry)), AccountService().sessionId, AppConfig().deviceId)
+        .postJson(url, json.encode(EntryServiceData(uploadEntry)), AccountService().sessionId, AppManager().deviceId)
         .then((dynamic result) {
       if (result['errorCode'] != null) {
         completer.completeError(new NPError(cause: result['errorCode']));
@@ -112,7 +112,7 @@ class UploadService extends BaseService {
 
     String url = getUploadCompletionEndPoint(uploadEntry.parentEntry.moduleId, uploadEntry.entryId);
 
-    RestClient().postJson(url, null, AccountService().sessionId, AppConfig().deviceId).then((dynamic result) {
+    RestClient().postJson(url, null, AccountService().sessionId, AppManager().deviceId).then((dynamic result) {
       if (result['errorCode'] != null) {
         completer.completeError(new NPError(cause: result['errorCode']));
       } else {

@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:np_mobile/app_config.dart';
+import 'package:np_mobile/app_manager.dart';
 import 'package:np_mobile/service/FolderServiceData.dart';
 import 'package:np_mobile/service/account_service.dart';
 import 'package:np_mobile/service/np_error.dart';
@@ -81,7 +81,7 @@ class FolderService extends BaseService {
     String url = getFolderDetailEndPoint(folder.moduleId, folder.folderId);
 
     RestClient()
-        .postJson(url, json.encode(FolderServiceData(folder, action)), AccountService().sessionId, AppConfig().deviceId)
+        .postJson(url, json.encode(FolderServiceData(folder, action)), AccountService().sessionId, AppManager().deviceId)
         .then((dynamic result) {
       if (result['errorCode'] != null) {
         completer.completeError(new NPError(cause: result['errorCode']));
@@ -104,7 +104,7 @@ class FolderService extends BaseService {
 
     String url = getFolderDetailEndPoint(folder.moduleId, folder.folderId);
 
-    RestClient().delete(url, AccountService().sessionId, AppConfig().deviceId).then((dynamic result) {
+    RestClient().delete(url, AccountService().sessionId, AppManager().deviceId).then((dynamic result) {
       if (result['errorCode'] != null) {
         completer.completeError(new NPError(cause: result['errorCode']));
       } else {

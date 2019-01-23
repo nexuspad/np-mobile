@@ -3,7 +3,6 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
-import 'package:np_mobile/app_config.dart';
 import 'package:np_mobile/datamodel/np_module.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -11,7 +10,7 @@ class UIHelper {
   static GlobalKey<ScaffoldState> _globalScaffold;
 
   static final npDateFormatter = new DateFormat('yyyy-MM-dd');
-  static final npTimeFormatter = new DateFormat('yyyy-MM-dd');
+  static final npTimeFormatter = new DateFormat.Hm();
 
   static var _grayedTitle;
   static var _regularTitle;
@@ -145,6 +144,10 @@ class UIHelper {
       hour = timeOfDay.hour;
     }
     return hour.toString().padLeft(2, '0') + ':' + timeOfDay.minute.toString().padLeft(2, '0');
+  }
+
+  static String npTimeStrFromDateTime(DateTime dateTimeObj) {
+    return npTimeFormatter.format(dateTimeObj);
   }
 
   static String localDateTimeDisplay(context, DateTime dateTime) {

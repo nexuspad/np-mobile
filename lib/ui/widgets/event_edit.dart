@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:np_mobile/app_manager.dart';
 import 'package:np_mobile/datamodel/np_event.dart';
 import 'package:np_mobile/datamodel/np_module.dart';
 import 'package:np_mobile/datamodel/np_user.dart';
 import 'package:np_mobile/datamodel/recurrence.dart';
 import 'package:np_mobile/datamodel/reminder.dart';
+import 'package:np_mobile/service/account_service.dart';
 import 'package:np_mobile/service/event_service.dart';
 import 'package:np_mobile/ui/message_helper.dart';
 import 'package:np_mobile/ui/ui_helper.dart';
@@ -36,10 +38,11 @@ class EventEdit {
           initialTime: event.localStartTime != null ? _fromNpLocalTime(event.localStartTime) : null,
           selectDate: (DateTime date) {
             event.localStartDate = UIHelper.npDateStr(date);
-            print('start date set $date ${event.localStartDate}');
+            setStateCallback();
           },
           selectTime: (TimeOfDay time) {
             event.localStartTime = UIHelper.npTimeStr(time);
+            setStateCallback();
           },
         ),
       ),
@@ -52,12 +55,25 @@ class EventEdit {
           initialTime: event.localEndTime != null ? _fromNpLocalTime(event.localEndTime) : null,
           selectDate: (DateTime date) {
             event.localEndDate = UIHelper.npDateStr(date);
+            setStateCallback();
           },
           selectTime: (TimeOfDay time) {
             event.localEndTime = UIHelper.npTimeStr(time);
+            setStateCallback();
           },
         ),
       ),
+    ];
+
+    Widget tzField = _timezone(context, event, setStateCallback);
+    if (tzField != null) {
+      formFields.add(tzField);
+    }
+
+    formFields.addAll(_reminder(context, event.reminder, event.owner, setStateCallback));
+    formFields.addAll(_recurrence(context, event.recurrence, setStateCallback));
+
+    formFields.add(
       new Padding(
         padding: UIHelper.contentPadding(),
         child: new TextFormField(
@@ -67,11 +83,8 @@ class EventEdit {
           onSaved: (val) => event.note = val,
           decoration: new InputDecoration(labelText: "note", border: UnderlineInputBorder()),
         ),
-      ),
-    ];
-
-    formFields.addAll(_reminder(context, event.reminder, event.owner, setStateCallback));
-    formFields.addAll(_recurrence(context, event.recurrence, setStateCallback));
+      )
+    );
 
     return new Form(
       key: formKey,
@@ -79,6 +92,42 @@ class EventEdit {
         children: formFields,
       ),
     );
+  }
+
+  static Widget _timezone(BuildContext context, NPEvent event, Function setStateCallback) {
+    String deviceTimezone = AppManager().timezoneId;
+    String accountTimezone = AccountService().acctOwner.preference.timezone;
+    if (event.localStartTime != null) {
+      return Padding(
+        padding: UIHelper.contentPadding(),
+        child: Row(
+          children: <Widget>[
+            Text('timezone'),
+            UIHelper.formSpacer(),
+            Expanded(
+              child: DropdownButton<String>(
+                items: [
+                  DropdownMenuItem<String>(
+                    value: deviceTimezone,
+                    child: new Text(deviceTimezone),
+                  ),
+                  DropdownMenuItem<String>(
+                    value: accountTimezone,
+                    child: new Text(accountTimezone),
+                  ),
+                ],
+                value: event.timezone,
+                onChanged: (value) {
+                  event.timezone = value;
+                  setStateCallback();
+                },
+              ),
+            )
+          ],
+        ),
+      );
+    }
+    return null;
   }
 
   static List<Widget> _recurrence(BuildContext context, Recurrence recurrence, Function setStateCallback) {
@@ -267,7 +316,8 @@ class EventEdit {
                   }
                   return null;
                 },
-                decoration: new InputDecoration(labelText: MessageHelper.getCmsValue("quick_todo"), border: UnderlineInputBorder()),
+                decoration: new InputDecoration(
+                    labelText: MessageHelper.getCmsValue("quick_todo"), border: UnderlineInputBorder()),
               ),
             ),
           ),
@@ -293,7 +343,10 @@ class EventEdit {
             ),
           ),
           IconButton(
-            icon: Icon(Icons.add_circle, color: Colors.blue,),
+            icon: Icon(
+              Icons.add_circle,
+              color: Colors.blue,
+            ),
             onPressed: () {
               if (formKey.currentState.validate()) {
                 formKey.currentState.save();

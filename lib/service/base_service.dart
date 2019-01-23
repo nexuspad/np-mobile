@@ -1,44 +1,44 @@
-import 'package:np_mobile/app_config.dart';
+import 'package:np_mobile/app_manager.dart';
 import 'package:np_mobile/datamodel/np_module.dart';
 import 'package:np_mobile/datamodel/np_folder.dart';
 
 class BaseService {
   String getFolderServiceEndPoint(int moduleId, int folderId, int ownerId) {
-    String url = AppConfig().serviceHost + _setModule(moduleId) + '/folders';
+    String url = AppManager().serviceHost + _setModule(moduleId) + '/folders';
     return url;
   }
 
   String getFolderDetailEndPoint(moduleId, folderId) {
-    return AppConfig().serviceHost + setModuleBase(moduleId) + '/folder/$folderId';
+    return AppManager().serviceHost + setModuleBase(moduleId) + '/folder/$folderId';
   }
 
   String getListEndPoint(
       {moduleId, folderId = NPFolder.ROOT, includeAllFolders = false, pageId = 1, startDate, endDate, ownerId = 0}) {
     if (startDate != null && endDate != null) {
       if (includeAllFolders) {
-        return AppConfig().serviceHost + _setList(moduleId) + "?folder_id=all&start_date=$startDate&end_date=$endDate";
+        return AppManager().serviceHost + _setList(moduleId) + "?folder_id=all&start_date=$startDate&end_date=$endDate";
       } else {
-        return AppConfig().serviceHost + _setList(moduleId) + "?folder_id=$folderId&start_date=$startDate&end_date=$endDate";
+        return AppManager().serviceHost + _setList(moduleId) + "?folder_id=$folderId&start_date=$startDate&end_date=$endDate";
       }
     } else {
       if (includeAllFolders) {
-        return AppConfig().serviceHost + _setList(moduleId) + "?folder_id=all&page=$pageId";
+        return AppManager().serviceHost + _setList(moduleId) + "?folder_id=all&page=$pageId";
       }
-      return AppConfig().serviceHost + _setList(moduleId) + "?folder_id=$folderId&page=$pageId";
+      return AppManager().serviceHost + _setList(moduleId) + "?folder_id=$folderId&page=$pageId";
     }
   }
 
   String getSearchEndPoint({moduleId, folderId = NPFolder.ROOT, keyword, ownerId = 0}) {
-    String url = AppConfig().serviceHost + _setList(moduleId) + "?keyword=$keyword";
+    String url = AppManager().serviceHost + _setList(moduleId) + "?keyword=$keyword";
     return url;
   }
 
   String getEntryEndPoint({moduleId = NPModule.UNASSIGNED, String entryId, String attribute, ownerId = 0}) {
     String url = setModuleBase(moduleId);
     if (entryId != null) {
-      url = AppConfig().serviceHost + url + '/' + entryId;
+      url = AppManager().serviceHost + url + '/' + entryId;
     } else {
-      url = AppConfig().serviceHost + url;
+      url = AppManager().serviceHost + url;
     }
     if (attribute != null && attribute.isNotEmpty) {
       url = url + '/$attribute';
@@ -47,15 +47,15 @@ class BaseService {
   }
 
   String getUploadPlaceholder(int moduleId) {
-    return AppConfig().serviceHost + _setModule(moduleId) + '/placeholder';
+    return AppManager().serviceHost + _setModule(moduleId) + '/placeholder';
   }
 
   String getUploadCompletionEndPoint(int moduleId, String entryId) {
-    return AppConfig().serviceHost + _setModule(moduleId) + '/s3/$entryId';
+    return AppManager().serviceHost + _setModule(moduleId) + '/s3/$entryId';
   }
 
   String getAccountServiceEndPoint(String action) {
-    return AppConfig().serviceHost + '/user/' + action;
+    return AppManager().serviceHost + '/user/' + action;
   }
 
   String _setModule(int moduleId) {

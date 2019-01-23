@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:np_mobile/app_config.dart';
+import 'package:np_mobile/app_manager.dart';
 import 'package:np_mobile/datamodel/np_doc.dart';
 import 'package:np_mobile/ui/message_helper.dart';
 import 'package:np_mobile/ui/ui_helper.dart';
@@ -48,8 +48,8 @@ class DocEdit {
    */
   static Widget noImplementation(context, text) {
     double top = 150;
-    if (AppConfig().screenHeight != null) {
-      top = AppConfig().screenHeight / 3;
+    if (AppManager().screenHeight != null) {
+      top = AppManager().screenHeight / 3;
     } else {
       try {
         top = MediaQuery.of(context).size.height / 3;

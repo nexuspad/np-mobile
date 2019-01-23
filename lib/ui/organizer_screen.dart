@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:np_mobile/app_config.dart';
+import 'package:np_mobile/app_manager.dart';
 import 'package:np_mobile/datamodel/entry_factory.dart';
 import 'package:np_mobile/datamodel/list_setting.dart';
 import 'package:np_mobile/datamodel/np_folder.dart';
@@ -27,7 +27,7 @@ class OrganizerScreen extends StatelessWidget {
   @override
   Widget build(context) {
     final organizeBloc = ApplicationStateProvider.forOrganize(context);
-    AppConfig().checkScreenSize(context);
+    AppManager().checkScreenSize(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -244,14 +244,14 @@ class OrganizerScreen extends StatelessWidget {
 
   Drawer _drawer(context) {
     var timezoneTile = ListTile(
-      title: Text(AppConfig().timezoneId),
+      title: Text(AppManager().timezoneId),
       onTap: () {},
     );
 
-    if (AccountService().acctOwner.preference.timezone != AppConfig().timezoneId) {
+    if (AccountService().acctOwner.preference.timezone != AppManager().timezoneId) {
       timezoneTile = ListTile(
-        title: Text(AppConfig().timezoneId),
-        subtitle: Text('this is different from account preference'),
+        title: Text(AppManager().timezoneId),
+        subtitle: Text('your account timezone: ' + AccountService().acctOwner.preference.timezone),
         onTap: () {},
       );
     }
@@ -276,7 +276,7 @@ class OrganizerScreen extends StatelessWidget {
           ),
           timezoneTile,
           UIHelper.actionButton(context, "log out", () {
-            AppConfig().logout(context);
+            AppManager().logout(context);
           }),
         ],
       ),

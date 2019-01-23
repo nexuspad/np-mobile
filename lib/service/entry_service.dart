@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:np_mobile/app_config.dart';
+import 'package:np_mobile/app_manager.dart';
 import 'package:np_mobile/datamodel/EntryListFactory.dart';
 import 'package:np_mobile/datamodel/entry_factory.dart';
 import 'package:np_mobile/datamodel/entry_list.dart';
@@ -40,7 +40,7 @@ class EntryService extends BaseService {
     String url = getEntryEndPoint(moduleId: entry.moduleId, entryId: entry.entryId, ownerId: entry.owner.userId);
 
     RestClient()
-        .postJson(url, json.encode(EntryServiceData(entry)), AccountService().sessionId, AppConfig().deviceId)
+        .postJson(url, json.encode(EntryServiceData(entry)), AccountService().sessionId, AppManager().deviceId)
         .then((dynamic result) {
       if (result['errorCode'] != null) {
         completer.completeError(new NPError(cause: result['errorCode']));
@@ -131,7 +131,7 @@ class EntryService extends BaseService {
         ownerId: entry.owner.userId);
 
     RestClient()
-        .postJson(url, json.encode(EntryServiceData(entry)), AccountService().sessionId, AppConfig().deviceId)
+        .postJson(url, json.encode(EntryServiceData(entry)), AccountService().sessionId, AppManager().deviceId)
         .then((dynamic result) {
       if (result['errorCode'] != null) {
         completer.completeError(new NPError(cause: result['errorCode']));
@@ -151,7 +151,7 @@ class EntryService extends BaseService {
 
     String url = getEntryEndPoint(moduleId: entry.moduleId, entryId: entry.entryId, ownerId: entry.owner.userId);
 
-    RestClient().delete(url, AccountService().sessionId, AppConfig().deviceId).then((dynamic result) {
+    RestClient().delete(url, AccountService().sessionId, AppManager().deviceId).then((dynamic result) {
       if (result['errorCode'] != null) {
         completer.completeError(new NPError(cause: result['errorCode']));
       } else {

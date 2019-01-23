@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:np_mobile/app_config.dart';
+import 'package:np_mobile/app_manager.dart';
 import 'package:np_mobile/datamodel/account.dart';
 import 'package:np_mobile/service/account_service.dart';
 import 'package:np_mobile/ui/blocs/application_state_provider.dart';
@@ -44,7 +44,7 @@ class LandingScreenState extends State<LandingScreen> {
     return FutureBuilder<dynamic>(
       future: MessageHelper.loadContent(context),
       builder: (context, snapshot) {
-        AppConfig().checkScreenSize(context);
+        AppManager().checkScreenSize(context);
         UIHelper.init(context);
         if (_authenticated) {
           return Scaffold(

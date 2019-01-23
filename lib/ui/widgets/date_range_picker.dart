@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:np_mobile/app_config.dart';
+import 'package:np_mobile/app_manager.dart';
 import 'package:np_mobile/ui/ui_helper.dart';
 
 enum RangeMenu { today, week, month, year }
@@ -59,7 +59,7 @@ class _DateRangePickerState extends State<DateRangePicker> {
       ),
     ];
 
-    if (!AppConfig().isSmallScreen) {
+    if (!AppManager().isSmallScreen) {
       menuItems.add(
         Expanded(
           child: FlatButton(

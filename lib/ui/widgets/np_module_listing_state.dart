@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:np_mobile/app_config.dart';
+import 'package:np_mobile/app_manager.dart';
 import 'package:np_mobile/datamodel/entry_list.dart';
 import 'package:np_mobile/datamodel/list_setting.dart';
 import 'package:np_mobile/datamodel/np_entry.dart';
@@ -107,7 +107,7 @@ class NPModuleListingState<T extends BaseList> extends State<T> {
       });
       print('error retrieving list: $error');
       if (error is NPError && error.errorCode == NPError.INVALID_SESSION) {
-        AppConfig().logout(context);
+        AppManager().logout(context);
       }
     });
   }

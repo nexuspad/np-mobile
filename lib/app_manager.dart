@@ -8,10 +8,10 @@ import 'package:np_mobile/ui/ui_helper.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
-class AppConfig {
-  factory AppConfig() => _instance;
-  static AppConfig _instance = new AppConfig.internal();
-  AppConfig.internal();
+class AppManager {
+  factory AppManager() => _instance;
+  static AppManager _instance = new AppManager.internal();
+  AppManager.internal();
 
   String _timezoneId;
   SharedPreferences _prefs;

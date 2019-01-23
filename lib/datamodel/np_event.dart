@@ -1,4 +1,4 @@
-import 'package:np_mobile/app_config.dart';
+import 'package:np_mobile/app_manager.dart';
 import 'package:np_mobile/datamodel/np_entry.dart';
 import 'package:np_mobile/datamodel/np_folder.dart';
 import 'package:np_mobile/datamodel/np_module.dart';
@@ -28,7 +28,7 @@ class NPEvent extends NPEntry {
     moduleId = NPModule.EVENT;
     _startDateTime = DateTime.now();
     _localStartDate = UIHelper.npDateStr(_startDateTime);
-    _timezone = AppConfig().timezoneId;
+    _timezone = AppManager().timezoneId;
     _recurrence = new Recurrence();
     _reminder = new Reminder();
   }
@@ -64,21 +64,31 @@ class NPEvent extends NPEntry {
     _timezone = data['timezone'];
     _timezoneOffset = data['timezoneOffset'];
 
+    // -- build the start date time object
     String startDateTimeISO8601 = _localStartDate;
     if (localStartTime != null) {
       startDateTimeISO8601 += 'T' + _localStartTime + _timezoneOffset;
     }
     _startDateTime = DateTime.parse(startDateTimeISO8601);
 
+    // -- build the end date time object
     if (_localEndDate != null) {
       String endDateTimeISO8601 = _localEndDate;
-      if (!(_localEndTime?.isEmpty ?? true)) {
+      if (_localEndTime != null) {
         endDateTimeISO8601 += 'T' + _localEndTime + _timezoneOffset;
       }
       _endDateTime = DateTime.parse(endDateTimeISO8601);
     } else if (_localEndTime != null) {
       String endDateTimeISO8601 = _localStartDate + 'T' + _localEndTime + _timezoneOffset;
       _endDateTime = DateTime.parse(endDateTimeISO8601);
+    }
+
+    // -- update the local time string to timezone adjusted
+    if (_localStartTime != null) {
+      _localStartTime = UIHelper.npTimeStrFromDateTime(_startDateTime);
+    }
+    if (_localEndTime != null) {
+      _localEndTime = UIHelper.npTimeStrFromDateTime(_endDateTime);
     }
 
     if (data['recurrence'] != null) {

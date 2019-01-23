@@ -6,7 +6,7 @@ import 'package:np_mobile/service/base_service.dart';
 import 'package:np_mobile/service/user_service_data.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:np_mobile/datamodel/account.dart';
-import 'package:np_mobile/app_config.dart';
+import 'package:np_mobile/app_manager.dart';
 
 class AccountService extends BaseService {
   Account _currentUser;
@@ -17,7 +17,7 @@ class AccountService extends BaseService {
   AccountService.internal();
 
   mock() async {
-    await AppConfig().test();
+    await AppManager().test();
 
     var completer = new Completer();
 
@@ -33,7 +33,7 @@ class AccountService extends BaseService {
   }
 
   init() async {
-    await AppConfig().env();
+    await AppManager().env();
 
     var completer = new Completer();
 
@@ -78,7 +78,7 @@ class AccountService extends BaseService {
 
     RestClient()
         .postJson(getAccountServiceEndPoint("login"),
-            json.encode(UserServiceData(login, password, AppConfig().deviceId)), "", AppConfig().deviceId)
+            json.encode(UserServiceData(login, password, AppManager().deviceId)), "", AppManager().deviceId)
         .then((dynamic result) {
       if (result['errorCode'] != null) {
         completer.completeError(new NPError(cause: result['errorCode']));
@@ -99,7 +99,7 @@ class AccountService extends BaseService {
 
     RestClient()
         .postJson(getAccountServiceEndPoint("register"),
-        json.encode(UserServiceData.newRegistration(email, password, AppConfig().deviceId, AppConfig().timezoneId)), "", AppConfig().deviceId)
+        json.encode(UserServiceData.newRegistration(email, password, AppManager().deviceId, AppManager().timezoneId)), "", AppManager().deviceId)
         .then((dynamic result) {
       if (result['errorCode'] != null) {
         completer.completeError(new NPError(cause: result['errorCode']));
