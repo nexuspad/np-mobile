@@ -10,9 +10,9 @@ class RestClient {
   RestClient.internal();
   factory RestClient() => _instance;
 
-  Future<dynamic> get(String url, String sessionId) {
-    print('RestClient: make API get call at: ' + url);
-    return http.get(url, headers: _headers(sessionId)).then((http.Response response) {
+  Future<dynamic> get(String url, String sessionId, {timezone, locale}) {
+    print('RestClient: make API get call at: $url, sessionId: $sessionId, timezone: $timezone');
+    return http.get(url, headers: _headers(sessionId, timezone: timezone)).then((http.Response response) {
       final String res = response.body;
       final int statusCode = response.statusCode;
 
@@ -24,11 +24,11 @@ class RestClient {
     });
   }
 
-  Future<dynamic> postJson(String url, body, sessionId, uuid) {
+  Future<dynamic> postJson(String url, body, sessionId, uuid, {timezone, locale}) {
     print('RestClient: make API post call at: $url, sessionId: $sessionId, uuid: $uuid');
     print('RestClient: request payload: $body');
 
-    Map headers = _headers(sessionId);
+    Map headers = _headers(sessionId, timezone: timezone);
 
     return http
         .post(url, body: body, headers: headers, encoding: Encoding.getByName("utf-8"))
@@ -58,7 +58,7 @@ class RestClient {
     });
   }
 
-  Map<String, String> _headers(String sessionId) {
+  Map<String, String> _headers(String sessionId, {timezone, locale}) {
     Map<String, String> h = new Map();
 
     h['content-type'] = 'application/json';
@@ -67,6 +67,14 @@ class RestClient {
       h['utoken'] = sessionId;
     }
     h['uuid'] = AppManager().deviceId;
+
+    if (timezone != null) {
+      h['timezone'] = timezone;
+    }
+
+    if (locale != null) {
+      h['locale'] = locale;
+    }
 
     return h;
   }

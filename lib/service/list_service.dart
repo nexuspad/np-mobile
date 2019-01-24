@@ -7,6 +7,7 @@ import 'package:np_mobile/datamodel/list_setting.dart';
 import 'package:np_mobile/datamodel/np_entry.dart';
 import 'package:np_mobile/service/account_service.dart';
 import 'package:np_mobile/service/base_service.dart';
+import 'package:np_mobile/service/preference_service.dart';
 import 'package:np_mobile/service/rest_client.dart';
 
 class ListService extends BaseService {
@@ -95,7 +96,10 @@ class ListService extends BaseService {
       if (listQuery.hasSearchQuery()) {
         url = getSearchEndPoint(moduleId: _moduleId, folderId: _folderId, keyword: _keyword, ownerId: _ownerId);
       }
-      RestClient().get(url, AccountService().sessionId).then((dynamic result) {
+
+      String timezone = PreferenceService().activeTimezone;
+
+      RestClient().get(url, AccountService().sessionId, timezone: timezone).then((dynamic result) {
         if (_entryList == null) {
           _entryList = EntryListFactory.initFromJson(result['entryList']);
         } else {

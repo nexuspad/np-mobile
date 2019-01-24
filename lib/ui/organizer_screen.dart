@@ -8,6 +8,7 @@ import 'package:np_mobile/datamodel/np_folder.dart';
 import 'package:np_mobile/datamodel/np_module.dart';
 import 'package:np_mobile/service/account_service.dart';
 import 'package:np_mobile/service/folder_service.dart';
+import 'package:np_mobile/service/preference_service.dart';
 import 'package:np_mobile/ui/blocs/application_state_provider.dart';
 import 'package:np_mobile/ui/blocs/organize_bloc.dart';
 import 'package:np_mobile/ui/entry_edit_screen.dart';
@@ -243,16 +244,18 @@ class OrganizerScreen extends StatelessWidget {
   }
 
   Drawer _drawer(context) {
+    List<String> timezones = PreferenceService().timezones();
     var timezoneTile = ListTile(
-      title: Text(AppManager().deviceTimezone),
+      title: Text(timezones[0]),
       onTap: () {},
     );
 
-    if (AccountService().acctOwner.preference.timezone != AppManager().deviceTimezone) {
+    if (timezones.length > 1) {
       timezoneTile = ListTile(
-        title: Text(AppManager().deviceTimezone),
-        subtitle: Text('your account timezone: ' + AccountService().acctOwner.preference.timezone),
-        onTap: () {},
+        title: Text(timezones[0]),
+        subtitle: Text('your account timezone: ${timezones[1]}'),
+        onTap: () {
+        },
       );
     }
 

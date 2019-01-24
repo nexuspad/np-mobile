@@ -105,7 +105,7 @@ class AccountService extends BaseService {
 
     RestClient()
         .postJson(getAccountServiceEndPoint("register"),
-        json.encode(UserServiceData.newRegistration(email, password, AppManager().deviceId, AppManager().deviceTimezone)), "", AppManager().deviceId)
+        json.encode(UserServiceData.newRegistration(email, password, AppManager().deviceId, PreferenceService().deviceTimezone)), "", AppManager().deviceId)
         .then((dynamic result) {
       if (result['errorCode'] != null) {
         completer.completeError(new NPError(cause: result['errorCode']));

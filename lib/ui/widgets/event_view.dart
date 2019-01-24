@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:np_mobile/datamodel/np_event.dart';
+import 'package:np_mobile/service/preference_service.dart';
 import 'package:np_mobile/ui/ui_helper.dart';
 
 class EventView {
@@ -82,6 +83,9 @@ class EventView {
     }
 
     eventContent.add(ListTile(title: Row(children: timeInfo)));
+    eventContent.add(ListTile(title: Row(children: [
+      Text('timezone:'), UIHelper.formSpacer(), Text(PreferenceService().activeTimezone, style: TextStyle(fontWeight: FontWeight.bold))
+    ])));
     return eventContent;
   }
 

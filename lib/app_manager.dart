@@ -14,7 +14,6 @@ class AppManager {
   static AppManager _instance = new AppManager.internal();
   AppManager.internal();
 
-  String _deviceTimezone;
   SharedPreferences _prefs;
 
   double _screenWidth;
@@ -31,8 +30,6 @@ class AppManager {
 
   Future<dynamic> env() async {
     var completer = new Completer();
-
-    _deviceTimezone = DateTime.now().timeZoneName;
 
     _serviceHost = "https://api.nexuspad.com/api";
 
@@ -73,9 +70,6 @@ class AppManager {
   String get serviceHost => _serviceHost;
   set serviceHost(value) => _serviceHost = value;
   String get deviceId => _deviceId;
-
-  String get deviceTimezone => _deviceTimezone;
-  set deviceTimezone(value) => _deviceTimezone = value;
 
   double get screenWidth => _screenWidth;
   double get screenHeight => _screenHeight;

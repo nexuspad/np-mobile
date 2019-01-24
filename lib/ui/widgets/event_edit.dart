@@ -8,12 +8,14 @@ import 'package:np_mobile/datamodel/recurrence.dart';
 import 'package:np_mobile/datamodel/reminder.dart';
 import 'package:np_mobile/service/account_service.dart';
 import 'package:np_mobile/service/event_service.dart';
+import 'package:np_mobile/service/preference_service.dart';
 import 'package:np_mobile/ui/message_helper.dart';
 import 'package:np_mobile/ui/ui_helper.dart';
 import 'package:np_mobile/ui/widgets/date_time_picker.dart';
 
 class EventEdit {
   static Form form(BuildContext context, GlobalKey<FormState> formKey, NPEvent event, Function setStateCallback) {
+    print(event);
     List<Widget> formFields = <Widget>[
       new Padding(
         padding: UIHelper.contentPadding(),
@@ -95,9 +97,11 @@ class EventEdit {
   }
 
   static Widget _timezone(BuildContext context, NPEvent event, Function setStateCallback) {
-    String deviceTimezone = AppManager().deviceTimezone;
-    String accountTimezone = AccountService().acctOwner.preference.timezone;
-    if (event.localStartTime != null) {
+    List<String> timezones = PreferenceService().timezones();
+    if (event.localStartTime != null && timezones.length > 1) {
+      if (timezones.indexOf(event.timezone) == -1) {
+        timezones.insert(0, event.timezone);
+      }
       return Padding(
         padding: UIHelper.contentPadding(),
         child: Row(
@@ -108,12 +112,12 @@ class EventEdit {
               child: DropdownButton<String>(
                 items: [
                   DropdownMenuItem<String>(
-                    value: deviceTimezone,
-                    child: new Text(deviceTimezone),
+                    value: timezones[0],
+                    child: new Text(timezones[0]),
                   ),
                   DropdownMenuItem<String>(
-                    value: accountTimezone,
-                    child: new Text(accountTimezone),
+                    value: timezones[1],
+                    child: new Text(timezones[1]),
                   ),
                 ],
                 value: event.timezone,

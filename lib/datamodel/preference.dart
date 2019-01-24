@@ -2,6 +2,7 @@ class Preference {
   int _lastAccessedModule;
   String _locale;
   String _timezone;
+  String _timezoneAlias;
 
   Preference();
 
@@ -11,6 +12,7 @@ class Preference {
     }
     _locale = data['locale'];
     _timezone = data['timezoneName'];
+    _timezoneAlias = data['timezoneAlias'];
   }
 
   Map<String, dynamic> toJson() {
@@ -28,6 +30,7 @@ class Preference {
   set locale(value) => _locale = value;
   String get timezone => _timezone;
   set timezone(value) => _timezone = value;
+  String get timezoneAlias => _timezoneAlias;
 
   String toString() {
     return toJson().toString();
