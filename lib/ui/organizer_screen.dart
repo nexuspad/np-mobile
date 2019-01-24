@@ -244,13 +244,13 @@ class OrganizerScreen extends StatelessWidget {
 
   Drawer _drawer(context) {
     var timezoneTile = ListTile(
-      title: Text(AppManager().timezoneId),
+      title: Text(AppManager().deviceTimezone),
       onTap: () {},
     );
 
-    if (AccountService().acctOwner.preference.timezone != AppManager().timezoneId) {
+    if (AccountService().acctOwner.preference.timezone != AppManager().deviceTimezone) {
       timezoneTile = ListTile(
-        title: Text(AppManager().timezoneId),
+        title: Text(AppManager().deviceTimezone),
         subtitle: Text('your account timezone: ' + AccountService().acctOwner.preference.timezone),
         onTap: () {},
       );

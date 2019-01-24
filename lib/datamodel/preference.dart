@@ -1,5 +1,3 @@
-import 'package:np_mobile/datamodel/np_module.dart';
-
 class Preference {
   int _lastAccessedModule;
   String _locale;

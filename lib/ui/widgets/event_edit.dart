@@ -95,7 +95,7 @@ class EventEdit {
   }
 
   static Widget _timezone(BuildContext context, NPEvent event, Function setStateCallback) {
-    String deviceTimezone = AppManager().timezoneId;
+    String deviceTimezone = AppManager().deviceTimezone;
     String accountTimezone = AccountService().acctOwner.preference.timezone;
     if (event.localStartTime != null) {
       return Padding(

@@ -28,7 +28,7 @@ class NPEvent extends NPEntry {
     moduleId = NPModule.EVENT;
     _startDateTime = DateTime.now();
     _localStartDate = UIHelper.npDateStr(_startDateTime);
-    _timezone = AppManager().timezoneId;
+    _timezone = AppManager().deviceTimezone;
     _recurrence = new Recurrence();
     _reminder = new Reminder();
   }

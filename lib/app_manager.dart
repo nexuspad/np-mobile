@@ -8,12 +8,13 @@ import 'package:np_mobile/ui/ui_helper.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
+/// handles device related data and initial bootstrapping and data clean up.
 class AppManager {
   factory AppManager() => _instance;
   static AppManager _instance = new AppManager.internal();
   AppManager.internal();
 
-  String _timezoneId;
+  String _deviceTimezone;
   SharedPreferences _prefs;
 
   double _screenWidth;
@@ -31,7 +32,7 @@ class AppManager {
   Future<dynamic> env() async {
     var completer = new Completer();
 
-    _timezoneId = DateTime.now().timeZoneName;
+    _deviceTimezone = DateTime.now().timeZoneName;
 
     _serviceHost = "https://api.nexuspad.com/api";
 
@@ -73,8 +74,8 @@ class AppManager {
   set serviceHost(value) => _serviceHost = value;
   String get deviceId => _deviceId;
 
-  String get timezoneId => _timezoneId;
-  set timezoneId(value) => _timezoneId = value;
+  String get deviceTimezone => _deviceTimezone;
+  set deviceTimezone(value) => _deviceTimezone = value;
 
   double get screenWidth => _screenWidth;
   double get screenHeight => _screenHeight;

@@ -58,6 +58,10 @@ class BaseService {
     return AppManager().serviceHost + '/user/' + action;
   }
 
+  String getCmsEndPoint(String subject) {
+    return AppManager().serviceHost + '/cms/' + subject;
+  }
+
   String _setModule(int moduleId) {
     switch (moduleId) {
       case NPModule.CONTACT:

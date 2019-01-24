@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:np_mobile/service/np_error.dart';
+import 'package:np_mobile/service/preference_service.dart';
 import 'package:np_mobile/service/rest_client.dart';
 import 'package:np_mobile/service/base_service.dart';
 import 'package:np_mobile/service/user_service_data.dart';
@@ -16,6 +17,7 @@ class AccountService extends BaseService {
   factory AccountService() => _instance;
   AccountService.internal();
 
+  /// for unit test only
   mock() async {
     await AppManager().test();
 
@@ -57,6 +59,9 @@ class AccountService extends BaseService {
             completer.completeError(new NPError(cause: result['errorCode']));
           } else {
             _currentUser = Account.fromJson(result['user']);
+            if (_currentUser.sessionId != null) {
+              PreferenceService().update(_currentUser.preference);
+            }
             completer.complete(_currentUser);
           }
         }).catchError((error) {
@@ -85,6 +90,7 @@ class AccountService extends BaseService {
       } else {
         _currentUser = Account.fromJson(result['user']);
         _saveSessionIdLocally();
+        PreferenceService().update(_currentUser.preference);
         completer.complete(_currentUser);
       }
     }).catchError((error) {
@@ -99,7 +105,7 @@ class AccountService extends BaseService {
 
     RestClient()
         .postJson(getAccountServiceEndPoint("register"),
-        json.encode(UserServiceData.newRegistration(email, password, AppManager().deviceId, AppManager().timezoneId)), "", AppManager().deviceId)
+        json.encode(UserServiceData.newRegistration(email, password, AppManager().deviceId, AppManager().deviceTimezone)), "", AppManager().deviceId)
         .then((dynamic result) {
       if (result['errorCode'] != null) {
         completer.completeError(new NPError(cause: result['errorCode']));
