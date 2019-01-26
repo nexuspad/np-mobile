@@ -300,7 +300,7 @@ class EventEdit {
                   decoration: new InputDecoration(
                     labelText: "",
                     border: UnderlineInputBorder(),
-                    contentPadding: new EdgeInsets.symmetric(vertical: 0.0, horizontal: 0.0),
+                    contentPadding: new EdgeInsets.symmetric(vertical: 0.0, horizontal: 5.0),
                   )),
             ),
             UIHelper.formSpacer(),
