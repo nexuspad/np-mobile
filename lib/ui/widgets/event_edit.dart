@@ -283,7 +283,7 @@ class EventEdit {
       recurrenceFields.add(Padding(
         padding: UIHelper.formFieldPadding(),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.end,
           children: <Widget>[
             UIHelper.formSpacer(),
