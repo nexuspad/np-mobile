@@ -75,18 +75,16 @@ class EventEdit {
     formFields.addAll(_reminder(context, event.reminder, event.owner, setStateCallback));
     formFields.addAll(_recurrence(context, event.recurrence, setStateCallback));
 
-    formFields.add(
-      new Padding(
-        padding: UIHelper.contentPadding(),
-        child: new TextFormField(
-          keyboardType: TextInputType.multiline,
-          maxLines: null,
-          initialValue: event.note,
-          onSaved: (val) => event.note = val,
-          decoration: new InputDecoration(labelText: "note", border: UnderlineInputBorder()),
-        ),
-      )
-    );
+    formFields.add(new Padding(
+      padding: UIHelper.contentPadding(),
+      child: new TextFormField(
+        keyboardType: TextInputType.multiline,
+        maxLines: null,
+        initialValue: event.note,
+        onSaved: (val) => event.note = val,
+        decoration: new InputDecoration(labelText: "note", border: UnderlineInputBorder()),
+      ),
+    ));
 
     return new Form(
       key: formKey,
@@ -134,13 +132,130 @@ class EventEdit {
     return null;
   }
 
+  static List<Widget> _reminder(BuildContext context, Reminder reminder, NPUser owner, Function setStateCallback) {
+    bool enabled = reminder != null && reminder.deliverType != null;
+
+    List<Widget> reminderFields = <Widget>[
+      Padding(
+        padding: UIHelper.formFieldPadding(),
+        child: Row(
+          children: <Widget>[
+            Text('reminder'),
+            Switch(
+              value: enabled,
+              onChanged: (bool value) {
+                if (value == false) {
+                  reminder.deliverType = null;
+                } else {
+                  if (reminder == null) {
+                    reminder = new Reminder();
+                  }
+                  if (owner.email != null) {
+                    reminder.deliverAddress = owner.email;
+                  }
+                  reminder.deliverType = DeliverType.EMAIL;
+                  reminder.timeUnit = ReminderTimeUnit.MINUTE;
+                  reminder.timeValue = 30;
+                }
+                setStateCallback(reminder);
+              },
+            )
+          ],
+        ),
+      ),
+    ];
+
+    if (enabled) {
+      List<int> reminderTimeValues = new List();
+      if (reminder.timeUnit == ReminderTimeUnit.MINUTE) {
+        reminderTimeValues.addAll([15, 30, 45]);
+      } else {
+        reminderTimeValues.addAll([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
+      }
+
+      // make sure the value is set to one of the selection
+      if (reminderTimeValues.indexOf(reminder.timeValue) == -1) {
+        reminder.timeValue = reminderTimeValues[0];
+      }
+
+      reminderFields.addAll(<Widget>[
+        Padding(
+          padding: UIHelper.formFieldPadding(),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              UIHelper.formSpacer(),
+              Flexible(
+                child: TextFormField(
+                    keyboardType: TextInputType.emailAddress,
+                    initialValue: reminder.deliverAddress,
+                    onSaved: (val) => reminder.deliverAddress = val,
+                    decoration: new InputDecoration(labelText: "reminder email", border: UnderlineInputBorder())),
+              ),
+            ],
+          ),
+        ),
+        Padding(
+          padding: UIHelper.formFieldPadding(),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              UIHelper.formSpacer(),
+              Flexible(
+                fit: FlexFit.loose,
+                child: Padding(
+                  padding: const EdgeInsets.only(right: 10.0),
+                  child: DropdownButton<String>(
+                    items: reminderTimeValues.map((int value) {
+                      return new DropdownMenuItem<String>(
+                        value: value.toString(),
+                        child: new Text(value.toString()),
+                      );
+                    }).toList(),
+                    value: reminder.timeValue.toString(),
+                    onChanged: (value) {
+                      reminder.timeValue = int.parse(value);
+                      setStateCallback(reminder);
+                    },
+                  ),
+                ),
+              ),
+              Flexible(
+                child: Padding(
+                  padding: const EdgeInsets.only(right: 0.0),
+                  child: DropdownButton<String>(
+                    items: ReminderTimeUnit.values.map((ReminderTimeUnit value) {
+                      String valueInStr = value.toString().split(".").last;
+                      return new DropdownMenuItem<String>(
+                        value: valueInStr,
+                        child: new Text(MessageHelper.getCmsValue(valueInStr)),
+                      );
+                    }).toList(),
+                    value: reminder.timeUnit.toString().split('.').last,
+                    onChanged: (value) {
+                      reminder.setTimeUnit(value);
+                      setStateCallback(reminder);
+                    },
+                  ),
+                ),
+              ),
+              Text('before it starts'),
+            ],
+          ),
+        )
+      ]);
+    }
+
+    return reminderFields;
+  }
+
   static List<Widget> _recurrence(BuildContext context, Recurrence recurrence, Function setStateCallback) {
     if (recurrence == null) {
       recurrence = new Recurrence();
     }
     List<Widget> recurrenceFields = <Widget>[
       Padding(
-        padding: UIHelper.contentPadding(),
+        padding: const EdgeInsets.only(top: 10.0, left: 10.0, right: 10.0),
         child: Row(
           children: <Widget>[
             Expanded(
@@ -155,7 +270,7 @@ class EventEdit {
                 value: recurrence.pattern.toString().split('.').last,
                 onChanged: (value) {
                   recurrence.pattern = value;
-                  setStateCallback();
+                  setStateCallback(recurrence);
                 },
               ),
             )
@@ -166,11 +281,14 @@ class EventEdit {
 
     if (recurrence.pattern != Pattern.NOREPEAT) {
       recurrenceFields.add(Padding(
-        padding: UIHelper.contentPadding(),
+        padding: UIHelper.formFieldPadding(),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.end,
           children: <Widget>[
+            UIHelper.formSpacer(),
             Text('repeat'),
+            UIHelper.formSpacer(),
             Flexible(
               child: TextFormField(
                   keyboardType: TextInputType.number,
@@ -179,21 +297,34 @@ class EventEdit {
                   ],
                   initialValue: recurrence.recurrenceTimes == null ? '' : recurrence.recurrenceTimes.toString(),
                   onSaved: (val) => recurrence.recurrenceTimes = int.parse(val),
-                  decoration: new InputDecoration(labelText: "", border: UnderlineInputBorder())),
+                  decoration: new InputDecoration(
+                    labelText: "",
+                    border: UnderlineInputBorder(),
+                    contentPadding: new EdgeInsets.symmetric(vertical: 0.0, horizontal: 0.0),
+                  )),
             ),
+            UIHelper.formSpacer(),
             Text('times'),
-            Expanded(
-              child: Center(child: Text('OR')),
-            ),
-            Text('end by'),
+          ],
+        ),
+      ));
+
+      recurrenceFields.add(Padding(
+        padding: const EdgeInsets.only(top: 15.0, left: 10.0, right: 10.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            UIHelper.formSpacer(),
+            Text('or end by'),
+            UIHelper.formSpacer(),
             Flexible(
               child: InkWell(
                 child: new Text(
                   UIHelper.localDateDisplay(context, recurrence.endDate),
-                  style: Theme.of(context).textTheme.title,
                   textAlign: TextAlign.left,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
+                  style: TextStyle(color: Colors.blue),
                 ),
                 onTap: () async {
                   final DateTime picked = await showDatePicker(
@@ -213,89 +344,6 @@ class EventEdit {
     }
 
     return recurrenceFields;
-  }
-
-  static List<Widget> _reminder(BuildContext context, Reminder reminder, NPUser owner, Function setStateCallback) {
-    bool enabled = reminder != null && reminder.deliverType != null;
-
-    List<Widget> reminderFields = <Widget>[
-      Padding(
-        padding: UIHelper.contentPadding(),
-        child: Row(
-          children: <Widget>[
-            Text('reminder'),
-            Switch(
-              value: enabled,
-              onChanged: (bool value) {
-                if (value == false) {
-                  reminder.deliverType = null;
-                } else {
-                  if (owner.email != null) {
-                    reminder.deliverAddress = owner.email;
-                  }
-                  reminder.deliverType = DeliverType.EMAIL;
-                  reminder.timeUnit = ReminderTimeUnit.MINUTE;
-                  reminder.timeValue = 30;
-                }
-                setStateCallback();
-              },
-            )
-          ],
-        ),
-      ),
-    ];
-
-    if (enabled) {
-      reminderFields.addAll(<Widget>[
-        Padding(
-          padding: UIHelper.contentPadding(),
-          child: Row(
-            children: <Widget>[
-              Expanded(
-                child: TextFormField(
-                    keyboardType: TextInputType.emailAddress,
-                    initialValue: reminder.deliverAddress,
-                    onSaved: (val) => reminder.deliverAddress = val,
-                    decoration: new InputDecoration(labelText: "reminder email", border: UnderlineInputBorder())),
-              ),
-            ],
-          ),
-        ),
-        Padding(
-          padding: UIHelper.contentPadding(),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              Flexible(
-                child: TextFormField(
-                    keyboardType: TextInputType.number,
-                    initialValue: reminder.timeValue.toString(),
-                    onSaved: (val) => reminder.timeValue = int.parse(val),
-                    decoration: new InputDecoration(labelText: "", border: UnderlineInputBorder())),
-              ),
-              Flexible(
-                child: DropdownButton<String>(
-                  items: ReminderTimeUnit.values.map((ReminderTimeUnit value) {
-                    String valueInStr = value.toString().split(".").last;
-                    return new DropdownMenuItem<String>(
-                      value: valueInStr,
-                      child: new Text(MessageHelper.getCmsValue(valueInStr)),
-                    );
-                  }).toList(),
-                  value: reminder.timeUnit.toString().split('.').last,
-                  onChanged: (value) {
-                    reminder.timeUnit = value;
-                  },
-                ),
-              ),
-              Text('before it starts'),
-            ],
-          ),
-        )
-      ]);
-    }
-
-    return reminderFields;
   }
 
   static Widget quickTodo(

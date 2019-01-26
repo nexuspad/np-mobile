@@ -13,8 +13,9 @@
   "weekly": "repeat every week",
   "monthly": "repeat every month",
   "yearly": "repeat every year",
-  "day": "days",
-  "minute": "minutes",
+  "day": "days",        // event reminder
+  "minute": "minutes",  // event reminder
+  "hour": "hours",      // event reminder
   "no_selection": "no selection",
   "no_content": "no content on this page",
   "no_event": "no event",

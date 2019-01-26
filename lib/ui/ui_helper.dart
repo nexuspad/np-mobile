@@ -77,6 +77,10 @@ class UIHelper {
     return const EdgeInsets.all(10.0);
   }
 
+  static formFieldPadding() {
+    return const EdgeInsets.only(left: 10.0, right: 10.0);
+  }
+
   // this should only be used in list, grid, etc
   // the ListView is to ensure scroll/refresh will work.
   // this error might happen if used anywhere else:

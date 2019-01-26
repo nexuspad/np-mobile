@@ -14,7 +14,7 @@ class CmsService extends BaseService {
   Future<dynamic> getTimezoneHelperData() {
     var completer = new Completer();
 
-    String url = getEntryEndPoint();
+    String url = getCmsEndPoint('timezonenames');
     RestClient().get(url, null).then((dynamic result) {
       // the response should be a Map
       _timezoneHelperData = result;

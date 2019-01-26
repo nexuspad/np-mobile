@@ -26,7 +26,7 @@ class NPDoc extends NPEntry {
 
   NPDoc.fromJson(Map<String, dynamic> data) : super.fromJson(data) {
     if (data['format'] != null) {
-      if (data['format'].toString().toLowerCase() == 'plain') {
+      if (data['format'].toString().toLowerCase() == 'text') {
         _format = TextFormat.plain;
       } else if (data['format'].toString().toLowerCase() == 'html') {
         _format = TextFormat.html;

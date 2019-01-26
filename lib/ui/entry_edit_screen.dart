@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:np_mobile/app_manager.dart';
 import 'package:np_mobile/datamodel/np_entry.dart';
+import 'package:np_mobile/datamodel/np_event.dart';
 import 'package:np_mobile/datamodel/np_module.dart';
+import 'package:np_mobile/datamodel/recurrence.dart';
+import 'package:np_mobile/datamodel/reminder.dart';
 import 'package:np_mobile/service/entry_service.dart';
 import 'package:np_mobile/service/event_service.dart';
 import 'package:np_mobile/service/np_error.dart';
@@ -75,8 +78,13 @@ class _EntryFormState extends State<EntryEditScreen> {
           setState(() {});
         });
       case NPModule.CALENDAR:
-        return EventEdit.form(context, _formKey, _entry, () {
+        return EventEdit.form(context, _formKey, _entry, (updatedObj) {
           setState(() {
+            if (updatedObj is Reminder) {
+              (_entry as NPEvent).reminder = updatedObj;
+            } else if (updatedObj is Recurrence) {
+              (_entry as NPEvent).recurrence = updatedObj;
+            }
           });
         });
       case NPModule.DOC:

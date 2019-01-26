@@ -97,8 +97,6 @@ class EntryList<T extends NPEntry> {
       }
     }
 
-    print('....${entry.sortKey}');
-
     var moduleObj;
     switch (entry.moduleId) {
       case NPModule.CONTACT:

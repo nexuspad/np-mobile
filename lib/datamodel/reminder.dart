@@ -1,5 +1,5 @@
 enum DeliverType {EMAIL}
-enum ReminderTimeUnit {DAY, MINUTE}
+enum ReminderTimeUnit {DAY, HOUR, MINUTE}
 class Reminder {
   String _eventId;
   int _reminderId;
@@ -68,6 +68,16 @@ class Reminder {
   set timeUnit(value) => _timeUnit = value;
   int get timeValue => _timeValue;
   set timeValue(value) => _timeValue = value;
+
+  void setTimeUnit(String value) {
+    if (value.toLowerCase() == 'minute' || value.toLowerCase() == 'minutes') {
+      _timeUnit = ReminderTimeUnit.MINUTE;
+    } else if (value.toLowerCase() == 'hour' || value.toLowerCase() == 'hours') {
+      _timeUnit = ReminderTimeUnit.HOUR;
+    } else if (value.toLowerCase() == 'day' || value.toLowerCase() == 'days') {
+      _timeUnit = ReminderTimeUnit.DAY;
+    }
+  }
 
   String toString() {
     return '[Reminder] ' + toJson().toString();

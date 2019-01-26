@@ -4,12 +4,17 @@ import 'package:np_mobile/ui/ui_helper.dart';
 
 class ContactEdit {
   static Form form(BuildContext context, GlobalKey<FormState> formKey, NPContact contact, Function setStateCallback) {
-    if (contact.phones == null) {
+    if (contact.phones == null || contact.phones.length == 0) {
       contact.phones = new List<Map>();
       contact.phones.add(new Map());
+    } else {
+      // add an empty entry so UI shows a new phone field
+      contact.phones.add(new Map());
     }
-    if (contact.emails == null) {
+    if (contact.emails == null || contact.emails.length == 0) {
       contact.emails = new List<Map>();
+      contact.emails.add(new Map());
+    } else {
       contact.emails.add(new Map());
     }
     if (contact.address == null) {
