@@ -50,12 +50,13 @@ class _DateRangePickerState extends State<DateRangePicker> {
     _endDate = widget.endDate;
 
     List<Widget> menuItems = <Widget>[
+      UIHelper.formSpacer(),
       Expanded(
-        child:
-            Padding(padding: EdgeInsets.all(8.0), child: _inputDropdown('from', DateFormat.yMMMd().format(_startDate))),
+        child:_inputDropdown('from', DateFormat.yMMMd().format(_startDate)),
       ),
+      UIHelper.formSpacer(),
       Expanded(
-        child: Padding(padding: EdgeInsets.all(8.0), child: _inputDropdown('to', DateFormat.yMMMd().format(_endDate))),
+        child: _inputDropdown('to', DateFormat.yMMMd().format(_endDate)),
       ),
     ];
 
