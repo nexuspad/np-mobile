@@ -12,6 +12,7 @@ class App extends StatelessWidget {
   Widget build(context) {
     return ApplicationStateProvider(
       child: MaterialApp(
+        debugShowCheckedModeBanner: false,
         initialRoute: '/',
         routes: {
           '/': (context) => LandingScreen(),
