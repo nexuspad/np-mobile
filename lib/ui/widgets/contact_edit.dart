@@ -8,6 +8,12 @@ class ContactEdit {
       contact.phones = new List<Map>();
       contact.phones.add(new Map());
     } else {
+      // remove all the invalid entries
+      for (int i = contact.phones.length - 1; i >= 0; i--) {
+        if (contact.phones[i]['value'] == null || contact.phones[i]['value'].isEmpty) {
+          contact.phones.removeAt(i);
+        }
+      }
       // add an empty entry so UI shows a new phone field
       contact.phones.add(new Map());
     }
@@ -15,6 +21,12 @@ class ContactEdit {
       contact.emails = new List<Map>();
       contact.emails.add(new Map());
     } else {
+      // remove all the invalid entries
+      for (int i = contact.emails.length - 1; i >= 0; i--) {
+        if (contact.emails[i]['value'] == null || contact.emails[i]['value'].isEmpty) {
+          contact.emails.removeAt(i);
+        }
+      }
       contact.emails.add(new Map());
     }
     if (contact.address == null) {
@@ -85,6 +97,7 @@ class ContactEdit {
             decoration: new InputDecoration(labelText: "first name", border: UnderlineInputBorder()),
           ),
         ),
+        UIHelper.formSpacer(),
         Expanded(
           flex: 1,
           child: TextFormField(
@@ -139,6 +152,10 @@ class ContactEdit {
           Expanded(
             child: TextFormField(
               keyboardType: TextInputType.phone,
+              onFieldSubmitted: (val) {
+                phones[index]['value'] = val;
+                setStateCallback();
+              },
               controller: controller,
               onSaved: (val) => _addToPhoneList(contact, index, val),
             ),
@@ -155,13 +172,13 @@ class ContactEdit {
           ),
           phoneNumber != null && phoneNumber.isNotEmpty
               ? IconButton(
-                  icon: Icon(Icons.remove_circle),
+                  icon: Icon(Icons.remove_circle, color: Colors.red,),
                   onPressed: () {
                     phones.removeAt(index);
                     setStateCallback();
                   })
               : IconButton(
-                  icon: Icon(Icons.add_circle),
+                  icon: Icon(Icons.add_circle, color: Colors.blue,),
                   onPressed: () {
                     if (controller.value.text.isNotEmpty) {
                       phones.insert(phones.length - 1, {'value': controller.value.text});
@@ -208,19 +225,23 @@ class ContactEdit {
           Expanded(
             child: TextFormField(
               keyboardType: TextInputType.emailAddress,
+              onFieldSubmitted: (val) {
+                emails[index]['value'] = val;
+                setStateCallback();
+              },
               controller: controller,
               onSaved: (val) => _addToEmailList(contact, index, val),
             ),
           ),
           emailAddress != null && emailAddress.isNotEmpty
               ? IconButton(
-                  icon: Icon(Icons.remove_circle),
+                  icon: Icon(Icons.remove_circle, color: Colors.red,),
                   onPressed: () {
                     emails.removeAt(index);
                     setStateCallback();
                   })
               : IconButton(
-                  icon: Icon(Icons.add_circle),
+                  icon: Icon(Icons.add_circle, color: Colors.blue,),
                   onPressed: () {
                     if (controller.value.text.isNotEmpty) {
                       emails.insert(emails.length - 1, {'value': controller.value.text});
