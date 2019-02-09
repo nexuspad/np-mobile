@@ -23,6 +23,7 @@ class DocView {
         docContent.add(SingleChildScrollView(
             child: new HtmlView(
                 data: doc.note,
+                baseURL: '',
                 onLaunchFail: (url) {
                   // optional, type Function
                   print("launch $url failed");
