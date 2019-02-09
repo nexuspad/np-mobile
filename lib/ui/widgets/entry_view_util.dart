@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:np_mobile/datamodel/np_entry.dart';
 import 'package:np_mobile/datamodel/np_module.dart';
-import 'package:np_mobile/ui/widgets/bookmark_view.dart';
-import 'package:np_mobile/ui/widgets/contact_view.dart';
-import 'package:np_mobile/ui/widgets/doc_view.dart';
-import 'package:np_mobile/ui/widgets/event_view.dart';
-import 'package:np_mobile/ui/widgets/photo_view.dart';
+import 'package:np_mobile/ui/widgets/bookmark_view_util.dart';
+import 'package:np_mobile/ui/widgets/contact_view_util.dart';
+import 'package:np_mobile/ui/widgets/doc_view_util.dart';
+import 'package:np_mobile/ui/widgets/event_view_util.dart';
+import 'package:np_mobile/ui/widgets/photo_view_util.dart';
 
 class EntryViewUtil {
   static dynamic inList(NPEntry entry, BuildContext context) {

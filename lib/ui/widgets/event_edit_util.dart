@@ -12,6 +12,7 @@ import 'package:np_mobile/service/preference_service.dart';
 import 'package:np_mobile/ui/message_helper.dart';
 import 'package:np_mobile/ui/ui_helper.dart';
 import 'package:np_mobile/ui/widgets/date_time_picker.dart';
+import 'package:np_mobile/ui/widgets/tag_form_widget.dart';
 
 class EventEdit {
   static Form form(BuildContext context, GlobalKey<FormState> formKey, NPEvent event, Function setStateCallback) {
@@ -85,6 +86,8 @@ class EventEdit {
         decoration: new InputDecoration(labelText: "note", border: UnderlineInputBorder()),
       ),
     ));
+
+    formFields.add(TagForm(context, event, false, true),);
 
     return new Form(
       key: formKey,

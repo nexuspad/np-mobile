@@ -14,6 +14,7 @@ import 'package:np_mobile/ui/folder_selector_screen.dart';
 import 'package:np_mobile/ui/message_helper.dart';
 import 'package:np_mobile/ui/ui_helper.dart';
 import 'package:np_mobile/ui/widgets/base_list.dart';
+import 'package:np_mobile/ui/widgets/tag_form_util.dart';
 
 class NPModuleListingState<T extends BaseList> extends State<T> {
   ListService _listService;
@@ -167,6 +168,10 @@ class NPModuleListingState<T extends BaseList> extends State<T> {
               builder: (context) => EntryEditScreen(context, e),
             ),
           );
+        } else if (selected == EntryMenu.tag) {
+          showDialog(context: context, builder: (BuildContext context) {
+            return TagFormUtil.dialog(context, e);
+          });
         } else if (selected == EntryMenu.move) {
           Navigator.push(
             context,
@@ -189,6 +194,10 @@ class NPModuleListingState<T extends BaseList> extends State<T> {
             child: pinnedText,
           ),
           const PopupMenuItem<EntryMenu>(
+            value: EntryMenu.tag,
+            child: Text('tag'),
+          ),
+          const PopupMenuItem<EntryMenu>(
             value: EntryMenu.update,
             child: Text('update'),
           ),
@@ -204,7 +213,7 @@ class NPModuleListingState<T extends BaseList> extends State<T> {
 
         // remove the update option for photos
         if (e.moduleId == NPModule.PHOTO) {
-          menuItems.removeAt(1);
+          menuItems.removeAt(2);
         }
 
         // remove the pin menu for events

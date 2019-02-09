@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:np_mobile/datamodel/np_bookmark.dart';
 import 'package:np_mobile/ui/ui_helper.dart';
+import 'package:np_mobile/ui/widgets/tag_form_widget.dart';
 
 class BookmarkView {
   static Row subTitleInList(NPBookmark bookmark, BuildContext context) {
@@ -61,6 +62,8 @@ class BookmarkView {
     if (bookmark.note != null) {
       bookmarkContent.add(SingleChildScrollView(child: new Text(bookmark.note)));
     }
+
+    bookmarkContent.add(TagForm(context, bookmark, true, false));
 
     return ListView(shrinkWrap: true, padding: UIHelper.contentPadding(), children: bookmarkContent);
   }
