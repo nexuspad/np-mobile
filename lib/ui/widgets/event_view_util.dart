@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:np_mobile/datamodel/np_event.dart';
 import 'package:np_mobile/service/preference_service.dart';
 import 'package:np_mobile/ui/ui_helper.dart';
+import 'package:np_mobile/ui/widgets/tag_form_widget.dart';
 
 class EventView {
   static Row subTitleInList(NPEvent event, BuildContext context) {
@@ -158,6 +159,8 @@ class EventView {
             Text(PreferenceService().activeTimezone, style: TextStyle(fontWeight: FontWeight.bold))
           ])));
     }
+
+    eventContent.add(TagForm(context, event, true, false));
 
     return eventContent;
   }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:np_mobile/datamodel/np_contact.dart';
 import 'package:np_mobile/ui/ui_helper.dart';
+import 'package:np_mobile/ui/widgets/tag_form_widget.dart';
 
 class ContactView {
   static Row subTitleInList(NPContact contact, BuildContext context) {
@@ -158,6 +159,8 @@ class ContactView {
     if (contact.note != null) {
       contactContent.add(Text(contact.note));
     }
+
+    contactContent.add(TagForm(context, contact, true, false));
 
     return ListView(padding: UIHelper.contentPadding(), children: contactContent);
   }

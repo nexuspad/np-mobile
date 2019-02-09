@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:np_mobile/datamodel/np_bookmark.dart';
 import 'package:np_mobile/ui/ui_helper.dart';
+import 'package:np_mobile/ui/widgets/tag_form_widget.dart';
 
 class BookmarkEdit {
   static Form form(BuildContext context, GlobalKey<FormState> formKey, NPBookmark bookmark) {
@@ -41,6 +42,7 @@ class BookmarkEdit {
               decoration: new InputDecoration(labelText: "note", border: UnderlineInputBorder()),
             ),
           ),
+          TagForm(context, bookmark, false, true),
         ],
       ),
     );

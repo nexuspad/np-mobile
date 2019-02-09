@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:np_mobile/datamodel/np_contact.dart';
 import 'package:np_mobile/ui/ui_helper.dart';
+import 'package:np_mobile/ui/widgets/tag_form_widget.dart';
 
 class ContactEdit {
   static Form form(BuildContext context, GlobalKey<FormState> formKey, NPContact contact, Function setStateCallback) {
@@ -78,6 +79,8 @@ class ContactEdit {
         decoration: new InputDecoration(labelText: "note", border: UnderlineInputBorder()),
       ),
     ));
+
+    formFields.add(TagForm(context, contact, false, true),);
 
     return Form(
       key: formKey,

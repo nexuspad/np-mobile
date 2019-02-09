@@ -3,6 +3,7 @@ import 'package:np_mobile/app_manager.dart';
 import 'package:np_mobile/datamodel/np_doc.dart';
 import 'package:np_mobile/ui/message_helper.dart';
 import 'package:np_mobile/ui/ui_helper.dart';
+import 'package:np_mobile/ui/widgets/tag_form_widget.dart';
 
 class DocEdit {
   static Widget form(BuildContext context, GlobalKey<FormState> formKey, NPDoc doc) {
@@ -37,6 +38,7 @@ class DocEdit {
               decoration: new InputDecoration(labelText: "note", border: UnderlineInputBorder()),
             ),
           ),
+          TagForm(context, doc, false, true),
         ],
       ),
     );

@@ -1,5 +1,4 @@
 import 'package:np_mobile/datamodel/np_folder.dart';
-import 'package:np_mobile/datamodel/np_module.dart';
 import 'package:np_mobile/datamodel/np_user.dart';
 import 'package:np_mobile/datamodel/timeline_key.dart';
 
@@ -12,7 +11,7 @@ class NPEntry {
   String _entryId;
   String _title;
   String _note;
-  List<String> _tags;
+  Set<String> _tags;
   String _colorCode;
   bool _pinned;
   String _sortKey;
@@ -36,7 +35,7 @@ class NPEntry {
     _title = otherEntry.title;
     _note = otherEntry.note;
     if (otherEntry._tags != null) {
-      _tags = List.from(otherEntry._tags);
+      _tags = Set.from(otherEntry._tags);
     }
     _colorCode = otherEntry.colorCode;
     _sortKey = otherEntry.sortKey;
@@ -60,6 +59,12 @@ class NPEntry {
 
     if (data['owner'] != null) {
       _owner = NPUser.fromJson(data['owner']);
+    }
+
+    if (data['tags'] != null) {
+      _tags = new Set();
+      List tagList = data['tags'];
+      tagList.forEach((t) => _tags.add(t));
     }
   }
 
@@ -86,10 +91,23 @@ class NPEntry {
     }
 
     if (_tags != null && _tags.length > 0) {
-      data['tags'] = _tags;
+      data['tags'] = _tags.toList();
     }
 
     return data;
+  }
+
+  void addTag(String tag) {
+    if (_tags == null) {
+      _tags = new Set();
+    }
+    _tags.add(tag);
+  }
+
+  void removeTag(String tag) {
+    if (_tags != null) {
+      _tags.remove(tag);
+    }
   }
 
   int get moduleId => _moduleId;
@@ -126,6 +144,8 @@ class NPEntry {
   }
 
   String get colorCode => _colorCode;
+
+  Set<String> get tags => _tags;
 
   String get tagsInString {
     return "";

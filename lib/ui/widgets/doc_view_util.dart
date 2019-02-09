@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_html_view/flutter_html_view.dart';
 import 'package:np_mobile/datamodel/np_doc.dart';
 import 'package:np_mobile/ui/ui_helper.dart';
+import 'package:np_mobile/ui/widgets/tag_form_widget.dart';
 
 class DocView {
   static Text subTitleInList(NPDoc doc, BuildContext context) {
@@ -30,6 +31,8 @@ class DocView {
         docContent.add(SingleChildScrollView(child: new Text(doc.note, style: UIHelper.bodyFont(context))));
       }
     }
+
+    docContent.add(TagForm(context, doc, true, false));
 
     return ListView(shrinkWrap: true, padding: UIHelper.contentPadding(), children: docContent);
   }

@@ -12,8 +12,8 @@ import 'package:np_mobile/ui/ui_helper.dart';
 import 'package:np_mobile/ui/widgets/base_list.dart';
 import 'package:np_mobile/ui/widgets/date_range_picker.dart';
 import 'package:np_mobile/ui/widgets/entry_view_util.dart';
-import 'package:np_mobile/ui/widgets/event_edit.dart';
-import 'package:np_mobile/ui/widgets/event_view.dart';
+import 'package:np_mobile/ui/widgets/event_edit_util.dart';
+import 'package:np_mobile/ui/widgets/event_view_util.dart';
 import 'package:np_mobile/ui/widgets/np_module_listing_state.dart';
 
 class NPTimelineWidget extends BaseList {

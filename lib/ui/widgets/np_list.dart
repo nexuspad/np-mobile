@@ -6,7 +6,7 @@ import 'package:np_mobile/ui/entry_view_screen.dart';
 import 'package:np_mobile/ui/message_helper.dart';
 import 'package:np_mobile/ui/widgets/base_list.dart';
 import 'package:np_mobile/ui/ui_helper.dart';
-import 'package:np_mobile/ui/widgets/contact_view.dart';
+import 'package:np_mobile/ui/widgets/contact_view_util.dart';
 import 'package:np_mobile/ui/widgets/entry_view_util.dart';
 import 'package:np_mobile/ui/widgets/np_module_listing_state.dart';
 

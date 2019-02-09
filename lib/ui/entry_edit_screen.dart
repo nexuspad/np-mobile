@@ -10,10 +10,10 @@ import 'package:np_mobile/service/event_service.dart';
 import 'package:np_mobile/service/np_error.dart';
 import 'package:np_mobile/ui/message_helper.dart';
 import 'package:np_mobile/ui/ui_helper.dart';
-import 'package:np_mobile/ui/widgets/bookmark_edit.dart';
-import 'package:np_mobile/ui/widgets/contact_edit.dart';
-import 'package:np_mobile/ui/widgets/doc_edit.dart';
-import 'package:np_mobile/ui/widgets/event_edit.dart';
+import 'package:np_mobile/ui/widgets/bookmark_edit_util.dart';
+import 'package:np_mobile/ui/widgets/contact_edit_util.dart';
+import 'package:np_mobile/ui/widgets/doc_edit_util.dart';
+import 'package:np_mobile/ui/widgets/event_edit_util.dart';
 
 class EntryEditScreen extends StatefulWidget {
   final NPEntry _entry;
