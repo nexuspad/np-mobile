@@ -18,14 +18,19 @@ import 'package:np_mobile/service/rest_client.dart';
 
 class UploadService extends BaseService {
   Future<dynamic> uploadToFolder(NPFolder parentEntryFolder, File file, Function progressCallback) {
-    String url = getUploadPlaceholder(parentEntryFolder.moduleId);
     FileStat stat = file.statSync();
     NPUpload uploadEntryPlaceholder =
         NPUpload.placeHolder(parentEntryFolder, basename(file.path), stat.size, parentEntryFolder.owner);
-    return _uploadFile(url, uploadEntryPlaceholder, file, progressCallback);
+    return _uploadFile(uploadEntryPlaceholder, file, progressCallback);
   }
 
-  Future<dynamic> _uploadFile(String url, NPUpload uploadEntryPlaceholder, File file, Function progressCallback) {
+  Future<dynamic> attachToEntry(NPEntry entry, File file, Function progressCallback) {
+    FileStat stat = file.statSync();
+    NPUpload uploadEntryPlaceholder = NPUpload.placeHolderForAttachment(entry, basename(file.path), stat.size, entry.owner);
+    return _uploadFile(uploadEntryPlaceholder, file, progressCallback);
+  }
+
+  Future<dynamic> _uploadFile(NPUpload uploadEntryPlaceholder, File file, Function progressCallback) {
     EntryService entryService = new EntryService();
 
     var completer = new Completer();
@@ -55,7 +60,8 @@ class UploadService extends BaseService {
   Future<dynamic> _uploadPlaceHolder(NPUpload uploadEntry) {
     var completer = new Completer();
 
-    String url = getUploadPlaceholder(uploadEntry.parentEntry.moduleId);
+    // if entryId is not null, the endpoint will be for attachment
+    String url = getUploadPlaceholder(uploadEntry.parentEntry.moduleId, uploadEntry.parentEntry.entryId);
 
     RestClient()
         .postJson(url, json.encode(EntryServiceData(uploadEntry)), AccountService().sessionId, AppManager().deviceId)

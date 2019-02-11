@@ -49,7 +49,6 @@ class UIHelper {
 
   static bodyFont(context) {
     MediaQueryData queryData = MediaQuery.of(context);
-    print('size: ${queryData.size.shortestSide}');
     // Theme.of(context).textTheme.body1
     return TextStyle(fontSize: mediumFontSize);
   }

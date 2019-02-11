@@ -69,6 +69,14 @@ class NPUpload extends NPEntry {
     }
   }
 
+  NPUpload.placeHolderForAttachment(NPEntry parentEntry, String uploadFileName, int fileSize, NPUser user) {
+    moduleId = NPModule.UPLOAD;
+    _fileName = uploadFileName;
+    _fileSize = fileSize;
+    owner = user;
+    _parentEntry = parentEntry;
+  }
+
   String get originalName => _originalName;
   String get fileName => _fileName;
   String get fileType => _fileType;

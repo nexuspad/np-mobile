@@ -46,7 +46,7 @@ class _TagFormState extends State<TagForm> {
                       )),
                   IconButton(
                     icon: Icon(
-                      Icons.add_circle,
+                      Icons.add,
                       color: Colors.blue,
                     ),
                     onPressed: () {

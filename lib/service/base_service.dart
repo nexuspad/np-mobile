@@ -46,7 +46,10 @@ class BaseService {
     return url;
   }
 
-  String getUploadPlaceholder(int moduleId) {
+  String getUploadPlaceholder(int moduleId, String entryId) {
+    if (entryId != null) {
+      return AppManager().serviceHost + _setModule(moduleId) + '/$entryId/placeholder';
+    }
     return AppManager().serviceHost + _setModule(moduleId) + '/placeholder';
   }
 

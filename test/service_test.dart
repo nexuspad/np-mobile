@@ -146,7 +146,7 @@ void main() {
     }
     print('test uploading ${fileEntities.length} files');
     NPFolder folder = NPFolder(NPModule.DOC, NPFolder.ROOT, AccountService().acctOwner);
-    await UploadWorker(folder, fileEntities, null).start().then((result) {
+    await UploadWorker(folder: folder, files: fileEntities, progressCallback: null).start().then((result) {
       if (result != null) {
         List<UploadFileWrapper> _fileEntities = result;
         for (UploadFileWrapper fw in _fileEntities) {

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:np_mobile/datamodel/np_entry.dart';
+import 'package:np_mobile/datamodel/np_module.dart';
+import 'package:np_mobile/service/entry_service.dart';
+import 'package:np_mobile/ui/blocs/application_state_provider.dart';
 import 'package:np_mobile/ui/widgets/entry_view_util.dart';
 
 const double _kMinFlingVelocity = 400.0;
@@ -20,27 +23,47 @@ class _EntryViewWidgetState extends State<EntryViewWidget> with SingleTickerProv
   Offset _normalizedOffset;
   double _previousScale;
 
+  NPEntry _entry;
+
   @override
   void initState() {
     super.initState();
+    _entry = widget.entry;
+    if (_entry.moduleId == NPModule.DOC) {
+      EntryService().get(NPModule.DOC, _entry.entryId, _entry.owner.userId).then((doc) {
+        setState(() {
+          _entry = doc;
+        });
+      });
+    }
     _controller = AnimationController(vsync: this)..addListener(_handleFlingAnimation);
   }
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onScaleStart: _handleOnScaleStart,
-      onScaleUpdate: _handleOnScaleUpdate,
-      onScaleEnd: _handleOnScaleEnd,
-      child: ClipRect(
-        child: Transform(
-          transform: Matrix4.identity()
-            ..translate(_offset.dx, _offset.dy)
-            ..scale(_scale),
-          child: EntryViewUtil.fullPage(widget.entry, context),
+    if (_entry.moduleId == NPModule.PHOTO) {
+      return GestureDetector(
+        onScaleStart: _handleOnScaleStart,
+        onScaleUpdate: _handleOnScaleUpdate,
+        onScaleEnd: _handleOnScaleEnd,
+        child: ClipRect(
+          child: Transform(
+            transform: Matrix4.identity()
+              ..translate(_offset.dx, _offset.dy)
+              ..scale(_scale),
+            child: EntryViewUtil.fullPage(_entry, context, (entry) {
+              setState(() {
+              });
+            }),
+          ),
         ),
-      ),
-    );
+      );
+    } else {
+      return EntryViewUtil.fullPage(_entry, context, (entry) {
+        setState(() {
+        });
+      });
+    }
   }
 
   @override

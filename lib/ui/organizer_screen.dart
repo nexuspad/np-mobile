@@ -13,6 +13,7 @@ import 'package:np_mobile/ui/blocs/application_state_provider.dart';
 import 'package:np_mobile/ui/blocs/organize_bloc.dart';
 import 'package:np_mobile/ui/entry_edit_screen.dart';
 import 'package:np_mobile/ui/folder_selector_screen.dart';
+import 'package:np_mobile/ui/uploader_screen.dart';
 import 'package:np_mobile/ui/ui_helper.dart';
 import 'package:np_mobile/ui/widgets/np_grouped_list.dart';
 import 'package:np_mobile/ui/widgets/np_timeline.dart';
@@ -37,6 +38,7 @@ class OrganizerScreen extends StatelessWidget {
         actions: <Widget>[
           _appBarSearch(organizeBloc),
           _appBarAddNew(organizeBloc),
+          _appBarUpload(organizeBloc),
         ],
         backgroundColor: UIHelper.blackCanvas(),
       ),
@@ -81,26 +83,54 @@ class OrganizerScreen extends StatelessWidget {
     return StreamBuilder(
       stream: organizeBloc.stateStream,
       builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-        return IconButton(
-          tooltip: 'new',
-          icon: const Icon(Icons.add),
-          onPressed: () {
-            // navigate to the new entry screen
-            if (snapshot.data != null) {
-              if (snapshot.data.listSetting.moduleId == NPModule.PHOTO) {
-                Navigator.pushNamed(context, 'photoUploader');
-              } else {
+        if (snapshot.data != null) {
+          if (snapshot.data.listSetting.moduleId == NPModule.PHOTO) {
+            return Container(width: 0.0, height: 0.0);
+          } else {
+            return IconButton(
+                tooltip: 'new',
+                icon: const Icon(Icons.add),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          EntryEditScreen(context, EntryFactory.newInFolder(NPFolder.copy(organizeBloc.getFolder()))),
+                    ),
+                  );
+                });
+          }
+        } else {
+          return Container(width: 0.0, height: 0.0);
+        }
+      },
+    );
+  }
+
+  Widget _appBarUpload(OrganizeBloc organizeBloc) {
+    return StreamBuilder(
+      stream: organizeBloc.stateStream,
+      builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+        if (snapshot.data != null) {
+          if (snapshot.data.listSetting.moduleId == NPModule.PHOTO || snapshot.data.listSetting.moduleId == NPModule.DOC) {
+            return IconButton(
+              tooltip: 'upload',
+              icon: const Icon(Icons.file_upload),
+              onPressed: () {
                 Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) =>
-                        EntryEditScreen(context, EntryFactory.newInFolder(NPFolder.copy(organizeBloc.getFolder()))),
-                  ),
-                );
-              }
-            }
-          },
-        );
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          UploaderScreen(context, ApplicationStateProvider.forOrganize(context).getFolder(), null),
+                    ));
+              },
+            );
+          } else {
+            return Container(width: 0.0, height: 0.0);
+          }
+        } else {
+          return Container(width: 0.0, height: 0.0);
+        }
       },
     );
   }
@@ -138,7 +168,10 @@ class OrganizerScreen extends StatelessWidget {
             return Transform.rotate(
               angle: -math.pi,
               child: IconButton(
-                icon: const Icon(FontAwesomeIcons.levelDownAlt, size: 20,),
+                icon: const Icon(
+                  FontAwesomeIcons.levelDownAlt,
+                  size: 20,
+                ),
                 onPressed: () {
                   FolderService folderService =
                       FolderService(moduleId: listSetting.moduleId, ownerId: listSetting.ownerId);
@@ -254,8 +287,7 @@ class OrganizerScreen extends StatelessWidget {
       timezoneTile = ListTile(
         title: Text(timezones[0]),
         subtitle: Text('your account timezone: ${timezones[1]}'),
-        onTap: () {
-        },
+        onTap: () {},
       );
     }
 

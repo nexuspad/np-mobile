@@ -14,7 +14,6 @@ class OrganizeBloc {
 
   final _organizeSubject = BehaviorSubject<OrganizerSetting>();
   OrganizerSetting _currentSetting;
-
   Stream<OrganizerSetting> get stateStream => _organizeSubject.stream;
 
   OrganizeBloc() {
@@ -80,10 +79,6 @@ class OrganizeBloc {
     }
   }
 
-  updateActiveEntry(NPEntry entry) {
-    _currentSetting._activeEntry = entry;
-  }
-
   /// somehow sink.add is not needed
   refreshBloc() {
     _currentSetting._refreshRequested = true;
@@ -110,10 +105,6 @@ class OrganizeBloc {
     return new NPFolder(_currentSetting.listSetting.moduleId, NPFolder.ROOT, AccountService().acctOwner);
   }
 
-  NPEntry getActiveEntry() {
-    return _currentSetting._activeEntry;
-  }
-
   int getOwnerId() {
     return _currentSetting.listSetting.ownerId;
   }
@@ -137,7 +128,6 @@ class OrganizeBloc {
 
 class OrganizerSetting {
   ListSetting _listSetting;
-  NPEntry _activeEntry;
   bool _refreshRequested = false;
 
   OrganizerSetting() {
@@ -148,7 +138,6 @@ class OrganizerSetting {
   }
 
   ListSetting get listSetting => _listSetting;
-  NPEntry get activeEntry => _activeEntry;
 
   bool get refreshRequested => _refreshRequested;
   set refreshRequested(value) => _refreshRequested = value;

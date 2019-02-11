@@ -399,7 +399,7 @@ class EventEdit {
           ),
           IconButton(
             icon: Icon(
-              Icons.add_circle,
+              Icons.add,
               color: Colors.blue,
             ),
             onPressed: () {

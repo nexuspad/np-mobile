@@ -33,6 +33,13 @@ class NPDoc extends NPEntry {
       }
     }
     _description = data['description'];
+
+    if (data['attachments'] != null) {
+      _attachments = new List<NPUpload>();
+      for (var data in data['attachments']) {
+        _attachments.add(new NPUpload.fromJson(data));
+      }
+    }
   }
 
   Map<String, dynamic> toJson() {

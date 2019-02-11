@@ -24,14 +24,14 @@ class EntryViewUtil {
     return null;
   }
 
-  static dynamic fullPage(NPEntry entry, BuildContext context) {
+  static dynamic fullPage(NPEntry entry, BuildContext context, Function setStateCallback) {
     switch (entry.moduleId) {
       case NPModule.CONTACT:
         return ContactView.fullPage(entry, context);
       case NPModule.CALENDAR:
         return EventView.fullPage(entry, context);
       case NPModule.DOC:
-        return DocView.fullPage(entry, context);
+        return DocView.fullPage(entry, context, setStateCallback);
       case NPModule.BOOKMARK:
         return BookmarkView.fullPage(entry, context);
       case NPModule.PHOTO:

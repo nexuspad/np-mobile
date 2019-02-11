@@ -1,26 +1,26 @@
 import 'dart:async';
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:np_mobile/datamodel/UploadFileWrapper.dart';
+import 'package:np_mobile/datamodel/np_entry.dart';
 import 'package:np_mobile/datamodel/np_folder.dart';
 import 'package:np_mobile/service/UploadWorker.dart';
 import 'package:np_mobile/service/list_service.dart';
-import 'package:np_mobile/ui/blocs/application_state_provider.dart';
 import 'package:np_mobile/ui/message_helper.dart';
 import 'package:np_mobile/ui/ui_helper.dart';
 
-class PhotoUploaderScreen extends StatefulWidget {
-  PhotoUploaderScreen(BuildContext context) : _folder = ApplicationStateProvider.forOrganize(context).getFolder();
+class UploaderScreen extends StatefulWidget {
+  UploaderScreen(BuildContext context, NPFolder folder, NPEntry parentEntry) : _folder = folder, _parentEntry = parentEntry;
 
   final NPFolder _folder;
+  final NPEntry _parentEntry;
 
   @override
-  _PhotoUploaderScreenState createState() => new _PhotoUploaderScreenState();
+  _UploaderScreenState createState() => new _UploaderScreenState();
 }
 
-class _PhotoUploaderScreenState extends State<PhotoUploaderScreen> {
+class _UploaderScreenState extends State<UploaderScreen> {
   Future<File> _imageFile;
   List<UploadFileWrapper> _selectedFiles = new List();
   bool isVideo = false;
@@ -28,7 +28,7 @@ class _PhotoUploaderScreenState extends State<PhotoUploaderScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('upload photos'), backgroundColor: UIHelper.blackCanvas(), actions: <Widget>[
+      appBar: AppBar(title: Text('upload'), backgroundColor: UIHelper.blackCanvas(), actions: <Widget>[
         IconButton(
           tooltip: 'select from gallery',
           icon: const Icon(Icons.photo_library),
@@ -119,7 +119,7 @@ class _PhotoUploaderScreenState extends State<PhotoUploaderScreen> {
       return FloatingActionButton(
         child: const Icon(Icons.file_upload),
         onPressed: () {
-          UploadWorker(widget._folder, _selectedFiles, (UploadFileWrapper ufw) {
+          UploadWorker(folder: widget._folder, entry: widget._parentEntry, files: _selectedFiles, progressCallback: (UploadFileWrapper ufw) {
             setState(() {
               // update the uploading status shown in the table
             });

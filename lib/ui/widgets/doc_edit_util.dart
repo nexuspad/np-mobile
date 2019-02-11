@@ -14,20 +14,6 @@ class DocEdit {
       key: formKey,
       child: new Column(
         children: <Widget>[
-//          new Padding(
-//            padding: UIHelper.contentPadding(),
-//            child: new TextFormField(
-//              initialValue: doc.title,
-//              onSaved: (val) => doc.title = val,
-//              validator: (val) {
-//                if (val.length < 1) {
-//                  return 'invalid title';
-//                }
-//                return null;
-//              },
-//              decoration: new InputDecoration(labelText: "title", border: UnderlineInputBorder()),
-//            ),
-//          ),
           new Padding(
             padding: UIHelper.contentPadding(),
             child: new TextFormField(

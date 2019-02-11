@@ -3,9 +3,8 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:np_mobile/datamodel/UploadFileWrapper.dart';
-import 'package:np_mobile/datamodel/np_doc.dart';
+import 'package:np_mobile/datamodel/np_entry.dart';
 import 'package:np_mobile/datamodel/np_folder.dart';
-import 'package:np_mobile/datamodel/np_photo.dart';
 import 'package:np_mobile/service/upload_service.dart';
 
 class UploadWorker {
@@ -13,8 +12,11 @@ class UploadWorker {
   final ValueChanged<UploadFileWrapper> _uploadProgress;
 
   final NPFolder _folder;
+  final NPEntry _entry;
+
   List<UploadFileWrapper> _fileEntities;
-  UploadWorker(folder, files, progressCallback) : _folder = folder, _uploadProgress = progressCallback {
+  UploadWorker({NPFolder folder, NPEntry entry, files, progressCallback}) :
+        _folder = folder, _entry = entry, _uploadProgress = progressCallback {
     _fileEntities = files;
   }
 
@@ -68,14 +70,26 @@ class UploadWorker {
     print('UploadWorker: upload file: $path');
     _uploadProgress(_fileEntities[index]);
     UploadService uploadService = new UploadService();
-    uploadService.uploadToFolder(_folder, File(path), _uploadProgress).then((dynamic result) {
-      _fileEntities[index].status = UploadStatus.completed;
-      _fileEntities[index].parentEntry = result;
-      _uploadProgress(_fileEntities[index]);
-    }).catchError((error) {
-      _fileEntities[index].status = UploadStatus.failed;
-      print(error);
-    });
+
+    if (_folder != null) {
+      uploadService.uploadToFolder(_folder, File(path), _uploadProgress).then((dynamic result) {
+        _fileEntities[index].status = UploadStatus.completed;
+        _fileEntities[index].parentEntry = result;
+        _uploadProgress(_fileEntities[index]);
+      }).catchError((error) {
+        _fileEntities[index].status = UploadStatus.failed;
+        print(error);
+      });
+    } else if (_entry != null) {
+      uploadService.attachToEntry(_entry, File(path), _uploadProgress).then((dynamic result) {
+        _fileEntities[index].status = UploadStatus.completed;
+        _fileEntities[index].parentEntry = result;
+        _uploadProgress(_fileEntities[index]);
+      }).catchError((error) {
+        _fileEntities[index].status = UploadStatus.failed;
+        print(error);
+      });
+    }
   }
 
   _performMockUpload(int index) {

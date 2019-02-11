@@ -8,6 +8,7 @@ import 'package:np_mobile/ui/entry_edit_screen.dart';
 import 'package:np_mobile/ui/folder_selector_screen.dart';
 import 'package:np_mobile/ui/message_helper.dart';
 import 'package:np_mobile/ui/ui_helper.dart';
+import 'package:np_mobile/ui/uploader_screen.dart';
 import 'package:np_mobile/ui/widgets/base_list.dart';
 import 'package:np_mobile/ui/widgets/entry_view_widget.dart';
 
@@ -69,6 +70,13 @@ class _EntryViewScreenState extends State<EntryViewScreen> {
         icon: Icon(Icons.delete),
       ),
     ];
+
+    if (widget._entryList.listSetting.moduleId == NPModule.DOC) {
+      actions.insert(1, IconButton(
+        onPressed: () => _attachUpload(),
+        icon: Icon(Icons.attachment),
+      ));
+    }
 
     var backgroundDecoration = BoxDecoration(color: Colors.white);
     if (widget._entryList.listSetting.moduleId == NPModule.PHOTO) {
@@ -134,6 +142,14 @@ class _EntryViewScreenState extends State<EntryViewScreen> {
     EntryService().delete(e).then((deletedEntry) {
       setState(() {});
     });
+  }
+
+  _attachUpload() {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => UploaderScreen(context, null, _entryList.entries[_index]),
+        ));
   }
 
   _getMoreData() {

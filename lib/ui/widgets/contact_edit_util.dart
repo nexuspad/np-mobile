@@ -175,13 +175,13 @@ class ContactEdit {
           ),
           phoneNumber != null && phoneNumber.isNotEmpty
               ? IconButton(
-                  icon: Icon(Icons.remove_circle, color: Colors.red,),
+                  icon: Icon(Icons.clear),
                   onPressed: () {
                     phones.removeAt(index);
                     setStateCallback();
                   })
               : IconButton(
-                  icon: Icon(Icons.add_circle, color: Colors.blue,),
+                  icon: Icon(Icons.add, color: Colors.blue,),
                   onPressed: () {
                     if (controller.value.text.isNotEmpty) {
                       phones.insert(phones.length - 1, {'value': controller.value.text});
@@ -238,13 +238,13 @@ class ContactEdit {
           ),
           emailAddress != null && emailAddress.isNotEmpty
               ? IconButton(
-                  icon: Icon(Icons.remove_circle, color: Colors.red,),
+                  icon: Icon(Icons.clear),
                   onPressed: () {
                     emails.removeAt(index);
                     setStateCallback();
                   })
               : IconButton(
-                  icon: Icon(Icons.add_circle, color: Colors.blue,),
+                  icon: Icon(Icons.add, color: Colors.blue,),
                   onPressed: () {
                     if (controller.value.text.isNotEmpty) {
                       emails.insert(emails.length - 1, {'value': controller.value.text});
