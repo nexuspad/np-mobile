@@ -82,7 +82,7 @@ class EventService extends EntryService {
           // this is because the result does not have complete information like folder. so there will be problem
           // when deleting the entry from ListService.
           ListService.activeServicesForModule(NPModule.CALENDAR, event.owner.userId)
-              .forEach((service) => service.deleteEntries(List.filled(1, event)));
+              .forEach((service) => service.removeEntriesFromList(List.filled(1, event), UpdateReason.DELETED));
         }
 
         completer.complete(event);

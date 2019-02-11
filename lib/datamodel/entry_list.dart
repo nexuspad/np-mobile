@@ -10,6 +10,8 @@ import 'package:np_mobile/datamodel/np_module.dart';
 import 'package:np_mobile/datamodel/np_photo.dart';
 import 'package:np_mobile/ui/ui_helper.dart';
 
+enum UpdateReason {DELETED, MOVED, UNPINNED}
+
 class EntryList<T extends NPEntry> {
   ListSetting _listSetting;
   List<T> _entries;
@@ -135,24 +137,38 @@ class EntryList<T extends NPEntry> {
     }
   }
 
-  deleteEntries(List<NPEntry> entries) {
+  removeEntriesFromList(List<NPEntry> entries, UpdateReason reason) {
     entries.forEach((e) {
-      _deleteEntry(e);
+      _removeEntryFromList(e, reason);
     });
     _sortEntries();
   }
 
-  _deleteEntry(NPEntry entry) {
+  _removeEntryFromList(NPEntry entry, UpdateReason reason) {
     if (_entries == null) {
       return;
     }
 
-    // if folders don't match, or not deleting un-pinned entry from ROOT, do not proceed.
-    if (entry.folder.folderId != _folder.folderId) {
-      if (!(_folder.folderId == NPFolder.ROOT && entry.pinned == false)) {
+    if (reason == UpdateReason.MOVED) {
+      // for contacts and events, all entries are displayed at ROOT
+      if (_folder.folderId == NPFolder.ROOT && _listSetting.includeEntriesInAllFolders == true) {
+        return;
+      }
+      // just a safe measure
+      if (entry.folder.folderId == _folder.folderId) {
+        return;
+      }
+    } else if (reason == UpdateReason.UNPINNED) {
+      // for contacts and events, all entries are displayed at ROOT, pinned or not
+      if (_folder.folderId == NPFolder.ROOT && _listSetting.includeEntriesInAllFolders == true) {
+        return;
+      }
+      // nothing to do
+      if (_folder.folderId != NPFolder.ROOT && entry.folder.folderId == _folder.folderId) {
         return;
       }
     }
+
     int len = _entries.length;
     int idxToRemove = -1;
     for (int i=0; i<len; i++) {

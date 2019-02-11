@@ -134,8 +134,9 @@ class ListService extends BaseService {
     _entryList.updateEntries(entries);
   }
 
-  deleteEntries(List<NPEntry> entries) {
-    _entryList.deleteEntries(entries);
+  // reason: 'deleted', 'moved', 'unpinned'
+  removeEntriesFromList(List<NPEntry> entries, UpdateReason reason) {
+    _entryList.removeEntriesFromList(entries, reason);
   }
 
   deleteAllRecurringEvents(String entryId) {

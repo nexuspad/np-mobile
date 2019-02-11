@@ -79,18 +79,24 @@ class EntryService extends BaseService {
         ListService.activeServicesForModule(updatedEntry.moduleId, updatedEntry.owner.userId)
             .forEach((service) => service.updateEntries(List.filled(1, updatedEntry)));
       } else {
-        if (updatedEntry.moduleId == NPModule.CONTACT) {
-          ListService.activeServicesForModule(updatedEntry.moduleId, updatedEntry.owner.userId)
-              .forEach((service) => service.updateEntries(List.filled(1, updatedEntry)));
-        } else {
-          if (updatedEntry.folder.folderId != NPFolder.ROOT) {
-            ListService(moduleId: entry.moduleId, folderId: NPFolder.ROOT, ownerId: entry.owner.userId)
-                .deleteEntries(List.filled(1, updatedEntry));
-          } else {
-            ListService.activeServicesForModule(updatedEntry.moduleId, updatedEntry.owner.userId)
-                .forEach((service) => service.updateEntries(List.filled(1, updatedEntry)));
-          }
-        }
+        // removal should only be targeting ROOT
+        ListService(moduleId: entry.moduleId, folderId: NPFolder.ROOT, ownerId: entry.owner.userId)
+            .removeEntriesFromList(List.filled(1, updatedEntry), UpdateReason.UNPINNED);
+        ListService.activeServicesForModule(updatedEntry.moduleId, updatedEntry.owner.userId)
+            .forEach((service) => service.updateEntries(List.filled(1, updatedEntry)));
+//
+//        if (updatedEntry.moduleId == NPModule.CONTACT) {
+//          ListService.activeServicesForModule(updatedEntry.moduleId, updatedEntry.owner.userId)
+//              .forEach((service) => service.updateEntries(List.filled(1, updatedEntry)));
+//        } else {
+//          if (updatedEntry.folder.folderId != NPFolder.ROOT) {
+//            ListService(moduleId: entry.moduleId, folderId: NPFolder.ROOT, ownerId: entry.owner.userId)
+//                .removeEntriesFromList(List.filled(1, updatedEntry), UpdateReason.UNPINNED);
+//          } else {
+//            ListService.activeServicesForModule(updatedEntry.moduleId, updatedEntry.owner.userId)
+//                .forEach((service) => service.updateEntries(List.filled(1, updatedEntry)));
+//          }
+//        }
       }
       completer.complete(updatedEntry);
     }).catchError((error) {
@@ -104,7 +110,7 @@ class EntryService extends BaseService {
 
     // delete it from the original folder
     ListService.activeServicesForModule(entry.moduleId, entry.owner.userId)
-        .forEach((service) => service.deleteEntries(List.filled(1, entry)));
+        .forEach((service) => service.removeEntriesFromList(List.filled(1, entry), UpdateReason.MOVED));
 
     entry.folder = toFolder;
     _updateAttribute(entry: entry, attribute: UpdateAttribute.folder).then((updatedEntry) {
@@ -159,7 +165,7 @@ class EntryService extends BaseService {
         // this is because the result does not have complete information like folder. so there will be problem
         // when deleting the entry from ListService.
         ListService.activeServicesForModule(entry.moduleId, entry.owner.userId)
-            .forEach((service) => service.deleteEntries(List.filled(1, entry)));
+            .forEach((service) => service.removeEntriesFromList(List.filled(1, entry), UpdateReason.DELETED));
         completer.complete(entry);
       }
     }).catchError((error) {
