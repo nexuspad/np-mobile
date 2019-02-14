@@ -93,6 +93,11 @@ class EntryList<T extends NPEntry> {
     bool okToProceed = true;
 
     switch (reason) {
+      case UpdateReason.ADDED_OR_UPDATED:
+        if (entry.folder.folderId != _folder.folderId) {
+          okToProceed = false;
+        }
+        break;
       case UpdateReason.PINNED:
         // make sure if folder Ids don't match, only update list for ROOT, since the pin affects ROOT
         if (entry.folder.folderId != _folder.folderId) {
