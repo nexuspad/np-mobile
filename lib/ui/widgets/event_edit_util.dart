@@ -6,7 +6,6 @@ import 'package:np_mobile/datamodel/np_module.dart';
 import 'package:np_mobile/datamodel/np_user.dart';
 import 'package:np_mobile/datamodel/recurrence.dart';
 import 'package:np_mobile/datamodel/reminder.dart';
-import 'package:np_mobile/service/account_service.dart';
 import 'package:np_mobile/service/event_service.dart';
 import 'package:np_mobile/service/preference_service.dart';
 import 'package:np_mobile/ui/message_helper.dart';
@@ -16,7 +15,6 @@ import 'package:np_mobile/ui/widgets/tag_form_widget.dart';
 
 class EventEdit {
   static Form form(BuildContext context, GlobalKey<FormState> formKey, NPEvent event, Function setStateCallback) {
-    print(event);
     List<Widget> formFields = <Widget>[
       new Padding(
         padding: UIHelper.contentPadding(),

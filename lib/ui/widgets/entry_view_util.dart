@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:np_mobile/datamodel/np_entry.dart';
 import 'package:np_mobile/datamodel/np_module.dart';
+import 'package:np_mobile/ui/ui_helper.dart';
 import 'package:np_mobile/ui/widgets/bookmark_view_util.dart';
 import 'package:np_mobile/ui/widgets/contact_view_util.dart';
 import 'package:np_mobile/ui/widgets/doc_view_util.dart';
@@ -21,7 +22,7 @@ class EntryViewUtil {
       case NPModule.PHOTO:
         return PhotoView.photoInGrid(entry, context);
     }
-    return null;
+    return UIHelper.emptySpace();
   }
 
   static dynamic fullPage(NPEntry entry, BuildContext context, Function setStateCallback) {
@@ -37,6 +38,6 @@ class EntryViewUtil {
       case NPModule.PHOTO:
         return PhotoView.photoFullview(entry, context);
     }
-    return null;
+    return UIHelper.emptySpace();
   }
 }

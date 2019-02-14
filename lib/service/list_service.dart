@@ -126,12 +126,12 @@ class ListService extends BaseService {
     return _entryList.listSetting.hasMorePage;
   }
 
-  addEntries(List<NPEntry> entries) {
-    _entryList.addEntries(entries);
+  addEntries(List<NPEntry> entries, UpdateReason reason) {
+    _entryList.addEntries(entries, reason);
   }
 
-  updateEntries(List<NPEntry> entries) {
-    _entryList.updateEntries(entries);
+  updateEntries(List<NPEntry> entries, UpdateReason reason) {
+    _entryList.updateEntries(entries, reason);
   }
 
   // reason: 'deleted', 'moved', 'unpinned'

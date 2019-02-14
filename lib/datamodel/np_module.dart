@@ -36,6 +36,8 @@ class NPModule {
         return 'bookmark';
       case NPModule.PHOTO:
         return 'photo';
+      case NPModule.UPLOAD:
+        return 'attachment';
     }
     return 'ERROR';
   }

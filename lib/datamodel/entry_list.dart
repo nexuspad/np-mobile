@@ -10,7 +10,7 @@ import 'package:np_mobile/datamodel/np_module.dart';
 import 'package:np_mobile/datamodel/np_photo.dart';
 import 'package:np_mobile/ui/ui_helper.dart';
 
-enum UpdateReason {DELETED, MOVED, UNPINNED}
+enum UpdateReason {ADDED_OR_UPDATED, DELETED, MOVED, PINNED, UNPINNED}
 
 class EntryList<T extends NPEntry> {
   ListSetting _listSetting;
@@ -75,65 +75,77 @@ class EntryList<T extends NPEntry> {
     return true;
   }
 
-  addEntries(List<NPEntry> entries) {
-    entries.forEach((e) => _addOrUpdateEntry(e));
+  addEntries(List<NPEntry> entries, UpdateReason reason) {
+    entries.forEach((e) => _addOrUpdateEntry(e, reason));
     _sortEntries();
   }
 
-  updateEntries(List<NPEntry> entries) {
-    entries.forEach((e) => _addOrUpdateEntry(e));
+  updateEntries(List<NPEntry> entries, UpdateReason reason) {
+    entries.forEach((e) => _addOrUpdateEntry(e, reason));
     _sortEntries();
   }
 
-  _addOrUpdateEntry(NPEntry entry) {
+  _addOrUpdateEntry(NPEntry entry, UpdateReason reason) {
     if (_entries == null) {
       _entries = new List();
     }
 
-    // skip this if entry folder doesn't match, or entry is not pinned to ROOT folder.
-    if (_listSetting.includeEntriesInAllFolders == false) {
-      if (entry.folder.folderId != _folder.folderId) {
-        if (!(_folder.folderId == NPFolder.ROOT && entry.pinned)) {
-          return;
+    bool okToProceed = true;
+
+    switch (reason) {
+      case UpdateReason.PINNED:
+        // make sure if folder Ids don't match, only update list for ROOT, since the pin affects ROOT
+        if (entry.folder.folderId != _folder.folderId) {
+          if (_folder.folderId == NPFolder.ROOT)
+            okToProceed = true;
+        } else {
+          // when the folder does match, it's ok to proceed.
+          okToProceed = true;
+        }
+        break;
+      case UpdateReason.MOVED:
+        break;
+      default:
+        break;
+    }
+
+    if (okToProceed) {
+      var moduleObj;
+      switch (entry.moduleId) {
+        case NPModule.CONTACT:
+          moduleObj = NPContact.copy(entry);
+          break;
+        case NPModule.CALENDAR:
+          moduleObj = NPEvent.copy(entry);
+          break;
+        case NPModule.DOC:
+          moduleObj = NPDoc.copy(entry);
+          break;
+        case NPModule.BOOKMARK:
+          moduleObj = NPBookmark.copy(entry);
+          break;
+        case NPModule.PHOTO:
+          moduleObj = NPPhoto.copy(entry);
+          break;
+      }
+
+      if (moduleObj == null) {
+        print('Error: invalid entry');
+        return;
+      }
+
+      int len = _entries.length;
+      bool updated = false;
+      for (int i=0; i<len; i++) {
+        if (entry.keyMatches(_entries[i])) {
+          _entries[i] = moduleObj;
+          updated = true;
+          break;
         }
       }
-    }
-
-    var moduleObj;
-    switch (entry.moduleId) {
-      case NPModule.CONTACT:
-        moduleObj = NPContact.copy(entry);
-        break;
-      case NPModule.CALENDAR:
-        moduleObj = NPEvent.copy(entry);
-        break;
-      case NPModule.DOC:
-        moduleObj = NPDoc.copy(entry);
-        break;
-      case NPModule.BOOKMARK:
-        moduleObj = NPBookmark.copy(entry);
-        break;
-      case NPModule.PHOTO:
-        moduleObj = NPPhoto.copy(entry);
-        break;
-    }
-
-    if (moduleObj == null) {
-      print('Error: invalid entry');
-      return;
-    }
-
-    int len = _entries.length;
-    bool updated = false;
-    for (int i=0; i<len; i++) {
-      if (entry.keyMatches(_entries[i])) {
-        _entries[i] = moduleObj;
-        updated = true;
-        break;
+      if (!updated) {
+        _entries.insert(0, moduleObj);
       }
-    }
-    if (!updated) {
-      _entries.insert(0, moduleObj);
     }
   }
 
@@ -149,37 +161,52 @@ class EntryList<T extends NPEntry> {
       return;
     }
 
-    if (reason == UpdateReason.MOVED) {
-      // for contacts and events, all entries are displayed at ROOT
-      if (_folder.folderId == NPFolder.ROOT && _listSetting.includeEntriesInAllFolders == true) {
-        return;
-      }
-      // just a safe measure
-      if (entry.folder.folderId == _folder.folderId) {
-        return;
-      }
-    } else if (reason == UpdateReason.UNPINNED) {
-      // for contacts and events, all entries are displayed at ROOT, pinned or not
-      if (_folder.folderId == NPFolder.ROOT && _listSetting.includeEntriesInAllFolders == true) {
-        return;
-      }
-      // nothing to do
-      if (_folder.folderId != NPFolder.ROOT && entry.folder.folderId == _folder.folderId) {
-        return;
-      }
+    bool okToProceed = true;
+
+    switch (reason) {
+      case UpdateReason.UNPINNED:
+        // if an entry is unpinned, only remove it from ROOT, if the module does not show all at root
+        if (_folder.folderId == NPFolder.ROOT) {
+          if (_listSetting.includeEntriesInAllFolders == true) {
+            okToProceed = false;
+          } else {
+            okToProceed = true;
+          }
+        } else {
+          // do not proceed to remove, keep the entry in the non-ROOT folder
+          okToProceed = false;
+        }
+        break;
+      case UpdateReason.MOVED:
+        // if an entry is moved, only remove it from ROOT, if the module does not show all at root
+        if (_folder.folderId == NPFolder.ROOT) {
+          if (_listSetting.includeEntriesInAllFolders == true) {
+            okToProceed = false;
+          } else {
+            okToProceed = true;
+          }
+        } else {
+          // remove it from folders other than ROOT
+          okToProceed = true;
+        }
+        break;
+      default:
+        break;
     }
 
-    int len = _entries.length;
-    int idxToRemove = -1;
-    for (int i=0; i<len; i++) {
-      if (entry.keyMatches(_entries[i])) {
-        idxToRemove = i;
-        break;
+    if (okToProceed) {
+      int len = _entries.length;
+      int idxToRemove = -1;
+      for (int i=0; i<len; i++) {
+        if (entry.keyMatches(_entries[i])) {
+          idxToRemove = i;
+          break;
+        }
       }
-    }
-    if (idxToRemove != -1) {
-      _entries.removeAt(idxToRemove);
-      _listSetting.totalCount --;
+      if (idxToRemove != -1) {
+        _entries.removeAt(idxToRemove);
+        _listSetting.totalCount --;
+      }
     }
   }
 

@@ -180,6 +180,7 @@ class NPModuleListingState<T extends BaseList> extends State<T> {
             ),
           );
         } else if (selected == EntryMenu.delete) {
+          UIHelper.showMessageOnSnackBar(context: context, text: MessageHelper.deleting(e.moduleId));
           EntryService().delete(e).then((deletedEntry) {
             setState(() {});
             UIHelper.showMessageOnSnackBar(context: context, text: MessageHelper.entryDeleted(e.moduleId));

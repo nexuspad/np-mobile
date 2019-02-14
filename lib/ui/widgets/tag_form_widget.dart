@@ -104,6 +104,7 @@ class _TagFormState extends State<TagForm> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
         new Wrap(
+          spacing: 2.0,
           children: chips,
         ),
       ],

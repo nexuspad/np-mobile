@@ -31,9 +31,11 @@ class _EntryViewWidgetState extends State<EntryViewWidget> with SingleTickerProv
     _entry = widget.entry;
     if (_entry.moduleId == NPModule.DOC) {
       EntryService().get(NPModule.DOC, _entry.entryId, _entry.owner.userId).then((doc) {
-        setState(() {
-          _entry = doc;
-        });
+        if (this.mounted) {
+          setState(() {
+            _entry = doc;
+          });
+        }
       });
     }
     _controller = AnimationController(vsync: this)..addListener(_handleFlingAnimation);
@@ -41,6 +43,8 @@ class _EntryViewWidgetState extends State<EntryViewWidget> with SingleTickerProv
 
   @override
   Widget build(BuildContext context) {
+    final organizeBloc = ApplicationStateProvider.forOrganize(context);
+
     if (_entry.moduleId == NPModule.PHOTO) {
       return GestureDetector(
         onScaleStart: _handleOnScaleStart,
@@ -52,17 +56,31 @@ class _EntryViewWidgetState extends State<EntryViewWidget> with SingleTickerProv
               ..translate(_offset.dx, _offset.dy)
               ..scale(_scale),
             child: EntryViewUtil.fullPage(_entry, context, (entry) {
-              setState(() {
-              });
+              if (this.mounted) {
+                setState(() {
+                });
+              }
             }),
           ),
         ),
       );
+
     } else {
-      return EntryViewUtil.fullPage(_entry, context, (entry) {
-        setState(() {
-        });
-      });
+      return StreamBuilder(
+        stream: organizeBloc.updateStream,
+        builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+          if (snapshot.data != null) {
+            _entry = snapshot.data;
+          }
+          return EntryViewUtil.fullPage(_entry, context, (entry) {
+            if (this.mounted) {
+              setState(() {
+                _entry = entry;
+              });
+            }
+          });
+        },
+      );
     }
   }
 

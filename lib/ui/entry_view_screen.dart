@@ -119,12 +119,17 @@ class _EntryViewScreenState extends State<EntryViewScreen> {
     );
   }
 
-  _editPage() {
-    Navigator.push(
+  _editPage() async {
+    final updatedEntry = await Navigator.push(
         context,
         MaterialPageRoute(
           builder: (context) => EntryEditScreen(context, _entryList.entries[_index]),
         ));
+
+    // the entry might have been at a different index since the list will be re-sorted after the update.
+    if (updatedEntry != null) {
+      _jumpToEntry(updatedEntry);
+    }
   }
 
   _moveEntry() {
@@ -144,12 +149,23 @@ class _EntryViewScreenState extends State<EntryViewScreen> {
     });
   }
 
-  _attachUpload() {
+  _attachUpload() async  {
     Navigator.push(
         context,
         MaterialPageRoute(
           builder: (context) => UploaderScreen(context, null, _entryList.entries[_index]),
         ));
+  }
+
+  _jumpToEntry(NPEntry entry) {
+    int page = 0;
+    for (int i = 0; i < _entryList.entries.length; i++) {
+      if (_entryList.entries[i].entryId == entry.entryId) {
+        page = i;
+        break;
+      }
+    }
+    _controller.jumpToPage(page);
   }
 
   _getMoreData() {

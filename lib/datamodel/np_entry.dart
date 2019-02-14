@@ -1,8 +1,9 @@
+import 'package:np_mobile/datamodel/NPObject.dart';
 import 'package:np_mobile/datamodel/np_folder.dart';
 import 'package:np_mobile/datamodel/np_user.dart';
 import 'package:np_mobile/datamodel/timeline_key.dart';
 
-class NPEntry {
+class NPEntry extends NPObject {
   static const PINNED_GROUP_NAME = '.';
 
   int _moduleId;
@@ -137,6 +138,7 @@ class NPEntry {
   }
 
   DateTime get updateTime => _updateTime;
+  set updateTime(value) => _updateTime = value;
 
   NPFolder get folder => _folder;
   set folder(value) {

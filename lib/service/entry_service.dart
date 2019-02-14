@@ -48,7 +48,7 @@ class EntryService extends BaseService {
         if (result['entry'] != null) {
           NPEntry updatedEntry = EntryFactory.initFromJson(result['entry']);
           ListService.activeServicesForModule(updatedEntry.moduleId, updatedEntry.owner.userId)
-              .forEach((service) => service.updateEntries(List.filled(1, updatedEntry)));
+              .forEach((service) => service.updateEntries(List.filled(1, updatedEntry), UpdateReason.ADDED_OR_UPDATED));
           completer.complete(updatedEntry);
         } else if (result['entryList'] != null) {
           EntryList entryList = EntryListFactory.initFromJson(result['entryList']);
@@ -58,7 +58,7 @@ class EntryService extends BaseService {
               if (event.isRecurring()) {
               }
             }
-            service.updateEntries(entryList.entries);
+            service.updateEntries(entryList.entries, UpdateReason.ADDED_OR_UPDATED);
           });
           completer.complete(entryList);
         }
@@ -77,26 +77,13 @@ class EntryService extends BaseService {
       NPEntry updatedEntry = result;
       if (updatedEntry.pinned) {
         ListService.activeServicesForModule(updatedEntry.moduleId, updatedEntry.owner.userId)
-            .forEach((service) => service.updateEntries(List.filled(1, updatedEntry)));
+            .forEach((service) => service.updateEntries(List.filled(1, updatedEntry), UpdateReason.PINNED));
       } else {
         // removal should only be targeting ROOT
         ListService(moduleId: entry.moduleId, folderId: NPFolder.ROOT, ownerId: entry.owner.userId)
             .removeEntriesFromList(List.filled(1, updatedEntry), UpdateReason.UNPINNED);
         ListService.activeServicesForModule(updatedEntry.moduleId, updatedEntry.owner.userId)
-            .forEach((service) => service.updateEntries(List.filled(1, updatedEntry)));
-//
-//        if (updatedEntry.moduleId == NPModule.CONTACT) {
-//          ListService.activeServicesForModule(updatedEntry.moduleId, updatedEntry.owner.userId)
-//              .forEach((service) => service.updateEntries(List.filled(1, updatedEntry)));
-//        } else {
-//          if (updatedEntry.folder.folderId != NPFolder.ROOT) {
-//            ListService(moduleId: entry.moduleId, folderId: NPFolder.ROOT, ownerId: entry.owner.userId)
-//                .removeEntriesFromList(List.filled(1, updatedEntry), UpdateReason.UNPINNED);
-//          } else {
-//            ListService.activeServicesForModule(updatedEntry.moduleId, updatedEntry.owner.userId)
-//                .forEach((service) => service.updateEntries(List.filled(1, updatedEntry)));
-//          }
-//        }
+            .forEach((service) => service.updateEntries(List.filled(1, updatedEntry), UpdateReason.UNPINNED));
       }
       completer.complete(updatedEntry);
     }).catchError((error) {
@@ -115,7 +102,7 @@ class EntryService extends BaseService {
     entry.folder = toFolder;
     _updateAttribute(entry: entry, attribute: UpdateAttribute.folder).then((updatedEntry) {
       ListService.activeServicesForModule(entry.moduleId, entry.owner.userId)
-          .forEach((service) => service.addEntries(List.filled(1, updatedEntry)));
+          .forEach((service) => service.addEntries(List.filled(1, updatedEntry), UpdateReason.MOVED));
       completer.complete(updatedEntry);
     }).catchError((error) {
       completer.completeError(error);
@@ -161,12 +148,20 @@ class EntryService extends BaseService {
       if (result['errorCode'] != null) {
         completer.completeError(new NPError(cause: result['errorCode']));
       } else {
-        // use the entry object instead of the result from service call.
-        // this is because the result does not have complete information like folder. so there will be problem
-        // when deleting the entry from ListService.
-        ListService.activeServicesForModule(entry.moduleId, entry.owner.userId)
-            .forEach((service) => service.removeEntriesFromList(List.filled(1, entry), UpdateReason.DELETED));
-        completer.complete(entry);
+        if (entry.moduleId == NPModule.UPLOAD) {
+          // returns the parent entry
+          NPEntry parentEntry = EntryFactory.initFromJson(result['entry']);
+          ListService.activeServicesForModule(parentEntry.moduleId, parentEntry.owner.userId)
+              .forEach((service) => service.updateEntries(List.filled(1, parentEntry), UpdateReason.ADDED_OR_UPDATED));
+          completer.complete(parentEntry);
+        } else {
+          // use the entry object instead of the result from service call.
+          // this is because the result does not have complete information like folder. so there will be problem
+          // when deleting the entry from ListService.
+          ListService.activeServicesForModule(entry.moduleId, entry.owner.userId)
+              .forEach((service) => service.removeEntriesFromList(List.filled(1, entry), UpdateReason.DELETED));
+          completer.complete(entry);
+        }
       }
     }).catchError((error) {
       completer.completeError(error);

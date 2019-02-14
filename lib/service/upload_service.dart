@@ -43,7 +43,7 @@ class UploadService extends BaseService {
 
         _completeUpload(uploadEntry).then((result) {
           NPEntry parentEntry = result;
-          print('upload completed for parent ${parentEntry.toString()}');
+//          print('upload completed for parent ${parentEntry.toString()}');
           completer.complete(parentEntry);
         });
       }).catchError((error) {
@@ -105,7 +105,6 @@ class UploadService extends BaseService {
       } else {
         completer.completeError(new NPError(cause: 'UPLOAD_FAILED', detail: '${response.statusCode}'));
         response.stream.transform(utf8.decoder).listen((value) {
-          print(value);
         });
       }
     });

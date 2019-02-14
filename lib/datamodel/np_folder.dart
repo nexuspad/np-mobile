@@ -1,8 +1,9 @@
 import 'dart:ui';
 
+import 'package:np_mobile/datamodel/NPObject.dart';
 import 'package:np_mobile/datamodel/np_user.dart';
 
-class NPFolder {
+class NPFolder extends NPObject {
   static const int ROOT = 0;
   static const int TRASH = 9;
 

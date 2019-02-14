@@ -112,7 +112,7 @@ class _EntryFormState extends State<EntryEditScreen> {
 
       future.then((updatedEntryOrEntries) {
         UIHelper.showMessageOnSnackBar(text: MessageHelper.entrySaved(_entry.moduleId));
-        Navigator.of(context).pop(null);
+        Navigator.pop(context, _entry);
       }).catchError((error) {
         UIHelper.showMessageOnSnackBar(text: error.toString());
         print('error saving entry: $error');

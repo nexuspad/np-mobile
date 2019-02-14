@@ -19,8 +19,8 @@ class NPDoc extends NPEntry {
   NPDoc.copy(NPDoc doc) : super.copy(doc) {
     _format = doc.format;
     _description = doc.description;
-    if (doc.attachment != null && doc.attachment.length > 0) {
-      _attachments = new List.from(doc.attachment);
+    if (doc.attachments != null && doc.attachments.length > 0) {
+      _attachments = new List.from(doc.attachments);
     }
   }
 
@@ -48,7 +48,7 @@ class NPDoc extends NPEntry {
   }
 
   TextFormat get format => _format;
-  List<NPUpload> get attachment => _attachments;
+  List<NPUpload> get attachments => _attachments;
   String get description => _description;
 
   @override

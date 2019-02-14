@@ -3,15 +3,20 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:np_mobile/datamodel/UploadFileWrapper.dart';
+import 'package:np_mobile/datamodel/entry_list.dart';
 import 'package:np_mobile/datamodel/np_entry.dart';
 import 'package:np_mobile/datamodel/np_folder.dart';
 import 'package:np_mobile/service/UploadWorker.dart';
 import 'package:np_mobile/service/list_service.dart';
+import 'package:np_mobile/ui/blocs/application_state_provider.dart';
+import 'package:np_mobile/ui/blocs/organize_bloc.dart';
 import 'package:np_mobile/ui/message_helper.dart';
 import 'package:np_mobile/ui/ui_helper.dart';
 
 class UploaderScreen extends StatefulWidget {
-  UploaderScreen(BuildContext context, NPFolder folder, NPEntry parentEntry) : _folder = folder, _parentEntry = parentEntry;
+  UploaderScreen(BuildContext context, NPFolder folder, NPEntry parentEntry)
+      : _folder = folder,
+        _parentEntry = parentEntry;
 
   final NPFolder _folder;
   final NPEntry _parentEntry;
@@ -24,28 +29,47 @@ class _UploaderScreenState extends State<UploaderScreen> {
   Future<File> _imageFile;
   List<UploadFileWrapper> _selectedFiles = new List();
   bool isVideo = false;
+  NPEntry _updatedEntry;
+
+  OrganizeBloc _organizeBloc;
 
   @override
   Widget build(BuildContext context) {
+    _organizeBloc = ApplicationStateProvider.forOrganize(context);
+
     return Scaffold(
-      appBar: AppBar(title: Text('upload'), backgroundColor: UIHelper.blackCanvas(), actions: <Widget>[
-        IconButton(
-          tooltip: 'select from gallery',
-          icon: const Icon(Icons.photo_library),
-          onPressed: () {
-            isVideo = false;
-            _onSelectImageButtonPressed(ImageSource.gallery);
-          },
-        ),
-        IconButton(
-          tooltip: 'take a photo',
-          icon: const Icon(Icons.camera_alt),
-          onPressed: () {
-            isVideo = false;
-            _onSelectImageButtonPressed(ImageSource.camera);
-          },
-        )
-      ]),
+      appBar: AppBar(
+          leading: IconButton(
+            icon: Icon(Icons.close),
+            onPressed: () {
+              if (_updatedEntry == null) {
+                Navigator.pop(context, null);
+              } else {
+                Navigator.pop(context, _updatedEntry);
+                _organizeBloc.sendUpdate(_updatedEntry);
+              }
+            },
+          ),
+          title: Text('upload'),
+          backgroundColor: UIHelper.blackCanvas(),
+          actions: <Widget>[
+            IconButton(
+              tooltip: 'select from gallery',
+              icon: const Icon(Icons.photo_library),
+              onPressed: () {
+                isVideo = false;
+                _onSelectImageButtonPressed(ImageSource.gallery);
+              },
+            ),
+            IconButton(
+              tooltip: 'take a photo',
+              icon: const Icon(Icons.camera_alt),
+              onPressed: () {
+                isVideo = false;
+                _onSelectImageButtonPressed(ImageSource.camera);
+              },
+            )
+          ]),
       body: _selectedFiles.length == 0
           ? UIHelper.emptyContent(context, MessageHelper.getCmsValue("no_selection"))
           : _photoList(context),
@@ -64,6 +88,21 @@ class _UploaderScreenState extends State<UploaderScreen> {
       itemCount: _selectedFiles.length,
       itemBuilder: (context, index) {
         File file = _selectedFiles[index].file;
+
+        Widget actionButton = IconButton(
+          icon: Icon(Icons.clear),
+          tooltip: 'remove',
+          onPressed: () {
+            setState(() {
+              _selectedFiles.removeAt(index);
+            });
+          },
+        );
+
+        if (_selectedFiles[index].status == UploadStatus.completed) {
+          actionButton = Icon(Icons.check);
+        }
+
         return new ListTile(
           title: Row(
             children: <Widget>[
@@ -78,15 +117,7 @@ class _UploaderScreenState extends State<UploaderScreen> {
               Expanded(
                 child: Text(_selectedFiles[index].status.toString().split('.').last),
               ),
-              IconButton(
-                icon: Icon(Icons.remove_circle),
-                tooltip: 'remove',
-                onPressed: () {
-                  setState(() {
-                    _selectedFiles.removeAt(index);
-                  });
-                },
-              )
+              actionButton
             ],
           ),
           onTap: () {},
@@ -119,15 +150,32 @@ class _UploaderScreenState extends State<UploaderScreen> {
       return FloatingActionButton(
         child: const Icon(Icons.file_upload),
         onPressed: () {
-          UploadWorker(folder: widget._folder, entry: widget._parentEntry, files: _selectedFiles, progressCallback: (UploadFileWrapper ufw) {
-            setState(() {
-              // update the uploading status shown in the table
-            });
-            if (ufw.parentEntry != null) {
-              ListService.activeServicesForModule(ufw.parentEntry.moduleId, ufw.parentEntry.owner.userId)
-                  .forEach((service) => service.updateEntries(List.filled(1, ufw.parentEntry)));
-            }
-          }).start();
+          UploadWorker(
+              folder: widget._folder,
+              entry: widget._parentEntry,
+              files: _selectedFiles,
+              progressCallback: (UploadFileWrapper uploadedFileWrapper) {
+                setState(() {
+                  // update the uploading status shown in the table
+                  for (int i = 0; i<_selectedFiles.length; i++) {
+                    if (_selectedFiles[i].path == uploadedFileWrapper.path) {
+                      _selectedFiles[i].status = UploadStatus.completed;
+                    }
+                  }
+                });
+                if (uploadedFileWrapper.parentEntry != null) {
+                  ListService.activeServicesForModule(
+                          uploadedFileWrapper.parentEntry.moduleId, uploadedFileWrapper.parentEntry.owner.userId)
+                      .forEach((service) => service.updateEntries(
+                          List.filled(1, uploadedFileWrapper.parentEntry), UpdateReason.ADDED_OR_UPDATED));
+
+                  // attaching uploads to a doc
+                  if (widget._parentEntry != null) {
+                    _updatedEntry = uploadedFileWrapper.parentEntry;
+                    _organizeBloc.sendUpdate(_updatedEntry);
+                  }
+                }
+              }).start();
         },
         tooltip: 'upload',
       );

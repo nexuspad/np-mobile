@@ -205,7 +205,7 @@ class OrganizerScreen extends StatelessWidget {
         // anytime the builder sees new data in the stateStream, it will re-render the list widget
         if (snapshot.data != null) {
           ListSetting listSetting = snapshot.data.listSetting;
-          print('>>>>>>>>>>>>>>>> stream data received $listSetting');
+          print('OrganizerScreen >>>>>>>>>>>>>>>> stream data received $listSetting');
           if (listSetting.moduleId == NPModule.CONTACT) {
             return new NPGroupedListWidget(listSetting);
           } else if (listSetting.moduleId == NPModule.PHOTO) {

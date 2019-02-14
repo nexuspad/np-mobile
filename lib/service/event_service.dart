@@ -42,12 +42,12 @@ class EventService extends EntryService {
         if (result['entry'] != null) {
           NPEntry updatedEntry = EntryFactory.initFromJson(result['entry']);
           ListService.activeServicesForModule(updatedEntry.moduleId, updatedEntry.owner.userId)
-              .forEach((service) => service.updateEntries(List.filled(1, updatedEntry)));
+              .forEach((service) => service.updateEntries(List.filled(1, updatedEntry), UpdateReason.ADDED_OR_UPDATED));
           completer.complete(updatedEntry);
         } else if (result['entryList'] != null) {
           EntryList entryList = EventList.fromJson(result['entryList']);
           ListService.activeServicesForModule(NPModule.CALENDAR, event.owner.userId).forEach((service) {
-            service.updateEntries(entryList.entries);
+            service.updateEntries(entryList.entries, UpdateReason.ADDED_OR_UPDATED);
           });
           completer.complete(entryList);
         }

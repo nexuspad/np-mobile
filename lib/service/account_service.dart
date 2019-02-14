@@ -24,7 +24,6 @@ class AccountService extends BaseService {
     var completer = new Completer();
 
     if (_currentUser == null) {
-      print("init user object");
       _currentUser = new Account();
     }
 
@@ -40,7 +39,6 @@ class AccountService extends BaseService {
     var completer = new Completer();
 
     if (_currentUser == null) {
-      print("init user object");
       _currentUser = new Account();
     }
 

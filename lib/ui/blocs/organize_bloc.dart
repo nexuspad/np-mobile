@@ -1,5 +1,5 @@
+import 'package:np_mobile/datamodel/NPObject.dart';
 import 'package:np_mobile/datamodel/list_setting.dart';
-import 'package:np_mobile/datamodel/np_entry.dart';
 import 'package:np_mobile/datamodel/np_folder.dart';
 import 'package:np_mobile/datamodel/np_module.dart';
 import 'package:np_mobile/service/account_service.dart';
@@ -13,8 +13,13 @@ class OrganizeBloc {
   static final List<int> modules = [NPModule.CONTACT, NPModule.CALENDAR, NPModule.DOC, NPModule.BOOKMARK, NPModule.PHOTO];
 
   final _organizeSubject = BehaviorSubject<OrganizerSetting>();
+  final _updateSubject = BehaviorSubject<NPObject>();
+
   OrganizerSetting _currentSetting;
   Stream<OrganizerSetting> get stateStream => _organizeSubject.stream;
+
+  NPObject _updatedObject;
+  Stream<NPObject> get updateStream => _updateSubject.stream;
 
   OrganizeBloc() {
     _currentSetting = new OrganizerSetting();
@@ -24,6 +29,8 @@ class OrganizeBloc {
     if (_currentSetting.listSetting.ownerId == null) {
       _currentSetting.listSetting.ownerId = AccountService().userId;
     }
+
+    _updateSubject.sink.add(null);
   }
 
   setOwnerId(int ownerId) {
@@ -121,8 +128,14 @@ class OrganizeBloc {
     _currentSetting.listSetting.totalCount = totalCount;
   }
 
+  sendUpdate(NPObject entryOrFolder) {
+    _updatedObject = entryOrFolder;
+    _updateSubject.sink.add(_updatedObject);
+  }
+
   dispose() {
     _organizeSubject.close();
+    _updateSubject.close();
   }
 }
 
