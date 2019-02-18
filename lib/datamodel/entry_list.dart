@@ -75,6 +75,8 @@ class EntryList<T extends NPEntry> {
     return true;
   }
 
+  // an update reason needs to be provided since all entry lists current in the memory will execute this.
+  // if the entryList is for ROOT, there is logic to determine whether to add/delete entry based on the change and module.
   addEntries(List<NPEntry> entries, UpdateReason reason) {
     entries.forEach((e) => _addOrUpdateEntry(e, reason));
     _sortEntries();
@@ -109,6 +111,9 @@ class EntryList<T extends NPEntry> {
         }
         break;
       case UpdateReason.MOVED:
+        if (entry.folder.folderId != _folder.folderId) {
+          okToProceed = false;
+        }
         break;
       default:
         break;

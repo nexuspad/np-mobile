@@ -11,6 +11,9 @@ class CmsService extends BaseService {
   Map _timezoneHelperData;
   Map get timezoneHelperData => _timezoneHelperData;
 
+  Map<String, dynamic> _cmsContent;
+  Map get cmsContent => _cmsContent;
+
   Future<dynamic> getTimezoneHelperData() {
     var completer = new Completer();
 
@@ -18,6 +21,21 @@ class CmsService extends BaseService {
     RestClient().get(url, null).then((dynamic result) {
       // the response should be a Map
       _timezoneHelperData = result;
+      completer.complete(result);
+    }).catchError((error) {
+      completer.completeError(error);
+    });
+
+    return completer.future;
+  }
+
+  Future<dynamic> getCmsContent() {
+    var completer = new Completer();
+
+    String url = getCmsEndPoint('content');
+    RestClient().get(url, null).then((dynamic result) {
+      // the response should be a Map
+      _cmsContent = result;
       completer.complete(result);
     }).catchError((error) {
       completer.completeError(error);
