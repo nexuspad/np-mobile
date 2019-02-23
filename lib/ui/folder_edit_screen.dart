@@ -18,7 +18,7 @@ class FolderEditScreen extends StatefulWidget {
 
 class _FolderFormState extends State<FolderEditScreen> {
   final _formKey = GlobalKey<FormState>();
-  final scaffoldKey = UIHelper.initGlobalScaffold();
+  final scaffoldKey = new GlobalKey<ScaffoldState>();
 
   Color currentColor;
 
@@ -119,14 +119,14 @@ class _FolderFormState extends State<FolderEditScreen> {
   _submit(NPFolder folder) {
     if (_formKey.currentState.validate()) {
       _formKey.currentState.save();
-      UIHelper.showMessageOnSnackBar(text: MessageHelper.savingFolder());
+      UIHelper.showMessageOnSnackBar(globalKey: scaffoldKey, text: MessageHelper.savingFolder());
       FolderService(moduleId: widget._folder.moduleId, ownerId: widget._folder.owner.userId)
           .save(folder, FolderUpdateAction.UPDATE)
           .then((updatedEntry) {
-        UIHelper.showMessageOnSnackBar(text: MessageHelper.folderSaved());
+        UIHelper.showMessageOnSnackBar(globalKey: scaffoldKey, text: MessageHelper.folderSaved());
         Navigator.of(context).pop(null);
       }).catchError((error) {
-        UIHelper.showMessageOnSnackBar(text: error.toString());
+        UIHelper.showMessageOnSnackBar(globalKey: scaffoldKey, text: error.toString());
       });
     }
   }

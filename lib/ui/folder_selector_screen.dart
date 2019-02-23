@@ -17,37 +17,57 @@ import 'package:np_mobile/ui/widgets/folder_search_delegate.dart';
 enum FolderMenu { update, move, delete }
 enum SelectorAction { showList, moveEntry, moveFolder }
 
+// the folder selector may be opened for the following purposes
+// 1. listing navigation
+// 2. move an entry
+// 3. move a folder
+// 4. folder selection when add/update an entry
 class FolderSelectorScreen extends StatefulWidget {
   final NPFolder _startingFolder;
   final dynamic _itemToMove;
-  FolderSelectorScreen({BuildContext context, dynamic itemToMove})
+  final dynamic _itemToUpdate;
+
+  FolderSelectorScreen({BuildContext context, dynamic itemToMove, dynamic itemToUpdate})
       : _startingFolder = ApplicationStateProvider.forOrganize(context).getFolder(),
-        _itemToMove = itemToMove;
+        _itemToMove = itemToMove,
+        _itemToUpdate = itemToUpdate;
 
   @override
-  State<StatefulWidget> createState() => FolderSelectionState(_startingFolder, _itemToMove);
+  State<StatefulWidget> createState() => FolderSelectionState(_startingFolder, _itemToMove, _itemToUpdate);
 }
 
 class FolderSelectionState extends State<FolderSelectorScreen> {
-  final scaffoldKey = UIHelper.initGlobalScaffold();
+  final scaffoldKey = new GlobalKey<ScaffoldState>();
 
   bool _loading;
   NPFolder _currentRootFolder;
-  NPEntry _entryToMove;
-  NPFolder _folderToMove;
   FolderService _folderService;
   FolderTree _folderTree;
 
-  NPFolder _moveToFolder;
+  // items for moving action
+  NPEntry _entryToMove;
+  NPFolder _folderToMove;
+
+  // items for updating action
+  NPEntry _entryToUpdate;
+  NPFolder _folderToUpdate;
+
+  NPFolder _updateDestinationFolder;
 
   OrganizeBloc organizeBloc;
 
-  FolderSelectionState(NPFolder startingFolder, dynamic itemToMove) {
+  FolderSelectionState(NPFolder startingFolder, dynamic itemToMove, dynamic itemToUpdate) {
     _currentRootFolder = startingFolder;
     if (itemToMove is NPEntry) {
       _entryToMove = itemToMove;
     } else if (itemToMove is NPFolder) {
       _folderToMove = itemToMove;
+    }
+
+    if (itemToUpdate is NPEntry) {
+      _entryToUpdate = itemToUpdate;
+    } else if (itemToUpdate is NPFolder) {
+      _folderToUpdate = itemToUpdate;
     }
   }
 
@@ -78,8 +98,10 @@ class FolderSelectionState extends State<FolderSelectorScreen> {
     });
   }
 
-  bool _forMoving() {
-    return _folderToMove != null || _entryToMove != null ? true : false;
+  bool _selectorIsForMovingOrUpdating() {
+    return _folderToMove != null || _entryToMove != null || _entryToUpdate != null || _folderToUpdate != null
+        ? true
+        : false;
   }
 
   @override
@@ -93,13 +115,17 @@ class FolderSelectionState extends State<FolderSelectorScreen> {
       itemToMove = _folderToMove;
     }
 
+    dynamic title = Text(MessageHelper.folderNavigatorTitle(_currentRootFolder.moduleId));
+    if (_entryToMove != null || _folderToMove != null) {
+      title = Text('select folder to move into');
+    } else if (_entryToUpdate != null || _folderToUpdate != null) {
+      title = Text('select folder');
+    }
     return Scaffold(
       key: scaffoldKey,
       appBar: AppBar(
-        title: _entryToMove != null || _folderToMove != null
-            ? Text('select folder to move into')
-            : Text(MessageHelper.folderNavigatorTitle(_currentRootFolder.moduleId)),
-        backgroundColor: _forMoving() ? UIHelper.blueCanvas() : UIHelper.blackCanvas(),
+        title: title,
+        backgroundColor: _selectorIsForMovingOrUpdating() ? UIHelper.blueCanvas() : UIHelper.blackCanvas(),
         actions: <Widget>[
           IconButton(
             tooltip: 'search',
@@ -177,13 +203,24 @@ class FolderSelectionState extends State<FolderSelectorScreen> {
   Widget _parentRow() {
     var topWidget;
 
+    Widget lead = Icon(Icons.folder_open);
+
+    if (_currentRootFolder.folderId != NPFolder.ROOT) {
+      lead = UIHelper.goUpIconButton(() {
+        setState(() {
+          // refresh the folder selector
+          _currentRootFolder = _folderTree.searchNode(_currentRootFolder.parent.folderId);
+        });
+      });
+     }
+
     List<Widget> titleItems = [
-      Icon(Icons.folder_open),
+      lead,
       UIHelper.formSpacer(),
       Expanded(
         child: InkWell(
           onTap: () {
-            _moveToFolder = _currentRootFolder;
+            _updateDestinationFolder = _currentRootFolder;
             setState(() {});
           },
           child: _folderTitle(_currentRootFolder),
@@ -191,10 +228,10 @@ class FolderSelectionState extends State<FolderSelectorScreen> {
       )
     ];
 
-    if (_moveToFolder != null && _moveToFolder.folderId == _currentRootFolder.folderId) {
+    if (_updateDestinationFolder != null && _updateDestinationFolder.folderId == _currentRootFolder.folderId) {
       topWidget = Stack(
         alignment: AlignmentDirectional.centerStart,
-        children: <Widget>[Row(children: titleItems), _moveActionButtons(_currentRootFolder)],
+        children: <Widget>[Row(children: titleItems), _updateDestinationFolderActionButtons(_currentRootFolder)],
       );
     } else {
       topWidget = Row(children: _titleAndActionItems(titleItems, _currentRootFolder));
@@ -219,14 +256,14 @@ class FolderSelectionState extends State<FolderSelectorScreen> {
     ];
 
     Widget folderTile;
-    if (_moveToFolder != null && _moveToFolder.folderId == folder.folderId) {
+    if (_updateDestinationFolder != null && _updateDestinationFolder.folderId == folder.folderId) {
       // move has been initiated
       Row row = Row(
         children: titleItems,
       );
       folderTile = Stack(
         alignment: AlignmentDirectional.centerStart,
-        children: <Widget>[row, _moveActionButtons(folder)],
+        children: <Widget>[row, _updateDestinationFolderActionButtons(folder)],
       );
     } else {
       // just regular folder tile items
@@ -237,8 +274,8 @@ class FolderSelectionState extends State<FolderSelectorScreen> {
 
     return ListTile(
       onTap: () {
-        if (_entryToMove != null || _folderToMove != null) {
-          _moveToFolder = folder;
+        if (_selectorIsForMovingOrUpdating()) {
+          _updateDestinationFolder = folder;
           setState(() {});
         } else {
           organizeBloc.changeFolder(folder.folderId);
@@ -254,18 +291,9 @@ class FolderSelectionState extends State<FolderSelectorScreen> {
   List<Widget> _titleAndActionItems(List<Widget> items, NPFolder folder) {
     if (folder.folderId != NPFolder.ROOT) {
       if (_currentRootFolder.folderId == folder.folderId) {
-        items.add(new IconButton(
-          icon: Icon(FontAwesomeIcons.levelUpAlt, size:20),
-          tooltip: 'go up',
-          onPressed: () {
-            setState(() {
-              // refresh the folder selector
-              _currentRootFolder = _folderTree.searchNode(_currentRootFolder.parent.folderId);
-            });
-          },
-        ));
+        // this is parent row. nothing to show here.
       } else {
-        if (!_forMoving()) {
+        if (!_selectorIsForMovingOrUpdating()) {
           items.add(new PopupMenuButton<FolderMenu>(
             onSelected: (FolderMenu selection) {
               if (selection == FolderMenu.update) {
@@ -307,7 +335,7 @@ class FolderSelectionState extends State<FolderSelectorScreen> {
           items.insert(
               1,
               new IconButton(
-                icon: Icon(FontAwesomeIcons.chevronCircleDown, size:20),
+                icon: Icon(FontAwesomeIcons.chevronCircleDown, size: 20),
                 tooltip: 'open child folders',
                 onPressed: () {
                   setState(() {
@@ -322,40 +350,58 @@ class FolderSelectionState extends State<FolderSelectorScreen> {
     return items;
   }
 
-  _moveActionButtons(folder) {
-    return Row(
-      children: <Widget>[
-        Expanded(
-          child: UIHelper.formSpacer(),
-        ),
-        UIHelper.actionButton(context, 'move', () {
-          if (_entryToMove != null) {
-            UIHelper.showMessageOnSnackBar(text: MessageHelper.movingEntry(_entryToMove.moduleId));
-            EntryService().move(_entryToMove, folder).then((updatedEntry) {
-              UIHelper.showMessageOnSnackBar(text: MessageHelper.entryMoved(_entryToMove.moduleId));
-              Navigator.pop(context);
-            }).catchError((error) {
-              UIHelper.showMessageOnSnackBar(text: error.toString());
-            });
-          } else if (_folderToMove != null) {
-            _folderToMove.parent = NPFolder.copy(folder);
-            UIHelper.showMessageOnSnackBar(text: MessageHelper.movingFolder());
-            FolderService(moduleId: _folderToMove.moduleId, ownerId: _folderToMove.owner.userId)
-                .save(_folderToMove, FolderUpdateAction.MOVE)
-                .then((updatedFolder) {
-              UIHelper.showMessageOnSnackBar(text: MessageHelper.folderMoved());
-              Navigator.pop(context);
-            }).catchError((error) {
-              UIHelper.showMessageOnSnackBar(text: error.toString());
-            });
-          }
-        }),
-        UIHelper.cancelButton(context, () {
-          _moveToFolder = null;
-          setState(() {});
-        })
-      ],
-    );
+  _updateDestinationFolderActionButtons(folder) {
+    if (_entryToMove != null || _folderToMove != null) {
+      return Row(
+        children: <Widget>[
+          Expanded(
+            child: UIHelper.formSpacer(),
+          ),
+          UIHelper.actionButton(context, 'move', () {
+            if (_entryToMove != null) {
+              UIHelper.showMessageOnSnackBar(globalKey: scaffoldKey, text: MessageHelper.movingEntry(_entryToMove.moduleId));
+              EntryService().move(_entryToMove, folder).then((updatedEntry) {
+                UIHelper.showMessageOnSnackBar(globalKey: scaffoldKey, text: MessageHelper.entryMoved(_entryToMove.moduleId));
+                Navigator.pop(context);
+              }).catchError((error) {
+                UIHelper.showMessageOnSnackBar(globalKey: scaffoldKey, text: error.toString());
+              });
+            } else if (_folderToMove != null) {
+              _folderToMove.parent = NPFolder.copy(folder);
+              UIHelper.showMessageOnSnackBar(globalKey: scaffoldKey, text: MessageHelper.movingFolder());
+              FolderService(moduleId: _folderToMove.moduleId, ownerId: _folderToMove.owner.userId)
+                  .save(_folderToMove, FolderUpdateAction.MOVE)
+                  .then((updatedFolder) {
+                UIHelper.showMessageOnSnackBar(globalKey: scaffoldKey, text: MessageHelper.folderMoved());
+                Navigator.pop(context);
+              }).catchError((error) {
+                UIHelper.showMessageOnSnackBar(globalKey: scaffoldKey, text: error.toString());
+              });
+            }
+          }),
+          UIHelper.cancelButton(context, () {
+            _updateDestinationFolder = null;
+            setState(() {});
+          })
+        ],
+      );
+    } else if (_entryToUpdate != null || _folderToUpdate != null) {
+      return Row(
+        children: <Widget>[
+          Expanded(
+            child: UIHelper.formSpacer(),
+          ),
+          UIHelper.actionButton(context, 'select', () {
+            // pop to the entry or folder update form with the selected folder
+            Navigator.pop(context, folder);
+          }),
+          UIHelper.cancelButton(context, () {
+            _updateDestinationFolder = null;
+            setState(() {});
+          })
+        ],
+      );
+    }
   }
 
   Text _folderTitle(NPFolder folder) {
@@ -370,7 +416,7 @@ class FolderSelectionState extends State<FolderSelectorScreen> {
   }
 
   _folderEnabled(NPFolder folder) {
-    if (!_forMoving()) {
+    if (!_selectorIsForMovingOrUpdating()) {
       return true;
     } else {
       if (_entryToMove != null && _entryToMove.folder.folderId == folder.folderId) {
@@ -411,13 +457,13 @@ class FolderSelectionState extends State<FolderSelectorScreen> {
   }
 
   _deleteFolder(NPFolder folder) {
-    UIHelper.showMessageOnSnackBar(text: MessageHelper.deletingFolder());
+    UIHelper.showMessageOnSnackBar(globalKey: scaffoldKey, text: MessageHelper.deletingFolder());
     FolderService(moduleId: folder.moduleId, ownerId: folder.owner.userId).delete(folder).then((deletedFolder) {
       Navigator.of(context).pop();
-      UIHelper.showMessageOnSnackBar(text: MessageHelper.folderDeleted());
+      UIHelper.showMessageOnSnackBar(globalKey: scaffoldKey, text: MessageHelper.folderDeleted());
       setState(() {});
     }).catchError((error) {
-      UIHelper.showMessageOnSnackBar(text: error.toString());
+      UIHelper.showMessageOnSnackBar(globalKey: scaffoldKey, text: error.toString());
     });
   }
 

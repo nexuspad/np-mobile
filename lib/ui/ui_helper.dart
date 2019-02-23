@@ -7,14 +7,14 @@ import 'package:np_mobile/datamodel/np_module.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class UIHelper {
-  static GlobalKey<ScaffoldState> _globalScaffold;
-
   static final npDateFormatter = new DateFormat('yyyy-MM-dd');
   static final npTimeFormatter = new DateFormat.Hm();
 
   static var _grayedTitle;
   static var _regularTitle;
   static var _pinnedTitle;
+
+  static final int snackBarMessageDuration = 2;
 
   static double mediumFontSize = 20.0;
 
@@ -202,6 +202,19 @@ class UIHelper {
     return Transform.rotate(angle: -math.pi / 4, child: Icon(FontAwesomeIcons.chevronLeft, size: 28,));
   }
 
+  static goUpIconButton(onPressedFunction) {
+    return Transform.rotate(
+      angle: -math.pi,
+      child: IconButton(
+        icon: const Icon(
+          FontAwesomeIcons.levelDownAlt,
+          size: 20,
+        ),
+        onPressed: onPressedFunction,
+      ),
+    );
+  }
+
   static DateTime firstDayOfWeek({DateTime aDate, int startOfWeek: DateTime.sunday}) {
     if (aDate.weekday == startOfWeek) {
       return aDate;
@@ -215,27 +228,24 @@ class UIHelper {
     return DateTime.parse(ymd.substring(0, 8) + '01');
   }
 
-  static GlobalKey<ScaffoldState> initGlobalScaffold() {
-    _globalScaffold = new GlobalKey<ScaffoldState>();
-    return _globalScaffold;
-  }
-
-  static void showMessageOnSnackBar({BuildContext context, String text}) {
+  static void showMessageOnSnackBar({BuildContext context, GlobalKey<ScaffoldState> globalKey, String text}) {
     if (context != null) {
       try {
+        print(context);
         var currentState = Scaffold.of(context);
         if (currentState != null) {
           currentState.hideCurrentSnackBar();
-          currentState.showSnackBar(new SnackBar(content: new Text(text), duration: Duration(seconds: 3)));
+          currentState.showSnackBar(new SnackBar(content: new Text(text), duration: Duration(seconds: snackBarMessageDuration)));
         }
       } catch (error) {
         // nothing to do here.
+        print(error);
       }
-    } else if (_globalScaffold != null && _globalScaffold.currentState != null) {
-      _globalScaffold.currentState.hideCurrentSnackBar();
-      _globalScaffold.currentState.showSnackBar(new SnackBar(
+    } else if (globalKey != null && globalKey.currentState != null) {
+      globalKey.currentState.hideCurrentSnackBar();
+      globalKey.currentState.showSnackBar(new SnackBar(
         content: new Text(text),
-        duration: Duration(seconds: 3),
+        duration: Duration(seconds: snackBarMessageDuration),
       ));
     }
   }

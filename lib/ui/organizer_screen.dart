@@ -165,24 +165,14 @@ class OrganizerScreen extends StatelessWidget {
         if (snapshot.data != null) {
           ListSetting listSetting = snapshot.data.listSetting;
           if (listSetting.folderId != 0) {
-            return Transform.rotate(
-              angle: -math.pi,
-              child: IconButton(
-                icon: const Icon(
-                  FontAwesomeIcons.levelDownAlt,
-                  size: 20,
-                ),
-                onPressed: () {
-                  FolderService folderService =
-                      FolderService(moduleId: listSetting.moduleId, ownerId: listSetting.ownerId);
-                  NPFolder folder = folderService.folderDetail(listSetting.folderId);
-                  if (folder != null && folder.parent != null) {
-                    organizeBloc.changeFolder(folder.parent.folderId);
-                  }
-                },
-                tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
-              ),
-            );
+            return UIHelper.goUpIconButton(() {
+              FolderService folderService =
+              FolderService(moduleId: listSetting.moduleId, ownerId: listSetting.ownerId);
+              NPFolder folder = folderService.folderDetail(listSetting.folderId);
+              if (folder != null && folder.parent != null) {
+                organizeBloc.changeFolder(folder.parent.folderId);
+              }
+            });
           }
         }
 

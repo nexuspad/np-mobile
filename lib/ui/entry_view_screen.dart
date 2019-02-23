@@ -120,6 +120,7 @@ class _EntryViewScreenState extends State<EntryViewScreen> {
   }
 
   _editPage() async {
+    // the route returns the updated entry.
     final updatedEntry = await Navigator.push(
         context,
         MaterialPageRoute(

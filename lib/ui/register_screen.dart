@@ -13,7 +13,7 @@ class RegisterScreen extends StatefulWidget {
 
 class RegisterFormState extends State<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
-  final scaffoldKey = UIHelper.initGlobalScaffold();
+  final scaffoldKey = new GlobalKey<ScaffoldState>();
 
   String _email;
   String _password;
@@ -109,19 +109,19 @@ class RegisterFormState extends State<RegisterScreen> {
     if (_formKey.currentState.validate()) {
       _loading = true;
       _formKey.currentState.save();
-      UIHelper.showMessageOnSnackBar(text: 'creating account...');
+      UIHelper.showMessageOnSnackBar(globalKey: scaffoldKey, text: 'creating account...');
       AccountService().register(_email, _password).then((dynamic result) {
         Account user = result;
         setState(() {
           _loading = false;
         });
         if (user.sessionId != null) {
-          UIHelper.showMessageOnSnackBar(text: 'success');
+          UIHelper.showMessageOnSnackBar(globalKey: scaffoldKey, text: 'success');
           Navigator.pushReplacementNamed(context, 'organize');
         }
       }).catchError((error) {
         if (error is NPError) {
-          UIHelper.showMessageOnSnackBar(text: error.toString());
+          UIHelper.showMessageOnSnackBar(globalKey: scaffoldKey, text: error.toString());
         }
         setState(() {
           _loading = false;

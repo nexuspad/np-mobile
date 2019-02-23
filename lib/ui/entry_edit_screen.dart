@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:np_mobile/app_manager.dart';
 import 'package:np_mobile/datamodel/np_entry.dart';
 import 'package:np_mobile/datamodel/np_event.dart';
+import 'package:np_mobile/datamodel/np_folder.dart';
 import 'package:np_mobile/datamodel/np_module.dart';
 import 'package:np_mobile/datamodel/recurrence.dart';
 import 'package:np_mobile/datamodel/reminder.dart';
 import 'package:np_mobile/service/entry_service.dart';
 import 'package:np_mobile/service/event_service.dart';
 import 'package:np_mobile/service/np_error.dart';
+import 'package:np_mobile/ui/folder_selector_screen.dart';
 import 'package:np_mobile/ui/message_helper.dart';
 import 'package:np_mobile/ui/ui_helper.dart';
 import 'package:np_mobile/ui/widgets/bookmark_edit_util.dart';
@@ -25,7 +27,7 @@ class EntryEditScreen extends StatefulWidget {
 
 class _EntryFormState extends State<EntryEditScreen> {
   final _formKey = GlobalKey<FormState>();
-  final scaffoldKey = UIHelper.initGlobalScaffold();
+  final scaffoldKey = new GlobalKey<ScaffoldState>();
 
   NPEntry _entry;
 
@@ -49,10 +51,19 @@ class _EntryFormState extends State<EntryEditScreen> {
         backgroundColor: UIHelper.blueCanvas(),
         actions: <Widget>[
           IconButton(
+            icon: Icon(Icons.folder),
+            onPressed: () {
+              _selectDestinationFolder().then((selectedFolder) {
+                _entry.folder = NPFolder.copy(selectedFolder);
+                UIHelper.showMessageOnSnackBar(globalKey: scaffoldKey, text: 'folder updated to ${_entry.folder.folderName}');
+              });
+            },
+          ),
+          IconButton(
+            icon: Icon(Icons.save),
             onPressed: () {
               _submit();
             },
-            icon: Icon(Icons.save),
           ),
         ],
         leading: new IconButton(
@@ -97,10 +108,19 @@ class _EntryFormState extends State<EntryEditScreen> {
     return null;
   }
 
+  _selectDestinationFolder() async {
+    return await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => FolderSelectorScreen(context: context, itemToUpdate: _entry,),
+      ),
+    );
+  }
+
   _submit() {
     if (_formKey.currentState.validate()) {
       _formKey.currentState.save();
-      UIHelper.showMessageOnSnackBar(text: MessageHelper.savingEntry(_entry.moduleId));
+      UIHelper.showMessageOnSnackBar(globalKey: scaffoldKey, text: MessageHelper.savingEntry(_entry.moduleId));
 
       Future<dynamic> future;
 
@@ -111,10 +131,10 @@ class _EntryFormState extends State<EntryEditScreen> {
       }
 
       future.then((updatedEntryOrEntries) {
-        UIHelper.showMessageOnSnackBar(text: MessageHelper.entrySaved(_entry.moduleId));
+        UIHelper.showMessageOnSnackBar(globalKey: scaffoldKey, text: MessageHelper.entrySaved(_entry.moduleId));
         Navigator.pop(context, _entry);
       }).catchError((error) {
-        UIHelper.showMessageOnSnackBar(text: error.toString());
+        UIHelper.showMessageOnSnackBar(globalKey: scaffoldKey, text: error.toString());
         print('error saving entry: $error');
         if (error is NPError && error.errorCode == NPError.INVALID_SESSION) {
           AppManager().logout(context);
