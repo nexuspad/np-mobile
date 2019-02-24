@@ -54,6 +54,7 @@ class DocView {
             ],
           ),
           onTap: () {
+            print(upload.downloadLink);
             UIHelper.launchUrl(upload.downloadLink);
           },
         ));
