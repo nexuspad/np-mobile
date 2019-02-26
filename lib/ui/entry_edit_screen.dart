@@ -9,6 +9,8 @@ import 'package:np_mobile/datamodel/reminder.dart';
 import 'package:np_mobile/service/entry_service.dart';
 import 'package:np_mobile/service/event_service.dart';
 import 'package:np_mobile/service/np_error.dart';
+import 'package:np_mobile/ui/blocs/application_state_provider.dart';
+import 'package:np_mobile/ui/blocs/organize_bloc.dart';
 import 'package:np_mobile/ui/folder_selector_screen.dart';
 import 'package:np_mobile/ui/message_helper.dart';
 import 'package:np_mobile/ui/ui_helper.dart';
@@ -30,6 +32,7 @@ class _EntryFormState extends State<EntryEditScreen> {
   final scaffoldKey = new GlobalKey<ScaffoldState>();
 
   NPEntry _entry;
+  OrganizeBloc _organizeBloc;
 
   _EntryFormState(NPEntry entry) {
     _entry = entry;
@@ -37,6 +40,8 @@ class _EntryFormState extends State<EntryEditScreen> {
 
   @override
   Widget build(BuildContext context) {
+    _organizeBloc = ApplicationStateProvider.forOrganize(context);
+
     String title = NPModule.entryName(_entry.folder.moduleId);
     if (_entry.entryId != null && _entry.entryId.isNotEmpty) {
       title = 'update ' + title;
@@ -131,6 +136,7 @@ class _EntryFormState extends State<EntryEditScreen> {
       }
 
       future.then((updatedEntryOrEntries) {
+        _organizeBloc.sendUpdate(_entry);
         UIHelper.showMessageOnSnackBar(globalKey: scaffoldKey, text: MessageHelper.entrySaved(_entry.moduleId));
         Navigator.pop(context, _entry);
       }).catchError((error) {
