@@ -75,8 +75,8 @@ class _EntryViewWidgetState extends State<EntryViewWidget> with SingleTickerProv
             // entry view -> entry edit -> save and return to view
             if (_entry.moduleId == updatedEntry.moduleId && _entry.entryId == updatedEntry.entryId) {
               _entry = updatedEntry;
+              organizeBloc.resetUpdate();
             }
-            organizeBloc.resetUpdate();
           }
           return EntryViewUtil.fullPage(_entry, context, (entry) {
             if (this.mounted) {
