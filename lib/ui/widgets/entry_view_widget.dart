@@ -70,7 +70,13 @@ class _EntryViewWidgetState extends State<EntryViewWidget> with SingleTickerProv
         stream: organizeBloc.updateStream,
         builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
           if (snapshot.data != null) {
-            _entry = snapshot.data;
+            NPEntry updatedEntry = snapshot.data;
+            // only update the stream when the entry Id matches. the situation below fits:
+            // entry view -> entry edit -> save and return to view
+            if (_entry.moduleId == updatedEntry.moduleId && _entry.entryId == updatedEntry.entryId) {
+              _entry = updatedEntry;
+            }
+            organizeBloc.resetUpdate();
           }
           return EntryViewUtil.fullPage(_entry, context, (entry) {
             if (this.mounted) {

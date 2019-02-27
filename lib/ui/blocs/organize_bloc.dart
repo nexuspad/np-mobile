@@ -133,6 +133,11 @@ class OrganizeBloc {
     _updateSubject.sink.add(_updatedObject);
   }
 
+  resetUpdate() {
+    _updatedObject = null;
+    _updateSubject.sink.add(null);
+  }
+
   dispose() {
     _organizeSubject.close();
     _updateSubject.close();
