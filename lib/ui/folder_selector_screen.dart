@@ -10,7 +10,7 @@ import 'package:np_mobile/service/folder_service.dart';
 import 'package:np_mobile/ui/blocs/application_state_provider.dart';
 import 'package:np_mobile/ui/blocs/organize_bloc.dart';
 import 'package:np_mobile/ui/folder_edit_screen.dart';
-import 'package:np_mobile/ui/message_helper.dart';
+import 'package:np_mobile/ui/content_helper.dart';
 import 'package:np_mobile/ui/ui_helper.dart';
 import 'package:np_mobile/ui/widgets/folder_search_delegate.dart';
 
@@ -115,7 +115,7 @@ class FolderSelectionState extends State<FolderSelectorScreen> {
       itemToMove = _folderToMove;
     }
 
-    dynamic title = Text(MessageHelper.folderNavigatorTitle(_currentRootFolder.moduleId));
+    dynamic title = Text(ContentHelper.folderNavigatorTitle(_currentRootFolder.moduleId));
     if (_entryToMove != null || _folderToMove != null) {
       title = Text('select folder to move into');
     } else if (_entryToUpdate != null || _folderToUpdate != null) {
@@ -175,7 +175,7 @@ class FolderSelectionState extends State<FolderSelectorScreen> {
     } else {
       Widget childFolderWidget;
       if (_currentRootFolder.subFolders != null && _currentRootFolder.subFolders.length == 0) {
-        childFolderWidget = UIHelper.emptyContent(context, MessageHelper.getCmsValue("no_subfolder"), 0);
+        childFolderWidget = UIHelper.emptyContent(context, ContentHelper.getCmsValue("no_subfolder"), 0);
       } else {
         childFolderWidget = ListView.separated(
           padding: AppManager().isSmallScreen ? UIHelper.noPadding() : UIHelper.contentPadding(),
@@ -359,20 +359,20 @@ class FolderSelectionState extends State<FolderSelectorScreen> {
           ),
           UIHelper.actionButton(context, 'move', () {
             if (_entryToMove != null) {
-              UIHelper.showMessageOnSnackBar(globalKey: scaffoldKey, text: MessageHelper.movingEntry(_entryToMove.moduleId));
+              UIHelper.showMessageOnSnackBar(globalKey: scaffoldKey, text: ContentHelper.movingEntry(_entryToMove.moduleId));
               EntryService().move(_entryToMove, folder).then((updatedEntry) {
-                UIHelper.showMessageOnSnackBar(globalKey: scaffoldKey, text: MessageHelper.entryMoved(_entryToMove.moduleId));
+                UIHelper.showMessageOnSnackBar(globalKey: scaffoldKey, text: ContentHelper.entryMoved(_entryToMove.moduleId));
                 Navigator.pop(context);
               }).catchError((error) {
                 UIHelper.showMessageOnSnackBar(globalKey: scaffoldKey, text: error.toString());
               });
             } else if (_folderToMove != null) {
               _folderToMove.parent = NPFolder.copy(folder);
-              UIHelper.showMessageOnSnackBar(globalKey: scaffoldKey, text: MessageHelper.movingFolder());
+              UIHelper.showMessageOnSnackBar(globalKey: scaffoldKey, text: ContentHelper.movingFolder());
               FolderService(moduleId: _folderToMove.moduleId, ownerId: _folderToMove.owner.userId)
                   .save(_folderToMove, FolderUpdateAction.MOVE)
                   .then((updatedFolder) {
-                UIHelper.showMessageOnSnackBar(globalKey: scaffoldKey, text: MessageHelper.folderMoved());
+                UIHelper.showMessageOnSnackBar(globalKey: scaffoldKey, text: ContentHelper.folderMoved());
                 Navigator.pop(context);
               }).catchError((error) {
                 UIHelper.showMessageOnSnackBar(globalKey: scaffoldKey, text: error.toString());
@@ -457,10 +457,10 @@ class FolderSelectionState extends State<FolderSelectorScreen> {
   }
 
   _deleteFolder(NPFolder folder) {
-    UIHelper.showMessageOnSnackBar(globalKey: scaffoldKey, text: MessageHelper.deletingFolder());
+    UIHelper.showMessageOnSnackBar(globalKey: scaffoldKey, text: ContentHelper.deletingFolder());
     FolderService(moduleId: folder.moduleId, ownerId: folder.owner.userId).delete(folder).then((deletedFolder) {
       Navigator.of(context).pop();
-      UIHelper.showMessageOnSnackBar(globalKey: scaffoldKey, text: MessageHelper.folderDeleted());
+      UIHelper.showMessageOnSnackBar(globalKey: scaffoldKey, text: ContentHelper.folderDeleted());
       setState(() {});
     }).catchError((error) {
       UIHelper.showMessageOnSnackBar(globalKey: scaffoldKey, text: error.toString());

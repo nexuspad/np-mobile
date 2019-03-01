@@ -12,7 +12,7 @@ import 'package:np_mobile/service/np_error.dart';
 import 'package:np_mobile/ui/blocs/application_state_provider.dart';
 import 'package:np_mobile/ui/blocs/organize_bloc.dart';
 import 'package:np_mobile/ui/folder_selector_screen.dart';
-import 'package:np_mobile/ui/message_helper.dart';
+import 'package:np_mobile/ui/content_helper.dart';
 import 'package:np_mobile/ui/ui_helper.dart';
 import 'package:np_mobile/ui/widgets/bookmark_edit_util.dart';
 import 'package:np_mobile/ui/widgets/contact_edit_util.dart';
@@ -125,7 +125,7 @@ class _EntryFormState extends State<EntryEditScreen> {
   _submit() {
     if (_formKey.currentState.validate()) {
       _formKey.currentState.save();
-      UIHelper.showMessageOnSnackBar(globalKey: scaffoldKey, text: MessageHelper.savingEntry(_entry.moduleId));
+      UIHelper.showMessageOnSnackBar(globalKey: scaffoldKey, text: ContentHelper.savingEntry(_entry.moduleId));
 
       Future<dynamic> future;
 
@@ -137,7 +137,7 @@ class _EntryFormState extends State<EntryEditScreen> {
 
       future.then((updatedEntryOrEntries) {
         _organizeBloc.sendUpdate(_entry);
-        UIHelper.showMessageOnSnackBar(globalKey: scaffoldKey, text: MessageHelper.entrySaved(_entry.moduleId));
+        UIHelper.showMessageOnSnackBar(globalKey: scaffoldKey, text: ContentHelper.entrySaved(_entry.moduleId));
         Navigator.pop(context, _entry);
       }).catchError((error) {
         UIHelper.showMessageOnSnackBar(globalKey: scaffoldKey, text: error.toString());

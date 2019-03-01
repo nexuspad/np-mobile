@@ -11,7 +11,7 @@ import 'package:np_mobile/service/np_error.dart';
 import 'package:np_mobile/ui/blocs/application_state_provider.dart';
 import 'package:np_mobile/ui/entry_edit_screen.dart';
 import 'package:np_mobile/ui/folder_selector_screen.dart';
-import 'package:np_mobile/ui/message_helper.dart';
+import 'package:np_mobile/ui/content_helper.dart';
 import 'package:np_mobile/ui/ui_helper.dart';
 import 'package:np_mobile/ui/widgets/base_list.dart';
 import 'package:np_mobile/ui/widgets/tag_form_util.dart';
@@ -180,10 +180,10 @@ class NPModuleListingState<T extends BaseList> extends State<T> {
             ),
           );
         } else if (selected == EntryMenu.delete) {
-          UIHelper.showMessageOnSnackBar(context: context, text: MessageHelper.deleting(e.moduleId));
+          UIHelper.showMessageOnSnackBar(context: context, text: ContentHelper.deleting(e.moduleId));
           EntryService().delete(e).then((deletedEntry) {
             setState(() {});
-            UIHelper.showMessageOnSnackBar(context: context, text: MessageHelper.entryDeleted(e.moduleId));
+            UIHelper.showMessageOnSnackBar(context: context, text: ContentHelper.entryDeleted(e.moduleId));
           });
         }
       },

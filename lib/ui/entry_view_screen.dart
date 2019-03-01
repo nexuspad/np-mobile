@@ -6,7 +6,7 @@ import 'package:np_mobile/service/entry_service.dart';
 import 'package:np_mobile/service/list_service.dart';
 import 'package:np_mobile/ui/entry_edit_screen.dart';
 import 'package:np_mobile/ui/folder_selector_screen.dart';
-import 'package:np_mobile/ui/message_helper.dart';
+import 'package:np_mobile/ui/content_helper.dart';
 import 'package:np_mobile/ui/ui_helper.dart';
 import 'package:np_mobile/ui/uploader_screen.dart';
 import 'package:np_mobile/ui/widgets/base_list.dart';
@@ -144,7 +144,7 @@ class _EntryViewScreenState extends State<EntryViewScreen> {
 
   _deleteEntry() {
     NPEntry e = _entryList.entries[_index];
-    UIHelper.showMessageOnSnackBar(context: context, text: MessageHelper.deleting(e.moduleId));
+    UIHelper.showMessageOnSnackBar(context: context, text: ContentHelper.deleting(e.moduleId));
     EntryService().delete(e).then((deletedEntry) {
       setState(() {});
     });

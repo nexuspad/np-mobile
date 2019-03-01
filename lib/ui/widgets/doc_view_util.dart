@@ -4,7 +4,7 @@ import 'package:np_mobile/datamodel/np_doc.dart';
 import 'package:np_mobile/datamodel/np_module.dart';
 import 'package:np_mobile/datamodel/np_upload.dart';
 import 'package:np_mobile/service/entry_service.dart';
-import 'package:np_mobile/ui/message_helper.dart';
+import 'package:np_mobile/ui/content_helper.dart';
 import 'package:np_mobile/ui/ui_helper.dart';
 import 'package:np_mobile/ui/widgets/tag_form_widget.dart';
 
@@ -45,10 +45,10 @@ class DocView {
             children: <Widget>[
               Expanded(child: Text(upload.fileName),),
               IconButton(icon: Icon(Icons.clear), onPressed: () {
-                UIHelper.showMessageOnSnackBar(context: context, text: MessageHelper.deleting(NPModule.UPLOAD));
+                UIHelper.showMessageOnSnackBar(context: context, text: ContentHelper.deleting(NPModule.UPLOAD));
                 EntryService().delete(upload).then((doc) {
                   setStateCallback(doc);
-                  UIHelper.showMessageOnSnackBar(context: context, text: MessageHelper.entryDeleted(NPModule.UPLOAD));
+                  UIHelper.showMessageOnSnackBar(context: context, text: ContentHelper.entryDeleted(NPModule.UPLOAD));
                 });
               })
             ],

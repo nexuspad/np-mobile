@@ -8,7 +8,7 @@ import 'package:np_mobile/datamodel/recurrence.dart';
 import 'package:np_mobile/datamodel/reminder.dart';
 import 'package:np_mobile/service/event_service.dart';
 import 'package:np_mobile/service/preference_service.dart';
-import 'package:np_mobile/ui/message_helper.dart';
+import 'package:np_mobile/ui/content_helper.dart';
 import 'package:np_mobile/ui/ui_helper.dart';
 import 'package:np_mobile/ui/widgets/date_time_picker.dart';
 import 'package:np_mobile/ui/widgets/tag_form_widget.dart';
@@ -229,7 +229,7 @@ class EventEdit {
                       String valueInStr = value.toString().split(".").last;
                       return new DropdownMenuItem<String>(
                         value: valueInStr,
-                        child: new Text(MessageHelper.getCmsValue(valueInStr)),
+                        child: new Text(ContentHelper.getCmsValue(valueInStr)),
                       );
                     }).toList(),
                     value: reminder.timeUnit.toString().split('.').last,
@@ -265,7 +265,7 @@ class EventEdit {
                   String valueInString = value.toString().split(".").last;
                   return new DropdownMenuItem<String>(
                     value: valueInString,
-                    child: new Text(MessageHelper.getCmsValue(valueInString)),
+                    child: new Text(ContentHelper.getCmsValue(valueInString)),
                   );
                 }).toList(),
                 value: recurrence.pattern.toString().split('.').last,
@@ -370,7 +370,7 @@ class EventEdit {
                   return null;
                 },
                 decoration: new InputDecoration(
-                    labelText: MessageHelper.getCmsValue("quick_todo"), border: UnderlineInputBorder()),
+                    labelText: ContentHelper.getCmsValue("quick_todo"), border: UnderlineInputBorder()),
               ),
             ),
           ),
@@ -404,10 +404,10 @@ class EventEdit {
               if (formKey.currentState.validate()) {
                 formKey.currentState.save();
 
-                UIHelper.showMessageOnSnackBar(context: context, text: MessageHelper.savingEntry(NPModule.CALENDAR));
+                UIHelper.showMessageOnSnackBar(context: context, text: ContentHelper.savingEntry(NPModule.CALENDAR));
 
                 EventService().saveEvent(event: blankEvent).then((updatedEntryOrEntries) {
-                  UIHelper.showMessageOnSnackBar(context: context, text: MessageHelper.entrySaved(NPModule.CALENDAR));
+                  UIHelper.showMessageOnSnackBar(context: context, text: ContentHelper.entrySaved(NPModule.CALENDAR));
                   submissionCallback();
                   formKey.currentState.reset();
                 }).catchError((error) {

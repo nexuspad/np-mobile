@@ -4,7 +4,7 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'package:np_mobile/datamodel/np_module.dart';
 import 'package:np_mobile/service/cms_service.dart';
 
-class MessageHelper {
+class ContentHelper {
   static Map<String, dynamic> _content;
 
   static Future loadContent(context) {
@@ -13,6 +13,7 @@ class MessageHelper {
     CmsService().getCmsContent().then((result) {
       _content = result;
       if (_content.keys.length == 0) {
+        print('no cms entry found. fall back to local json file.');
         rootBundle.loadString("assets/data/content.json").then((contentInString) {
           _content = json.decode(contentInString);
           completer.complete();
@@ -21,6 +22,7 @@ class MessageHelper {
           completer.completeError(error);
         });
       } else {
+        print('${_content.keys.length} cms entries loaded.');
         completer.complete();
       }
     });

@@ -10,7 +10,7 @@ import 'package:np_mobile/service/UploadWorker.dart';
 import 'package:np_mobile/service/list_service.dart';
 import 'package:np_mobile/ui/blocs/application_state_provider.dart';
 import 'package:np_mobile/ui/blocs/organize_bloc.dart';
-import 'package:np_mobile/ui/message_helper.dart';
+import 'package:np_mobile/ui/content_helper.dart';
 import 'package:np_mobile/ui/ui_helper.dart';
 
 class UploaderScreen extends StatefulWidget {
@@ -71,7 +71,7 @@ class _UploaderScreenState extends State<UploaderScreen> {
             )
           ]),
       body: _selectedFiles.length == 0
-          ? UIHelper.emptyContent(context, MessageHelper.getCmsValue("no_selection"), 0)
+          ? UIHelper.emptyContent(context, ContentHelper.getCmsValue("no_selection"), 0)
           : _photoList(context),
       floatingActionButton: _actionMenuItems(),
     );

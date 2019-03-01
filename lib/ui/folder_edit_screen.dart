@@ -3,7 +3,7 @@ import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:np_mobile/datamodel/np_folder.dart';
 import 'package:np_mobile/service/FolderServiceData.dart';
 import 'package:np_mobile/service/folder_service.dart';
-import 'package:np_mobile/ui/message_helper.dart';
+import 'package:np_mobile/ui/content_helper.dart';
 import 'package:np_mobile/ui/ui_helper.dart';
 
 class FolderEditScreen extends StatefulWidget {
@@ -119,11 +119,11 @@ class _FolderFormState extends State<FolderEditScreen> {
   _submit(NPFolder folder) {
     if (_formKey.currentState.validate()) {
       _formKey.currentState.save();
-      UIHelper.showMessageOnSnackBar(globalKey: scaffoldKey, text: MessageHelper.savingFolder());
+      UIHelper.showMessageOnSnackBar(globalKey: scaffoldKey, text: ContentHelper.savingFolder());
       FolderService(moduleId: widget._folder.moduleId, ownerId: widget._folder.owner.userId)
           .save(folder, FolderUpdateAction.UPDATE)
           .then((updatedEntry) {
-        UIHelper.showMessageOnSnackBar(globalKey: scaffoldKey, text: MessageHelper.folderSaved());
+        UIHelper.showMessageOnSnackBar(globalKey: scaffoldKey, text: ContentHelper.folderSaved());
         Navigator.of(context).pop(null);
       }).catchError((error) {
         UIHelper.showMessageOnSnackBar(globalKey: scaffoldKey, text: error.toString());

@@ -3,7 +3,7 @@ import 'package:np_mobile/app_manager.dart';
 import 'package:np_mobile/datamodel/account.dart';
 import 'package:np_mobile/service/account_service.dart';
 import 'package:np_mobile/ui/blocs/application_state_provider.dart';
-import 'package:np_mobile/ui/message_helper.dart';
+import 'package:np_mobile/ui/content_helper.dart';
 import 'package:np_mobile/ui/ui_helper.dart';
 import 'login_screen.dart';
 
@@ -42,7 +42,7 @@ class LandingScreenState extends State<LandingScreen> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<dynamic>(
-      future: MessageHelper.loadContent(context),
+      future: ContentHelper.loadContent(context),
       builder: (context, snapshot) {
         AppManager().checkScreenSize(context);
         UIHelper.init(context);
@@ -53,7 +53,7 @@ class LandingScreenState extends State<LandingScreen> {
               backgroundColor: UIHelper.blackCanvas(),
               automaticallyImplyLeading: false,
             ),
-            body: UIHelper.loadingContent(context, MessageHelper.getCmsValue('starting')),
+            body: UIHelper.loadingContent(context, ContentHelper.getCmsValue('starting')),
           );
         } else {
           return LoginScreen();

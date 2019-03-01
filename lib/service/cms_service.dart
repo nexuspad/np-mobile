@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:np_mobile/service/account_service.dart';
 import 'package:np_mobile/service/base_service.dart';
 import 'package:np_mobile/service/rest_client.dart';
 

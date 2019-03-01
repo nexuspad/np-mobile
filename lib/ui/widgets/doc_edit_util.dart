@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:np_mobile/app_manager.dart';
 import 'package:np_mobile/datamodel/np_doc.dart';
-import 'package:np_mobile/ui/message_helper.dart';
+import 'package:np_mobile/ui/content_helper.dart';
 import 'package:np_mobile/ui/ui_helper.dart';
 import 'package:np_mobile/ui/widgets/tag_form_widget.dart';
 
 class DocEdit {
   static Widget form(BuildContext context, GlobalKey<FormState> formKey, NPDoc doc) {
     if (doc.format == null || doc.format != TextFormat.plain) {
-      return noImplementation(context, MessageHelper.getCmsValue("no_html_editor"));
+      return noImplementation(context, ContentHelper.getCmsValue("no_html_editor"));
     }
     return new Form(
       key: formKey,
