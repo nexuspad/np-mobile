@@ -174,6 +174,10 @@ class EventView {
   }
 
   static String startDateTimeInfo(NPEvent event, BuildContext context) {
+    if (event.startDateTime == null) {
+      // something is wrong here
+      return "";
+    }
     if (event.localStartTime != null) {
       return DateFormat.yMMMd(Localizations.localeOf(context).toString())
           .add_jm()
@@ -184,6 +188,9 @@ class EventView {
   }
 
   static String endDateTimeInfo(NPEvent event, BuildContext context) {
+    if (event.endDateTime == null) {
+      return "";
+    }
     if (event.localEndTime != null) {
       return DateFormat.yMMMd(Localizations.localeOf(context).toString()).add_jm().format(event.endDateTime.toLocal());
     } else {

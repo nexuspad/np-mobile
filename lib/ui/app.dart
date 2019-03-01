@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:np_mobile/ui/account_screen.dart';
-import 'package:np_mobile/ui/uploader_screen.dart';
 import 'package:np_mobile/ui/register_screen.dart';
 import 'landing_screen.dart';
 import 'login_screen.dart';

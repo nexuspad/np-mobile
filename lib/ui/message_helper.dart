@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:np_mobile/datamodel/np_module.dart';
+import 'package:np_mobile/service/cms_service.dart';
 
 class MessageHelper {
   static Map<String, dynamic> _content;
@@ -9,12 +10,19 @@ class MessageHelper {
   static Future loadContent(context) {
     var completer = new Completer();
 
-    rootBundle.loadString("assets/data/content.json").then((contentInString) {
-      _content = json.decode(contentInString);
-      completer.complete();
-    }).catchError((error) {
-      print(error);
-      completer.completeError(error);
+    CmsService().getCmsContent().then((result) {
+      _content = result;
+      if (_content.keys.length == 0) {
+        rootBundle.loadString("assets/data/content.json").then((contentInString) {
+          _content = json.decode(contentInString);
+          completer.complete();
+        }).catchError((error) {
+          print(error);
+          completer.completeError(error);
+        });
+      } else {
+        completer.complete();
+      }
     });
 
     return completer.future;

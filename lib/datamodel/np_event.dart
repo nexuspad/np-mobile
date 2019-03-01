@@ -103,7 +103,7 @@ class NPEvent extends NPEntry {
       data['localStartTime'] = _localStartTime;
     }
     if (_localEndDate != null) {
-      data['_localEndDate'] = _localEndDate;
+      data['localEndDate'] = _localEndDate;
     }
     if (_localEndTime != null) {
       data['localEndTime'] = _localEndTime;

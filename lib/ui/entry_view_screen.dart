@@ -159,14 +159,16 @@ class _EntryViewScreenState extends State<EntryViewScreen> {
   }
 
   _jumpToEntry(NPEntry entry) {
-    int page = 0;
+    int page = -1;
     for (int i = 0; i < _entryList.entries.length; i++) {
       if (_entryList.entries[i].entryId == entry.entryId) {
         page = i;
         break;
       }
     }
-    _controller.jumpToPage(page);
+    if (page != -1) {
+      _controller.jumpToPage(page);
+    }
   }
 
   _getMoreData() {

@@ -39,11 +39,11 @@ class EventEdit {
           initialTime: event.localStartTime != null ? _fromNpLocalTime(event.localStartTime) : null,
           selectDate: (DateTime date) {
             event.localStartDate = UIHelper.npDateStr(date);
-            setStateCallback();
+            setStateCallback(event);
           },
           selectTime: (TimeOfDay time) {
             event.localStartTime = UIHelper.npTimeStr(time);
-            setStateCallback();
+            setStateCallback(event);
           },
         ),
       ),
@@ -56,11 +56,11 @@ class EventEdit {
           initialTime: event.localEndTime != null ? _fromNpLocalTime(event.localEndTime) : null,
           selectDate: (DateTime date) {
             event.localEndDate = UIHelper.npDateStr(date);
-            setStateCallback();
+            setStateCallback(event);
           },
           selectTime: (TimeOfDay time) {
             event.localEndTime = UIHelper.npTimeStr(time);
-            setStateCallback();
+            setStateCallback(event);
           },
         ),
       ),

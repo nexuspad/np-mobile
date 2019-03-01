@@ -84,10 +84,12 @@ class UIHelper {
   // the ListView is to ensure scroll/refresh will work.
   // this error might happen if used anywhere else:
   // -> RenderViewport does not support returning intrinsic dimensions.
-  static Widget emptyContent(context, text) {
-    double top = MediaQuery.of(context).size.height / 3;
+  static Widget emptyContent(context, text, topPosition) {
+    if (topPosition == 0) {
+      topPosition = MediaQuery.of(context).size.height / 3;
+    }
     return ListView(
-      padding: EdgeInsets.only(top: top),
+      padding: EdgeInsets.only(top: topPosition),
       children: <Widget>[
         Center(child: Text(text, textAlign: TextAlign.center, style: TextStyle(fontSize: mediumFontSize))),
       ],

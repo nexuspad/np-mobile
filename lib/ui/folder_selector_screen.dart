@@ -175,7 +175,7 @@ class FolderSelectionState extends State<FolderSelectorScreen> {
     } else {
       Widget childFolderWidget;
       if (_currentRootFolder.subFolders != null && _currentRootFolder.subFolders.length == 0) {
-        childFolderWidget = UIHelper.emptyContent(context, MessageHelper.getCmsValue("no_subfolder"));
+        childFolderWidget = UIHelper.emptyContent(context, MessageHelper.getCmsValue("no_subfolder"), 0);
       } else {
         childFolderWidget = ListView.separated(
           padding: AppManager().isSmallScreen ? UIHelper.noPadding() : UIHelper.contentPadding(),

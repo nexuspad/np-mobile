@@ -97,7 +97,11 @@ class EntryList<T extends NPEntry> {
     switch (reason) {
       case UpdateReason.ADDED_OR_UPDATED:
         if (entry.folder.folderId != _folder.folderId) {
-          okToProceed = false;
+          if (_folder.folderId == NPFolder.ROOT && _listSetting.includeEntriesInAllFolders == true) {
+            okToProceed = true;
+          } else {
+            okToProceed = false;
+          }
         }
         break;
       case UpdateReason.PINNED:

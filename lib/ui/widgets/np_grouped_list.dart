@@ -28,7 +28,7 @@ class _GroupedListState extends NPModuleListingState<NPGroupedListWidget> {
       if (loading) {
         return Center(child: buildProgressIndicator());
       } else {
-        return UIHelper.emptyContent(context, MessageHelper.getCmsValue("no_content"));
+        return UIHelper.emptyContent(context, MessageHelper.getCmsValue("no_content"), 0);
       }
     } else {
       List<dynamic> items = new List();

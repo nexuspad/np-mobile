@@ -27,7 +27,7 @@ class _ListState extends NPModuleListingState<NPListWidget> {
       if (loading) {
         return Center(child: buildProgressIndicator());
       } else {
-        return UIHelper.emptyContent(context, MessageHelper.getCmsValue("no_content"));
+        return UIHelper.emptyContent(context, MessageHelper.getCmsValue("no_content"), 0);
       }
     } else {
       ListView listView = ListView.separated(
