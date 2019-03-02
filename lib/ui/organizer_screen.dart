@@ -234,6 +234,8 @@ class OrganizerScreen extends StatelessWidget {
             },
             tooltip: 'open folders',
           );
+        } else {
+          return UIHelper.emptySpace();
         }
       },
     );

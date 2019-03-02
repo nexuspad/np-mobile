@@ -12,6 +12,7 @@ class CmsService extends BaseService {
   Map _timezoneHelperData;
   Map get timezoneHelperData => _timezoneHelperData;
 
+  DateTime _expiration;
   Map<String, dynamic> _cmsContent;
   Map get cmsContent => _cmsContent;
 
@@ -33,6 +34,10 @@ class CmsService extends BaseService {
   Future<dynamic> getCmsContent() {
     var completer = new Completer();
 
+    if (_cmsContent != null && !isCmsExpired()) {
+      completer.complete(_cmsContent);
+    }
+
     String url = getCmsEndPoint('content');
     RestClient().get(url, null).then((dynamic result) {
       // the response should be a Map
@@ -43,5 +48,12 @@ class CmsService extends BaseService {
     });
 
     return completer.future;
+  }
+
+  bool isCmsExpired() {
+    if (_expiration != null && _expiration.isAfter(DateTime.now())) {
+      return false;
+    }
+    return true;
   }
 }
