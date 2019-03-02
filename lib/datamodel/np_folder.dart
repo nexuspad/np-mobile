@@ -67,6 +67,9 @@ class NPFolder extends NPObject {
       if (hexValue.length == 6) {
         hexValue = '0xff' + hexValue;
         _color = Color(int.parse(hexValue));
+      } else if (hexValue.length == 8) {
+        hexValue = '0x' + hexValue;
+        _color = Color(int.parse(hexValue));
       } else {
         _color = Color(0xff336699);
       }
