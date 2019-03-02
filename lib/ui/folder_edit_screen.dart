@@ -19,24 +19,15 @@ class FolderEditScreen extends StatefulWidget {
 class _FolderFormState extends State<FolderEditScreen> {
   final _formKey = GlobalKey<FormState>();
   final scaffoldKey = new GlobalKey<ScaffoldState>();
-
-  Color currentColor;
-
-  ValueChanged<Color> onColorChanged;
-
-  changeSimpleColor(Color color) => setState(() => currentColor = color);
-  changeMaterialColor(Color color) => setState(() {
-        currentColor = color;
-        Navigator.of(context).pop();
-      });
+  NPFolder _folder;
 
   @override
   Widget build(BuildContext context) {
-    NPFolder folder = NPFolder.copy(widget._folder);
+    if (_folder == null) {
+      _folder = NPFolder.copy(widget._folder);
+    }
 
-    currentColor = folder.color;
-
-    String title = folder.folderId != null ? 'update folder' : 'new folder';
+    String title = _folder.folderId != null ? 'update folder' : 'new folder';
 
     return Scaffold(
       key: scaffoldKey,
@@ -46,7 +37,7 @@ class _FolderFormState extends State<FolderEditScreen> {
         actions: <Widget>[
           IconButton(
             onPressed: () {
-              _submit(folder);
+              _submit();
             },
             icon: Icon(Icons.save),
           ),
@@ -61,13 +52,13 @@ class _FolderFormState extends State<FolderEditScreen> {
               child: ConstrainedBox(
         constraints: BoxConstraints(),
         child: IntrinsicHeight(
-          child: _entryForm(folder),
+          child: _entryForm(),
         ),
       ))),
     );
   }
 
-  _entryForm(NPFolder folder) {
+  _entryForm() {
     return new Form(
       key: _formKey,
       child: new Column(
@@ -75,8 +66,8 @@ class _FolderFormState extends State<FolderEditScreen> {
           Padding(
             padding: UIHelper.contentPadding(),
             child: new TextFormField(
-              initialValue: folder.folderName,
-              onSaved: (val) => folder.folderName = val,
+              initialValue: _folder.folderName,
+              onSaved: (val) => _folder.folderName = val,
               decoration: new InputDecoration(labelText: "folder name", border: UnderlineInputBorder()),
             ),
           ),
@@ -86,29 +77,9 @@ class _FolderFormState extends State<FolderEditScreen> {
                 children: <Widget>[
                   Text(
                     'color label',
-                    style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                   UIHelper.formSpacer(),
-                  colorLabelButton(folder.color, () {
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                          titlePadding: EdgeInsets.all(0.0),
-                          contentPadding: EdgeInsets.all(0.0),
-                          content: SingleChildScrollView(
-                            child: ColorPicker(
-                              pickerColor: currentColor,
-                              onColorChanged: changeSimpleColor,
-                              colorPickerWidth: 1000.0,
-                              pickerAreaHeightPercent: 0.7,
-                              enableAlpha: true,
-                            ),
-                          ),
-                        );
-                      },
-                    );
-                  })
+                  colorLabelButton()
                 ],
               )),
         ],
@@ -116,12 +87,12 @@ class _FolderFormState extends State<FolderEditScreen> {
     );
   }
 
-  _submit(NPFolder folder) {
+  _submit() {
     if (_formKey.currentState.validate()) {
       _formKey.currentState.save();
       UIHelper.showMessageOnSnackBar(globalKey: scaffoldKey, text: ContentHelper.savingFolder());
-      FolderService(moduleId: widget._folder.moduleId, ownerId: widget._folder.owner.userId)
-          .save(folder, FolderUpdateAction.UPDATE)
+      FolderService(moduleId: _folder.moduleId, ownerId: _folder.owner.userId)
+          .save(_folder, FolderUpdateAction.UPDATE)
           .then((updatedEntry) {
         UIHelper.showMessageOnSnackBar(globalKey: scaffoldKey, text: ContentHelper.folderSaved());
         Navigator.of(context).pop(null);
@@ -131,14 +102,37 @@ class _FolderFormState extends State<FolderEditScreen> {
     }
   }
 
-  Widget colorLabelButton(Color color, Function onPressed) {
+  Widget colorLabelButton() {
     return RawMaterialButton(
       onPressed: () {
-        onPressed();
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              titlePadding: EdgeInsets.all(0.0),
+              contentPadding: EdgeInsets.all(0.0),
+              content: SingleChildScrollView(
+                child: ColorPicker(
+                  pickerColor: _folder.color,
+                  onColorChanged: (color) {
+                    _folder.color = color;
+                    print('folder color changed to ${_folder.color}');
+                    setState(() {
+                      _folder.color = color;
+                    });
+                  },
+                  colorPickerWidth: 1000.0,
+                  pickerAreaHeightPercent: 0.7,
+                  enableAlpha: true,
+                ),
+              ),
+            );
+          },
+        );
       },
       child: new Icon(
         Icons.folder,
-        color: color,
+        color: _folder.color,
         size: 40.0,
       ),
       shape: new CircleBorder(),

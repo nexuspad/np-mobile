@@ -34,7 +34,9 @@ class NPFolder extends NPObject {
     _moduleId = otherFolder.moduleId;
     _folderId = otherFolder.folderId;
     _folderName = otherFolder.folderName;
-    _color = otherFolder._color;
+    if (otherFolder.color != null) {
+      _color = Color.fromARGB(otherFolder.color.alpha, otherFolder.color.red, otherFolder.color.green, otherFolder.color.blue);
+    }
     if (otherFolder.parent != null) _parent = NPFolder.copy(otherFolder.parent);
   }
 
@@ -76,7 +78,7 @@ class NPFolder extends NPObject {
       'moduleId': _moduleId,
       'folderId': _folderId,
       'folderName': _folderName,
-      'colorCode': getColorCode(),
+      'colorLabel': getColorCode(),
     };
 
     if (_parent != null) {
@@ -106,18 +108,24 @@ class NPFolder extends NPObject {
   String get folderName => _folderName;
   set folderName(value) => _folderName = value;
 
-  Color get color => _color != null ? _color : Color(0xff336699);
-  set color(value) => _color = value;
+  Color get color {
+    if (_color != null)
+      return _color;
+    else {
+      return Color(0xff336699);
+    }
+  }
+  set color(value) {
+    _color = value;
+  }
 
   String getColorCode() {
     if (_color != null) {
-      int red = _color.red;
-      int green = _color.green;
-      int blue = _color.blue;
-      return '0x' +
-          red.toRadixString(16).toString() +
-          green.toRadixString(16).toString() +
-          blue.toRadixString(16).toString();
+      return '#' +
+          _color.alpha.toRadixString(16).toString() +
+          _color.red.toRadixString(16).toString() +
+          _color.green.toRadixString(16).toString() +
+          _color.blue.toRadixString(16).toString();
     }
     return "";
   }
