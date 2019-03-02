@@ -48,7 +48,7 @@ class OrganizerScreen extends StatelessWidget {
           organizeBloc.refreshBloc();
         },
       ),
-      floatingActionButton: _buildActionButton(context),
+      floatingActionButton: _buildActionButton(context, organizeBloc),
       bottomNavigationBar: _buildModuleNavigation(context, organizeBloc),
       drawer: _drawer(context),
     );
@@ -211,20 +211,31 @@ class OrganizerScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildActionButton(context) {
-    return FloatingActionButton(
-      child: const Icon(Icons.folder),
-      foregroundColor: Colors.blue,
-      backgroundColor: Colors.white,
-      onPressed: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => FolderSelectorScreen(context: context),
-          ),
-        );
+  Widget _buildActionButton(context, OrganizeBloc organizeBloc) {
+    return StreamBuilder(
+      stream: organizeBloc.stateStream,
+      builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+        if (snapshot.data != null) {
+          ListSetting listSetting = snapshot.data.listSetting;
+          FolderService folderService = FolderService(moduleId: listSetting.moduleId, ownerId: listSetting.ownerId);
+          NPFolder folder = folderService.folderDetail(listSetting.folderId);
+
+          return FloatingActionButton(
+            child: const Icon(Icons.folder),
+            foregroundColor: folder != null && folder.color != null? folder.color : Colors.blue,
+            backgroundColor: Colors.white,
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => FolderSelectorScreen(context: context),
+                ),
+              );
+            },
+            tooltip: 'open folders',
+          );
+        }
       },
-      tooltip: 'open folders',
     );
   }
 

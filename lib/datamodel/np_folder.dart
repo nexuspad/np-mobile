@@ -59,8 +59,8 @@ class NPFolder extends NPObject {
       _folderId == 0 ? _folderName = 'ROOT' : _folderName = 'ERROR';
     }
 
-    if (data['colorCode'] != null) {
-      String hexValue = data['colorCode'];
+    if (data['colorLabel'] != null) {
+      String hexValue = data['colorLabel'];
       if (hexValue.startsWith('#')) {
         hexValue = hexValue.replaceAll('#', '');
       }
