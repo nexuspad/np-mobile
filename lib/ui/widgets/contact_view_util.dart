@@ -72,7 +72,10 @@ class ContactView {
   static ListView fullPage(NPContact contact, BuildContext context) {
     List<Widget> contactContent = new List();
 
-    if (contact.fullName != null && contact.fullName.isNotEmpty) {
+    contactContent.add(Text(contact.title, style: Theme.of(context).textTheme.headline));
+    contactContent.add(UIHelper.divider());
+
+    if (contact.fullName != null && contact.fullName.isNotEmpty && contact.fullName != contact.title) {
       contactContent.add(Text(contact.fullName, style: Theme.of(context).textTheme.headline));
     }
 

@@ -159,7 +159,7 @@ class _UploaderScreenState extends State<UploaderScreen> {
                   // update the uploading status shown in the table
                   for (int i = 0; i<_selectedFiles.length; i++) {
                     if (_selectedFiles[i].path == uploadedFileWrapper.path) {
-                      _selectedFiles[i].status = UploadStatus.completed;
+                      _selectedFiles[i].status = uploadedFileWrapper.status;
                     }
                   }
                 });

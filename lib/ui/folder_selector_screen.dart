@@ -117,9 +117,9 @@ class FolderSelectionState extends State<FolderSelectorScreen> {
 
     dynamic title = Text(ContentHelper.folderNavigatorTitle(_currentParentFolder.moduleId));
     if (_entryToMove != null || _folderToMove != null) {
-      title = Text('select folder to move into');
+      title = Text('move into folder');
     } else if (_entryToUpdate != null || _folderToUpdate != null) {
-      title = Text('select folder');
+      title = Text('change folder');
     }
     return Scaffold(
       key: scaffoldKey,
@@ -403,7 +403,7 @@ class FolderSelectionState extends State<FolderSelectorScreen> {
           Expanded(
             child: UIHelper.formSpacer(),
           ),
-          UIHelper.actionButton(context, 'select', () {
+          UIHelper.actionButton(context, 'change', () {
             // pop to the entry or folder update form with the selected folder
             Navigator.pop(context, folder);
           }),

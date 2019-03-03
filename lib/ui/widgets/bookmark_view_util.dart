@@ -40,7 +40,9 @@ class BookmarkView {
 
   static ListView fullPage(NPBookmark bookmark, BuildContext context) {
     List<Widget> bookmarkContent = new List();
+
     bookmarkContent.add(Text(bookmark.title, style: Theme.of(context).textTheme.headline));
+    bookmarkContent.add(UIHelper.divider());
 
     bookmarkContent.add(Row(children: <Widget>[
       Expanded(

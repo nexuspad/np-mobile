@@ -119,7 +119,7 @@ class UIHelper {
   }
 
   static Widget divider() {
-    return new Padding(padding: EdgeInsets.all(8.0), child: new Divider());
+    return new Padding(padding: EdgeInsets.only(left: 0, right: 0, top: 4.0, bottom: 8), child: new Divider());
   }
 
   static launchUrl(String url) async {

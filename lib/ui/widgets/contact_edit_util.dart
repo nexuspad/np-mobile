@@ -36,14 +36,14 @@ class ContactEdit {
 
     List<Widget> formFields = new List();
 
-//    formFields.add(Padding(
-//      padding: UIHelper.contentPadding(),
-//      child: new TextFormField(
-//        initialValue: contact.title,
-//        onSaved: (val) => contact.title = val,
-//        decoration: new InputDecoration(labelText: "title", border: UnderlineInputBorder()),
-//      ),
-//    ));
+    formFields.add(Padding(
+      padding: UIHelper.contentPadding(),
+      child: new TextFormField(
+        initialValue: contact.title,
+        onSaved: (val) => contact.title = val,
+        decoration: new InputDecoration(labelText: "title", border: UnderlineInputBorder()),
+      ),
+    ));
 
     formFields.add(Padding(
         padding: UIHelper.contentPadding(),

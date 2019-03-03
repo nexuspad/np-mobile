@@ -42,7 +42,12 @@ class FolderTree {
       }
     }
 
+    // these folders have parent folder that cannot be found in the tree.
     if (folders.length > 0) {
+      print("${folders.length} folders are orphans. place them in the root of module: ${_root.moduleId}");
+      folders.forEach((f) {
+        f.parent = _root;
+      });
       _root.addChildren(folders);
     }
   }
