@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_html_view/flutter_html_view.dart';
+//import 'package:flutter_html_view/flutter_html_view.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:np_mobile/datamodel/np_doc.dart';
 import 'package:np_mobile/datamodel/np_module.dart';
 import 'package:np_mobile/datamodel/np_upload.dart';
@@ -25,12 +26,10 @@ class DocView {
     if (doc.note != null && doc.note.length > 0) {
       if (doc.format == TextFormat.html) {
         docContent.add(SingleChildScrollView(
-            child: new HtmlView(
+            child: new Html(
                 data: doc.note,
-                baseURL: '',
-                onLaunchFail: (url) {
-                  // optional, type Function
-                  print("launch $url failed");
+                onLinkTap: (url) {
+                  UIHelper.launchUrl(url);
                 })));
       } else {
         docContent.add(SingleChildScrollView(child: new Text(doc.note, style: UIHelper.bodyFont(context))));
