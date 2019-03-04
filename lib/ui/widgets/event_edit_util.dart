@@ -60,6 +60,9 @@ class EventEdit {
           },
           selectTime: (TimeOfDay time) {
             event.localEndTime = UIHelper.npTimeStr(time);
+            if (event.localEndTime == '00:00') {
+              event.localEndTime = '24:00';
+            }
             setStateCallback(event);
           },
         ),

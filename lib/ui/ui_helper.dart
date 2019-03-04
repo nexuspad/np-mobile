@@ -143,7 +143,7 @@ class UIHelper {
 
   static String npTimeStr(TimeOfDay timeOfDay) {
     int hour;
-    if (timeOfDay.period == DayPeriod.pm && timeOfDay.hour < 12) {
+    if (timeOfDay.period == DayPeriod.pm && timeOfDay.hour <= 12) {
       hour = timeOfDay.hour + 12;
     } else {
       hour = timeOfDay.hour;

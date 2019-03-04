@@ -170,7 +170,10 @@ class EventView {
   }
 
   static String timeInfo(DateTime dt, BuildContext context) {
-    return DateFormat.jm(Localizations.localeOf(context).toString()).format(dt.toLocal());
+    if (dt != null) {
+      return DateFormat.jm(Localizations.localeOf(context).toString()).format(dt.toLocal());
+    }
+    return "";
   }
 
   static String startDateTimeInfo(NPEvent event, BuildContext context) {
