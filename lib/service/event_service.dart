@@ -15,7 +15,7 @@ import 'package:np_mobile/service/list_service.dart';
 import 'package:np_mobile/service/np_error.dart';
 import 'package:np_mobile/service/rest_client.dart';
 
-enum RecurUpdateOption {ALL, ONE}
+enum RecurUpdateOption {ALL, ONE, FUTURE}
 
 class EventService extends EntryService {
   Future<dynamic> saveEvent({NPEvent event, RecurUpdateOption recurUpdateOption: RecurUpdateOption.ALL}) {

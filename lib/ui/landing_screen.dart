@@ -53,7 +53,7 @@ class LandingScreenState extends State<LandingScreen> {
               backgroundColor: UIHelper.blackCanvas(),
               automaticallyImplyLeading: false,
             ),
-            body: UIHelper.loadingContent(context, ContentHelper.getCmsValue('starting')),
+            body: UIHelper.progressIndicator(),
           );
         } else {
           return LoginScreen();

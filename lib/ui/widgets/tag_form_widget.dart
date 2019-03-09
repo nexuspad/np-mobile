@@ -6,9 +6,12 @@ import 'package:np_mobile/ui/ui_helper.dart';
 class TagForm extends StatefulWidget {
   final NPEntry _entry;
   final bool _updateOnChange;
-  final bool _canAdd;
-  TagForm(BuildContext context, NPEntry entry, bool updateOnChange, bool canAdd) :
-        _entry = entry, _updateOnChange = updateOnChange, _canAdd = canAdd;
+  final bool _enableAdd;
+
+  TagForm(BuildContext context, NPEntry entry, bool updateOnChange, bool enableAdd)
+      : _entry = entry,
+        _updateOnChange = updateOnChange,
+        _enableAdd = enableAdd;
 
   @override
   State<StatefulWidget> createState() {
@@ -27,41 +30,40 @@ class _TagFormState extends State<TagForm> {
   Widget build(BuildContext context) {
     final TextEditingController controller = TextEditingController(text: '');
 
-    if (widget._canAdd) {
-      return new Form(
+    if (widget._enableAdd) {
+      return new Padding(
+        padding: UIHelper.contentPadding(),
         child: new Column(
           children: <Widget>[
-            new Padding(
-              padding: UIHelper.contentPadding(),
-              child: Row(
-                children: <Widget>[
-                  Expanded(
-                      flex: 6,
-                      child: new TextFormField(
-                        onSaved: (val) {
-                          // add the new tag to the set
-                        },
-                        decoration: new InputDecoration(labelText: "add tags", border: UnderlineInputBorder()),
-                        controller: controller,
-                      )),
-                  IconButton(
-                    icon: Icon(
-                      Icons.add,
-                      color: Colors.blue,
-                    ),
-                    onPressed: () {
-                      if (controller.value.text.isNotEmpty) {
-                        _entry.addTag(controller.value.text);
-                        setState(() {
-                        });
-                        if (widget._updateOnChange) {
-                          EntryService().save(_entry);
-                        }
+            Row(
+              children: <Widget>[
+                Expanded(
+                    flex: 6,
+                    child: new TextFormField(
+                      onSaved: (val) {
+                        // handles form saving when the tag form is inside the entry edit form
+                        _entry.addTag(val);
+                      },
+                      decoration: new InputDecoration(labelText: "add tags", border: UnderlineInputBorder()),
+                      controller: controller,
+                    )),
+                IconButton(
+                  icon: Icon(
+                    Icons.add,
+                    color: Colors.blue,
+                  ),
+                  onPressed: () {
+                    if (controller.value.text.isNotEmpty) {
+                      _entry.addTag(controller.value.text);
+                      setState(() {});
+                      // when the form is in a pop up window
+                      if (widget._updateOnChange) {
+                        EntryService().save(_entry);
                       }
-                    },
-                  )
-                ],
-              ),
+                    }
+                  },
+                )
+              ],
             ),
             new Padding(
               padding: UIHelper.contentPadding(),
@@ -88,8 +90,7 @@ class _TagFormState extends State<TagForm> {
           label: new Text(tagList[i]),
           onDeleted: () {
             _entry.removeTag(tagList[i]);
-            setState(() {
-            });
+            setState(() {});
             if (widget._updateOnChange) {
               EntryService().save(_entry);
             }
