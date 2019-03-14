@@ -14,6 +14,7 @@ import 'package:np_mobile/ui/folder_selector_screen.dart';
 import 'package:np_mobile/ui/content_helper.dart';
 import 'package:np_mobile/ui/ui_helper.dart';
 import 'package:np_mobile/ui/widgets/base_list.dart';
+import 'package:np_mobile/ui/widgets/event_edit_util.dart';
 import 'package:np_mobile/ui/widgets/tag_form_util.dart';
 
 class NPModuleListingState<T extends BaseList> extends State<T> {
@@ -180,11 +181,21 @@ class NPModuleListingState<T extends BaseList> extends State<T> {
             ),
           );
         } else if (selected == EntryMenu.delete) {
-          UIHelper.showMessageOnSnackBar(context: context, text: ContentHelper.deleting(e.moduleId));
-          EntryService().delete(e).then((deletedEntry) {
-            setState(() {});
-            UIHelper.showMessageOnSnackBar(context: context, text: ContentHelper.entryDeleted(e.moduleId));
-          });
+          if (e.moduleId == NPModule.EVENT) {
+            EventEdit.confirmAndDelete(context, e).then((deletedEntry) {
+              if (deletedEntry != null) {
+                setState(() {
+                });
+                UIHelper.showMessageOnSnackBar(context: context, text: ContentHelper.entryDeleted(e.moduleId));
+              }
+            });
+          } else {
+            UIHelper.showMessageOnSnackBar(context: context, text: ContentHelper.deleting(e.moduleId));
+            EntryService().delete(e).then((deletedEntry) {
+              setState(() {});
+              UIHelper.showMessageOnSnackBar(context: context, text: ContentHelper.entryDeleted(e.moduleId));
+            });
+          }
         }
       },
       itemBuilder: (BuildContext context) {

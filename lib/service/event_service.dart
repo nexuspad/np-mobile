@@ -18,8 +18,17 @@ import 'package:np_mobile/service/rest_client.dart';
 enum RecurUpdateOption {ALL, ONE, FUTURE}
 
 class EventService extends EntryService {
-  Future<dynamic> saveEvent({NPEvent event, RecurUpdateOption recurUpdateOption: RecurUpdateOption.ALL}) {
+  Future<dynamic> saveEvent({NPEvent event, RecurUpdateOption recurUpdateOption}) {
     var completer = new Completer();
+
+    // if the recur update option is not specified, update one occurrence only
+    if (recurUpdateOption == null) {
+      if (event.isRecurring() && event.recurId > 0) {
+        recurUpdateOption = RecurUpdateOption.ONE;
+      } else {
+        recurUpdateOption = RecurUpdateOption.ALL;
+      }
+    }
 
     String url;
     if (recurUpdateOption == RecurUpdateOption.ALL) {

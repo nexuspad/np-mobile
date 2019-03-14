@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:np_mobile/app_manager.dart';
 import 'package:np_mobile/datamodel/np_event.dart';
 import 'package:np_mobile/datamodel/np_module.dart';
 import 'package:np_mobile/datamodel/np_user.dart';
@@ -430,5 +429,41 @@ class EventEdit {
       return TimeOfDay(hour: int.parse(parts[0]), minute: int.parse(parts[1]));
     }
     return null;
+  }
+
+  static Future<dynamic> confirmAndDelete(BuildContext context, NPEvent e) async {
+    if (!e.isRecurring()) {
+      UIHelper.showMessageOnSnackBar(context: context, text: ContentHelper.deleting(e.moduleId));
+      return EventService().deleteEvent(event: e, recurUpdateOption: RecurUpdateOption.ALL);
+    } else {
+      switch (await showDialog<RecurUpdateOption>(
+          context: context,
+          builder: (BuildContext context) {
+            return SimpleDialog(
+              title: const Text('this is an recurring event'),
+              children: <Widget>[
+                SimpleDialogOption(
+                  onPressed: () { Navigator.pop(context, RecurUpdateOption.ONE); },
+                  child: const Text('delete this one only'),
+                ),
+                SimpleDialogOption(
+                  onPressed: () { Navigator.pop(context, RecurUpdateOption.ALL); },
+                  child: const Text('delete all'),
+                ),
+              ],
+            );
+          }
+      )) {
+        case RecurUpdateOption.ONE:
+          UIHelper.showMessageOnSnackBar(context: context, text: ContentHelper.deleting(e.moduleId));
+          return EventService().deleteEvent(event: e, recurUpdateOption: RecurUpdateOption.ONE);
+          break;
+        case RecurUpdateOption.ALL:
+          UIHelper.showMessageOnSnackBar(context: context, text: ContentHelper.deleting(e.moduleId));
+          return EventService().deleteEvent(event: e, recurUpdateOption: RecurUpdateOption.ALL);
+        case RecurUpdateOption.FUTURE:
+          break;
+      }
+    }
   }
 }
