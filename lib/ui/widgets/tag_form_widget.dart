@@ -58,7 +58,7 @@ class _TagFormState extends State<TagForm> {
                       setState(() {});
                       // when the form is in a pop up window
                       if (widget._updateOnChange) {
-                        EntryService().save(_entry);
+                        EntryService().updateTag(_entry);
                       }
                     }
                   },
@@ -92,7 +92,7 @@ class _TagFormState extends State<TagForm> {
             _entry.removeTag(tagList[i]);
             setState(() {});
             if (widget._updateOnChange) {
-              EntryService().save(_entry);
+              EntryService().updateTag(_entry);
             }
           },
           labelPadding: EdgeInsets.all(4.0),
