@@ -98,6 +98,7 @@ class NPEvent extends NPEntry {
 
   Map<String, dynamic> toJson() {
     Map data = super.toJson();
+    data['recurId'] = _recurId;
     data['localStartDate'] = _localStartDate;
     if (_localStartTime != null) {
       data['localStartTime'] = _localStartTime;
