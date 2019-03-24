@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'dart:math' as math;
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:np_mobile/app_manager.dart';
 import 'package:np_mobile/datamodel/entry_factory.dart';
 import 'package:np_mobile/datamodel/list_setting.dart';
@@ -13,13 +11,13 @@ import 'package:np_mobile/ui/blocs/application_state_provider.dart';
 import 'package:np_mobile/ui/blocs/organize_bloc.dart';
 import 'package:np_mobile/ui/entry_edit_screen.dart';
 import 'package:np_mobile/ui/folder_selector_screen.dart';
-import 'package:np_mobile/ui/uploader_screen.dart';
 import 'package:np_mobile/ui/ui_helper.dart';
-import 'package:np_mobile/ui/widgets/np_grouped_list.dart';
-import 'package:np_mobile/ui/widgets/np_timeline.dart';
-import 'package:np_mobile/ui/widgets/np_grid.dart';
-import 'package:np_mobile/ui/widgets/np_list.dart';
+import 'package:np_mobile/ui/uploader_screen.dart';
 import 'package:np_mobile/ui/widgets/entry_search_delegate.dart';
+import 'package:np_mobile/ui/widgets/np_grid.dart';
+import 'package:np_mobile/ui/widgets/np_grouped_list.dart';
+import 'package:np_mobile/ui/widgets/np_list.dart';
+import 'package:np_mobile/ui/widgets/np_timeline.dart';
 
 enum AccountMenu { account, logout }
 

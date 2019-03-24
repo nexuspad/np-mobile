@@ -23,6 +23,8 @@ class EntryViewScreen extends BaseList {
 }
 
 class _EntryViewScreenState extends State<EntryViewScreen> {
+  final scaffoldKey = new GlobalKey<ScaffoldState>();
+
   ListService _listService;
   EntryList _entryList;
   PageController _controller;
@@ -106,6 +108,7 @@ class _EntryViewScreenState extends State<EntryViewScreen> {
     }
 
     return Scaffold(
+      key: scaffoldKey,
       appBar: AppBar(
         title: Text(''),
         backgroundColor: UIHelper.blackCanvas(),
@@ -144,9 +147,17 @@ class _EntryViewScreenState extends State<EntryViewScreen> {
 
   _deleteEntry() {
     NPEntry e = _entryList.entries[_index];
-    UIHelper.showMessageOnSnackBar(context: context, text: ContentHelper.deleting(e.moduleId));
+    bool needToPop = false;
+    if (_entryList.entries.length == 1) {
+      needToPop = true;
+    }
+    UIHelper.showMessageOnSnackBar(globalKey: scaffoldKey, text: ContentHelper.deleting(e.moduleId));
     EntryService().delete(e).then((deletedEntry) {
-      setState(() {});
+      if (needToPop) {
+        Navigator.of(context).pop(null);
+      } else {
+        setState(() {});
+      }
     });
   }
 
