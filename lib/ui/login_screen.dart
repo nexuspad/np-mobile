@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:np_mobile/datamodel/account.dart';
 import 'package:np_mobile/service/np_error.dart';
 import 'package:np_mobile/service/account_service.dart';
+import 'package:np_mobile/ui/blocs/application_state_provider.dart';
 import 'package:np_mobile/ui/ui_helper.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -110,6 +111,9 @@ class LoginFormState extends State<LoginScreen> {
         Account user = result;
         if (user.sessionId != null) {
           UIHelper.showMessageOnSnackBar(globalKey: scaffoldKey, text: 'you are logged in');
+          final organizeBloc = ApplicationStateProvider.forOrganize(context);
+          organizeBloc.setOwnerId(user.userId);
+          organizeBloc.changeModule(user.preference.lasAccessedModule);
           Navigator.pushReplacementNamed(context, 'organize');
         }
         setState(() {
