@@ -200,6 +200,43 @@ class UIHelper {
     return Icon(Icons.error);
   }
 
+  static Text textWithHighlightedPart(String text, String highlight) {
+    var regExp = new RegExp(highlight, caseSensitive: false);
+    List<String> parts = text.split(regExp);
+    if (parts.length > 1) {
+      return Text.rich(
+        TextSpan(
+            children: <TextSpan>[
+              TextSpan(text: parts[0]),
+              TextSpan(text: highlight, style: TextStyle(fontWeight: FontWeight.bold)),
+              TextSpan(text: parts[1]),
+            ]
+        ),
+      );
+    } else {
+      if (text.startsWith(regExp)) {
+        return Text.rich(
+          TextSpan(
+              children: <TextSpan>[
+                TextSpan(text: highlight, style: TextStyle(fontWeight: FontWeight.bold)),
+                TextSpan(text: parts[0]),
+              ]
+          ),
+        );
+      } else {
+        return Text.rich(
+          TextSpan(
+              children: <TextSpan>[
+                TextSpan(text: parts[0]),
+                TextSpan(text: highlight, style: TextStyle(fontWeight: FontWeight.bold)),
+              ]
+          ),
+        );
+      }
+    }
+
+  }
+
   static folderTreeNode() {
     return Transform.rotate(angle: -math.pi / 4, child: Icon(FontAwesomeIcons.chevronLeft, size: 28,));
   }

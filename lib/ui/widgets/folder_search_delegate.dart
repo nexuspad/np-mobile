@@ -142,7 +142,7 @@ class _SuggestionList extends StatelessWidget {
           List<String> suggestions = suggestedFolders.keys.toList();
           List<String> hits = suggestions.where((suggestion) {
             if (suggestion.length > _query.length) {
-              if (suggestion.indexOf(_query) != -1) {
+              if (suggestion.indexOf(new RegExp(_query, caseSensitive: false)) != -1) {
                 return true;
               }
             } else {
@@ -159,16 +159,7 @@ class _SuggestionList extends StatelessWidget {
 
               var title;
               if (_query != null && _query.isNotEmpty) {
-                List<String> parts = suggestion.split(_query);
-                title = Text.rich(
-                  TextSpan(
-                      children: <TextSpan>[
-                        TextSpan(text: parts[0]),
-                        TextSpan(text: _query, style: TextStyle(fontWeight: FontWeight.bold)),
-                        TextSpan(text: parts[1]),
-                      ]
-                  ),
-                );
+                title = UIHelper.textWithHighlightedPart(suggestion, _query);
               } else {
                 title = Text(suggestion);
               }
