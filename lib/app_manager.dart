@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:np_mobile/service/account_service.dart';
@@ -43,7 +44,7 @@ class AppManager {
       _deviceId = _prefs.getString("DEVICE_ID");
 
       if (_deviceId == null || _deviceId.isEmpty) {
-        _deviceId = RandomString.generate(10);
+        _deviceId = DeviceId.generate(10);
         _prefs.setString("DEVICE_ID", _deviceId);
         print('AppConfig: generate and stored device id: $_deviceId');
       }
@@ -60,6 +61,7 @@ class AppManager {
     }).whenComplete(() {
       ListService().cleanup();
       FolderService().cleanup();
+      _prefs.clear();
       UIHelper.goToLogin(context);
     });
   }
@@ -85,7 +87,7 @@ class AppManager {
   }
 }
 
-class RandomString {
+class DeviceId {
   static final String upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
   static final String lower = upper.toLowerCase();
   static final String digits = "0123456789";
@@ -101,6 +103,19 @@ class RandomString {
     }
 
     randomChars.shuffle();
-    return randomChars.join();
+
+    if (Platform.isIOS) {
+      return 'ios-' + randomChars.join();
+    } else if (Platform.isAndroid) {
+      return 'android-' + randomChars.join();
+    } else if (Platform.isLinux) {
+      return 'flutter-linux-' + randomChars.join();
+    } else if (Platform.isWindows) {
+      return 'flutter-windows-' + randomChars.join();
+    } else if (Platform.isMacOS) {
+      return 'flutter-macos-' + randomChars.join();
+    } else {
+      return 'flutter-others-' + randomChars.join();
+    }
   }
 }
