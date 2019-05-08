@@ -1,4 +1,5 @@
 import 'package:np_mobile/datamodel/NPObject.dart';
+import 'package:np_mobile/datamodel/account.dart';
 import 'package:np_mobile/datamodel/list_setting.dart';
 import 'package:np_mobile/datamodel/np_folder.dart';
 import 'package:np_mobile/datamodel/np_module.dart';
@@ -10,7 +11,7 @@ import 'package:rxdart/rxdart.dart';
 /// if UI needs to refresh the content, it's set to current time + 30 minutes to expire the entryList in ListService.
 /// if it's set to null, it means UI don't care. just use whatever matches in ListService.
 class OrganizeBloc {
-  static final List<int> modules = [NPModule.CONTACT, NPModule.CALENDAR, NPModule.DOC, NPModule.BOOKMARK, NPModule.PHOTO];
+  static List<int> modules = [NPModule.CONTACT, NPModule.CALENDAR, NPModule.DOC, NPModule.BOOKMARK, NPModule.PHOTO];
 
   final _organizeSubject = BehaviorSubject<OrganizerSetting>();
   final _updateSubject = BehaviorSubject<NPObject>();
@@ -33,10 +34,25 @@ class OrganizeBloc {
     _updateSubject.sink.add(null);
   }
 
+  initForUser(Account acct) {
+    _currentSetting.listSetting.ownerId = acct.userId;
+    if (acct.preference.activeModules != null && acct.preference.activeModules.length > 0) {
+      setActiveModules(acct.preference.activeModules);
+    }
+    changeModule(acct.preference.lasAccessedModule);
+    _currentSetting.listSetting.totalCount = 0;
+    _organizeSubject.sink.add(_currentSetting);
+  }
+
   setOwnerId(int ownerId) {
     _currentSetting.listSetting.ownerId = ownerId;
     _currentSetting.listSetting.totalCount = 0;
     _organizeSubject.sink.add(_currentSetting);
+  }
+
+  setActiveModules(List<int> modules) {
+    if (modules != null && modules.length > 0)
+      OrganizeBloc.modules = modules;
   }
 
   changeModule(moduleId) {

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:np_mobile/app_manager.dart';
 import 'package:np_mobile/datamodel/account.dart';
 import 'package:np_mobile/service/np_error.dart';
 import 'package:np_mobile/service/account_service.dart';
@@ -107,18 +108,26 @@ class LoginFormState extends State<LoginScreen> {
       _loading = true;
       _formKey.currentState.save();
       UIHelper.showMessageOnSnackBar(globalKey: scaffoldKey, text: 'logging in...');
-      AccountService().login(_userName, _password).then((dynamic result) {
-        Account user = result;
-        if (user.sessionId != null) {
+      AccountService().login(_userName, _password).then((acct) {
+        if (acct.sessionId != null) {
           UIHelper.showMessageOnSnackBar(globalKey: scaffoldKey, text: 'you are logged in');
           final organizeBloc = ApplicationStateProvider.forOrganize(context);
-          organizeBloc.setOwnerId(user.userId);
-          organizeBloc.changeModule(user.preference.lasAccessedModule);
-          Navigator.pushReplacementNamed(context, 'organize');
+          organizeBloc.initForUser(acct);
+
+          if (acct.serviceHost != null && acct.serviceHost.isNotEmpty) {
+            AppManager().changeServiceHost(acct.serviceHost);
+            // re-run hello
+            AccountService().hello().then((acct) {
+              organizeBloc.initForUser(acct);
+              Navigator.pushReplacementNamed(context, 'organize');
+            }).catchError((error) {
+              print('cannot init account with changed service host $error');
+              UIHelper.goToLogin(context);
+            });
+          } else {
+            Navigator.pushReplacementNamed(context, 'organize');
+          }
         }
-        setState(() {
-          _loading = false;
-        });
       }).catchError((error) {
         if (error is NPError) {
           UIHelper.showMessageOnSnackBar(globalKey: scaffoldKey, text: error.toString());

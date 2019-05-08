@@ -1,8 +1,11 @@
+import 'package:np_mobile/datamodel/np_module.dart';
+
 class Preference {
   int _lastAccessedModule;
   String _locale;
   String _timezone;
   String _timezoneAlias;
+  List<int> _activeModules = new List();
 
   Preference();
 
@@ -13,6 +16,32 @@ class Preference {
     _locale = data['locale'];
     _timezone = data['timezoneName'];
     _timezoneAlias = data['timezoneAlias'];
+
+    dynamic moduleSettings = data['moduleSettings'];
+    if (moduleSettings != null) {
+      if (moduleSettings['contact'] != null && moduleSettings['contact'] != false) {
+        _activeModules.add(NPModule.CONTACT);
+      }
+      if (moduleSettings['calendar'] != null && moduleSettings['calendar'] != false) {
+        _activeModules.add(NPModule.CALENDAR);
+      }
+      if (moduleSettings['doc'] != null && moduleSettings['doc'] != false) {
+        _activeModules.add(NPModule.DOC);
+      }
+      if (moduleSettings['bookmark'] != null && moduleSettings['bookmark'] != false) {
+        _activeModules.add(NPModule.BOOKMARK);
+      }
+      if (moduleSettings['photo'] != null && moduleSettings['photo'] != false) {
+        _activeModules.add(NPModule.PHOTO);
+      }
+
+    } else {
+      _activeModules.add(NPModule.CONTACT);
+      _activeModules.add(NPModule.CALENDAR);
+      _activeModules.add(NPModule.DOC);
+      _activeModules.add(NPModule.BOOKMARK);
+      _activeModules.add(NPModule.PHOTO);
+    }
   }
 
   Map<String, dynamic> toJson() {
@@ -31,6 +60,7 @@ class Preference {
   String get timezone => _timezone;
   set timezone(value) => _timezone = value;
   String get timezoneAlias => _timezoneAlias;
+  List<int> get activeModules => _activeModules;
 
   String toString() {
     return toJson().toString();
