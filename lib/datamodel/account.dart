@@ -3,6 +3,7 @@ import 'package:np_mobile/datamodel/auth_info.dart';
 import 'package:np_mobile/datamodel/preference.dart';
 
 class Account extends NPUser {
+  String _serviceHost;
   String _sessionId;
   AuthInfo _auth;
   Preference _preference;
@@ -13,6 +14,10 @@ class Account extends NPUser {
 
   Account.fromJson(Map<String, dynamic> data) : super.fromJson(data) {
     _sessionId = data['sessionId'];
+
+    if (data['servicehost'] != null) {
+      _serviceHost = data['servicehost'];
+    }
 
     if (data['preference'] != null) {
       _preference = Preference.fromJson(data['preference']);
@@ -49,6 +54,7 @@ class Account extends NPUser {
   set auth(value) => _auth = value;
 
   String get sessionId => _sessionId;
+  String get serviceHost => _serviceHost;
   AuthInfo get auth => _auth;
   Preference get preference => _preference;
   set preference(value) => _preference = value;

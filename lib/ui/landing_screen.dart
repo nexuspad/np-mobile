@@ -28,9 +28,21 @@ class LandingScreenState extends State<LandingScreen> {
         } else {
           _authenticated = true;
           final organizeBloc = ApplicationStateProvider.forOrganize(context);
-          organizeBloc.setOwnerId(acct.userId);
-          organizeBloc.changeModule(acct.preference.lasAccessedModule);
-          Navigator.pushReplacementNamed(context, 'organize');
+          organizeBloc.initForUser(acct);
+
+          if (acct.serviceHost != null && acct.serviceHost.isNotEmpty) {
+            AppManager().changeServiceHost(acct.serviceHost);
+            // re-run hello
+            AccountService().hello().then((acct) {
+              organizeBloc.initForUser(acct);
+              Navigator.pushReplacementNamed(context, 'organize');
+            }).catchError((error) {
+              print('cannot init account with changed service host $error');
+              UIHelper.goToLogin(context);
+            });
+          } else {
+            Navigator.pushReplacementNamed(context, 'organize');
+          }
         }
       });
     }).catchError((error) {

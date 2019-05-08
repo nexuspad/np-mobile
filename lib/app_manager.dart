@@ -46,13 +46,20 @@ class AppManager {
       if (_deviceId == null || _deviceId.isEmpty) {
         _deviceId = DeviceId.generate(10);
         _prefs.setString("DEVICE_ID", _deviceId);
-        print('AppConfig: generate and stored device id: $_deviceId');
+        print('AppManager: generate and stored device id: $_deviceId');
       }
 
       completer.complete(_instance);
     }
 
     return completer.future;
+  }
+
+  changeServiceHost(String hostName) {
+    if (hostName != null && hostName.isNotEmpty) {
+      _serviceHost = "https://" + hostName + ".nexuspad.com/api";
+      print('AppManager: service host updated to: $_serviceHost');
+    }
   }
 
   logout(context) {
@@ -70,7 +77,6 @@ class AppManager {
   String _deviceId;
 
   String get serviceHost => _serviceHost;
-  set serviceHost(value) => _serviceHost = value;
   String get deviceId => _deviceId;
 
   double get screenWidth => _screenWidth;

@@ -243,6 +243,38 @@ class OrganizerScreen extends StatelessWidget {
     return StreamBuilder(
       stream: organizeBloc.stateStream,
       builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+        List navBarItems = new List<BottomNavigationBarItem>();
+        if (OrganizeBloc.modules.contains(NPModule.CONTACT)) {
+          navBarItems.add(new BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            title: Text('contact'),
+          ));
+        }
+        if (OrganizeBloc.modules.contains(NPModule.CALENDAR)) {
+          navBarItems.add(new BottomNavigationBarItem(
+            icon: Icon(Icons.event),
+            title: Text('event'),
+          ));
+        }
+        if (OrganizeBloc.modules.contains(NPModule.DOC)) {
+          navBarItems.add(new BottomNavigationBarItem(
+            icon: Icon(Icons.note),
+            title: Text('doc'),
+          ));
+        }
+        if (OrganizeBloc.modules.contains(NPModule.BOOKMARK)) {
+          navBarItems.add(new BottomNavigationBarItem(
+            icon: Icon(Icons.bookmark),
+            title: Text('bookmark'),
+          ));
+        }
+        if (OrganizeBloc.modules.contains(NPModule.PHOTO)) {
+          navBarItems.add(new BottomNavigationBarItem(
+            icon: Icon(Icons.photo),
+            title: Text('photo'),
+          ));
+        }
+
         return new Theme(
             data: Theme.of(context).copyWith(
               // sets the background color of the `BottomNavigationBar`
@@ -253,25 +285,7 @@ class OrganizerScreen extends StatelessWidget {
                 organizeBloc.changeModule(OrganizeBloc.modules[index]);
               },
               currentIndex: organizeBloc.getNavigationIndex(),
-              items: [
-                new BottomNavigationBarItem(
-                  icon: Icon(Icons.person),
-                  title: Text('contact'),
-                ),
-                new BottomNavigationBarItem(
-                  icon: Icon(Icons.event),
-                  title: Text('event'),
-                ),
-                new BottomNavigationBarItem(
-                  icon: Icon(Icons.note),
-                  title: Text('doc'),
-                ),
-                new BottomNavigationBarItem(
-                  icon: Icon(Icons.bookmark),
-                  title: Text('bookmark'),
-                ),
-                new BottomNavigationBarItem(icon: Icon(Icons.photo), title: Text('photo')),
-              ],
+              items: navBarItems,
             ));
       },
     );

@@ -76,6 +76,28 @@ class AccountService extends BaseService {
     return completer.future;
   }
 
+  // for refreshing user, maybe using an updated endpoint
+  hello() {
+    var completer = new Completer();
+
+    String url = getAccountServiceEndPoint("hello") + '/' + _currentUser.sessionId;
+    RestClient().get(url, null).then((dynamic result) {
+      if (result['errorCode'] != null) {
+        completer.completeError(new NPError(cause: result['errorCode']));
+      } else {
+        _currentUser = Account.fromJson(result['user']);
+        if (_currentUser.sessionId != null) {
+          PreferenceService().update(_currentUser.preference);
+        }
+        completer.complete(_currentUser);
+      }
+    }).catchError((error) {
+      completer.completeError(error);
+    });
+
+    return completer.future;
+  }
+
   login(login, password) async {
     var completer = new Completer();
 
