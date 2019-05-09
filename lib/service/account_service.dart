@@ -82,7 +82,9 @@ class AccountService extends BaseService {
 
     String url = getAccountServiceEndPoint("hello") + '/' + _currentUser.sessionId;
     RestClient().get(url, null).then((dynamic result) {
-      if (result['errorCode'] != null) {
+      if (result is NPError) {
+        completer.completeError(result);
+      } else if (result['errorCode'] != null) {
         completer.completeError(new NPError(cause: result['errorCode']));
       } else {
         _currentUser = Account.fromJson(result['user']);
@@ -105,7 +107,9 @@ class AccountService extends BaseService {
         .postJson(getAccountServiceEndPoint("login"),
             json.encode(UserServiceData(login, password, AppManager().deviceId)), "", AppManager().deviceId)
         .then((dynamic result) {
-      if (result['errorCode'] != null) {
+      if (result is NPError) {
+        completer.completeError(result);
+      } else if (result['errorCode'] != null) {
         completer.completeError(new NPError(cause: result['errorCode']));
       } else {
         _currentUser = Account.fromJson(result['user']);
@@ -127,7 +131,9 @@ class AccountService extends BaseService {
         .postJson(getAccountServiceEndPoint("register"),
         json.encode(UserServiceData.newRegistration(email, password, AppManager().deviceId, PreferenceService().deviceTimezone)), "", AppManager().deviceId)
         .then((dynamic result) {
-      if (result['errorCode'] != null) {
+      if (result is NPError) {
+        completer.completeError(result);
+      } else if (result['errorCode'] != null) {
         completer.completeError(new NPError(cause: result['errorCode']));
       } else {
         _currentUser = Account.fromJson(result['user']);
@@ -145,7 +151,9 @@ class AccountService extends BaseService {
     var completer = new Completer();
 
     RestClient().get(getAccountServiceEndPoint("logout"), _currentUser.sessionId).then((dynamic result) {
-      if (result['errorCode'] != null) {
+      if (result is NPError) {
+        completer.completeError(result);
+      } else if (result['errorCode'] != null) {
         completer.completeError(new NPError(cause: result['errorCode']));
       } else {
         cleanupSession().then((result) {
