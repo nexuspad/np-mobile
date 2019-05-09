@@ -23,7 +23,8 @@ class EntryService extends BaseService {
 
     String url = getEntryEndPoint(moduleId: moduleId, entryId: entryId, ownerId: ownerId);
     RestClient().get(url, AccountService().sessionId).then((dynamic result) {
-      if (result['errorCode'] != null) {
+      if (result is NPError) {
+      } else if (result['errorCode'] != null) {
       } else {
         completer.complete(EntryFactory.initFromJson(result['entry']));
       }
@@ -42,7 +43,9 @@ class EntryService extends BaseService {
     RestClient()
         .postJson(url, json.encode(EntryServiceData(entry)), AccountService().sessionId, AppManager().deviceId)
         .then((dynamic result) {
-      if (result['errorCode'] != null) {
+      if (result is NPError) {
+        completer.completeError(result);
+      } else if (result['errorCode'] != null) {
         completer.completeError(new NPError(cause: result['errorCode']));
       } else {
         if (result['entry'] != null) {
@@ -126,7 +129,9 @@ class EntryService extends BaseService {
     RestClient()
         .postJson(url, json.encode(EntryServiceData(entry)), AccountService().sessionId, AppManager().deviceId)
         .then((dynamic result) {
-      if (result['errorCode'] != null) {
+      if (result is NPError) {
+        completer.completeError(result);
+      } else if (result['errorCode'] != null) {
         completer.completeError(new NPError(cause: result['errorCode']));
       } else {
         NPEntry updatedEntry = EntryFactory.initFromJson(result['entry']);
@@ -145,7 +150,9 @@ class EntryService extends BaseService {
     String url = getEntryEndPoint(moduleId: entry.moduleId, entryId: entry.entryId, ownerId: entry.owner.userId);
 
     RestClient().delete(url, AccountService().sessionId, AppManager().deviceId).then((dynamic result) {
-      if (result['errorCode'] != null) {
+      if (result is NPError) {
+        completer.completeError(result);
+      } else if (result['errorCode'] != null) {
         completer.completeError(new NPError(cause: result['errorCode']));
       } else {
         if (entry.moduleId == NPModule.UPLOAD) {
