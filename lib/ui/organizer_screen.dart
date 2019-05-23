@@ -19,6 +19,8 @@ import 'package:np_mobile/ui/widgets/np_grouped_list.dart';
 import 'package:np_mobile/ui/widgets/np_list.dart';
 import 'package:np_mobile/ui/widgets/np_timeline.dart';
 
+import 'content_helper.dart';
+
 enum AccountMenu { account, logout }
 
 class OrganizerScreen extends StatelessWidget {
@@ -145,7 +147,7 @@ class OrganizerScreen extends StatelessWidget {
           if (folder != null) {
             return Text(folder.folderName);
           } else {
-            return Text(NPModule.listName(listSetting.moduleId));
+            return Text(ContentHelper.getValue('m' + listSetting.moduleId.toString() + 's'));
           }
         } else {
           // todo - a blank screen of loading
@@ -247,31 +249,31 @@ class OrganizerScreen extends StatelessWidget {
         if (OrganizeBloc.modules.contains(NPModule.CONTACT)) {
           navBarItems.add(new BottomNavigationBarItem(
             icon: Icon(Icons.person),
-            title: Text('contact'),
+            title: Text(ContentHelper.getValue('m' + NPModule.CONTACT.toString())),
           ));
         }
         if (OrganizeBloc.modules.contains(NPModule.CALENDAR)) {
           navBarItems.add(new BottomNavigationBarItem(
             icon: Icon(Icons.event),
-            title: Text('event'),
+            title: Text(ContentHelper.getValue('m' + NPModule.CALENDAR.toString())),
           ));
         }
         if (OrganizeBloc.modules.contains(NPModule.DOC)) {
           navBarItems.add(new BottomNavigationBarItem(
             icon: Icon(Icons.note),
-            title: Text('doc'),
+            title: Text(ContentHelper.getValue('m' + NPModule.DOC.toString())),
           ));
         }
         if (OrganizeBloc.modules.contains(NPModule.BOOKMARK)) {
           navBarItems.add(new BottomNavigationBarItem(
             icon: Icon(Icons.bookmark),
-            title: Text('bookmark'),
+            title: Text(ContentHelper.getValue('m' + NPModule.BOOKMARK.toString())),
           ));
         }
         if (OrganizeBloc.modules.contains(NPModule.PHOTO)) {
           navBarItems.add(new BottomNavigationBarItem(
             icon: Icon(Icons.photo),
-            title: Text('photo'),
+            title: Text(ContentHelper.getValue('m' + NPModule.PHOTO.toString())),
           ));
         }
 
@@ -301,7 +303,7 @@ class OrganizerScreen extends StatelessWidget {
     if (timezones.length > 1) {
       timezoneTile = ListTile(
         title: Text(timezones[0]),
-        subtitle: Text('your account timezone: ${timezones[1]}'),
+        subtitle: Text(ContentHelper.getValue('account_timezone_setting') + ': ' + timezones[1]),
         onTap: () {},
       );
     }
@@ -325,7 +327,7 @@ class OrganizerScreen extends StatelessWidget {
             onTap: () {},
           ),
           timezoneTile,
-          UIHelper.actionButton(context, "log out", () {
+          UIHelper.actionButton(context, ContentHelper.translate("log out"), () {
             AppManager().logout(context);
           }),
         ],

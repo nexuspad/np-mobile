@@ -6,6 +6,8 @@ import 'package:intl/intl.dart';
 import 'package:np_mobile/datamodel/np_module.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import 'content_helper.dart';
+
 class UIHelper {
   static final npDateFormatter = new DateFormat('yyyy-MM-dd');
   static final npTimeFormatter = new DateFormat.Hm();
@@ -48,8 +50,6 @@ class UIHelper {
   }
 
   static bodyFont(context) {
-    MediaQueryData queryData = MediaQuery.of(context);
-    // Theme.of(context).textTheme.body1
     return TextStyle(fontSize: mediumFontSize);
   }
 
@@ -136,7 +136,7 @@ class UIHelper {
 
   static String localDateDisplay(context, DateTime dateTime) {
     if (dateTime == null) {
-      return "select a date";
+      return ContentHelper.translate("select a date");
     }
     return DateFormat.yMMMd(Localizations.localeOf(context).toString()).format(dateTime.toLocal());
   }
@@ -165,7 +165,7 @@ class UIHelper {
         onSubmit();
       },
       child: new Text(
-        text,
+        ContentHelper.translate(text),
         style: new TextStyle(color: Colors.white),
       ),
       color: Theme.of(context).accentColor,
@@ -179,7 +179,7 @@ class UIHelper {
       },
       textColor: ThemeData().primaryColor,
       child: new Text(
-        'cancel',
+        ContentHelper.getValue('cancel'),
       ),
     );
   }

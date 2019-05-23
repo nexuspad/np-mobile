@@ -186,40 +186,40 @@ class NPModuleListingState<T extends BaseList> extends State<T> {
               if (deletedEntry != null) {
                 setState(() {
                 });
-                UIHelper.showMessageOnSnackBar(context: context, text: ContentHelper.entryDeleted(e.moduleId));
+                UIHelper.showMessageOnSnackBar(context: context, text: ContentHelper.concatValues([e.moduleId.toString(), 'deleted']));
               }
             });
           } else {
-            UIHelper.showMessageOnSnackBar(context: context, text: ContentHelper.deleting(e.moduleId));
+            UIHelper.showMessageOnSnackBar(context: context, text: ContentHelper.getValue("deleting"));
             EntryService().delete(e).then((deletedEntry) {
               setState(() {});
-              UIHelper.showMessageOnSnackBar(context: context, text: ContentHelper.entryDeleted(e.moduleId));
+              UIHelper.showMessageOnSnackBar(context: context, text: ContentHelper.concatValues([e.moduleId.toString(), 'deleted']));
             });
           }
         }
       },
       itemBuilder: (BuildContext context) {
-        var pinnedText = e.pinned ? Text('unfavorite') : Text('favorite');
+        var pinnedText = e.pinned ? Text(ContentHelper.getValue('unfavorite')) : Text(ContentHelper.getValue('favorite'));
         List<PopupMenuEntry<EntryMenu>> menuItems = <PopupMenuEntry<EntryMenu>>[
           PopupMenuItem<EntryMenu>(
             value: EntryMenu.favorite,
             child: pinnedText,
           ),
-          const PopupMenuItem<EntryMenu>(
+          PopupMenuItem<EntryMenu>(
             value: EntryMenu.tag,
-            child: Text('tag'),
+            child: Text(ContentHelper.getValue('tag')),
           ),
-          const PopupMenuItem<EntryMenu>(
+          PopupMenuItem<EntryMenu>(
             value: EntryMenu.update,
-            child: Text('update'),
+            child: Text(ContentHelper.getValue('update')),
           ),
-          const PopupMenuItem<EntryMenu>(
+          PopupMenuItem<EntryMenu>(
             value: EntryMenu.move,
-            child: Text('move'),
+            child: Text(ContentHelper.getValue('move')),
           ),
-          const PopupMenuItem<EntryMenu>(
+          PopupMenuItem<EntryMenu>(
             value: EntryMenu.delete,
-            child: Text('delete'),
+            child: Text(ContentHelper.getValue('delete')),
           ),
         ];
 

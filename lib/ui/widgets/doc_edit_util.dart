@@ -8,7 +8,7 @@ import 'package:np_mobile/ui/widgets/tag_form_widget.dart';
 class DocEdit {
   static Widget form(BuildContext context, GlobalKey<FormState> formKey, NPDoc doc) {
     if (doc.format == null || doc.format != TextFormat.plain) {
-      return noImplementation(context, ContentHelper.getCmsValue("no_html_editor"));
+      return noImplementation(context, ContentHelper.getValue("no_html_editor"));
     }
     return new Form(
       key: formKey,
@@ -19,7 +19,7 @@ class DocEdit {
             child: new TextFormField(
               initialValue: doc.title,
               onSaved: (val) => doc.title = val,
-              decoration: new InputDecoration(labelText: "title", border: UnderlineInputBorder()),
+              decoration: new InputDecoration(labelText: ContentHelper.getValue("title"), border: UnderlineInputBorder()),
             ),
           ),
           new Padding(
@@ -29,7 +29,7 @@ class DocEdit {
               maxLines: null,
               initialValue: doc.note,
               onSaved: (val) => doc.note = val,
-              decoration: new InputDecoration(labelText: "note", border: UnderlineInputBorder()),
+              decoration: new InputDecoration(labelText: ContentHelper.getValue("note"), border: UnderlineInputBorder()),
             ),
           ),
           TagForm(context, doc, false, true),

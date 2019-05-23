@@ -27,7 +27,7 @@ class _FolderFormState extends State<FolderEditScreen> {
       _folder = NPFolder.copy(widget._folder);
     }
 
-    String title = _folder.folderId != null ? 'update folder' : 'new folder';
+    String title = _folder.folderId != null ? ContentHelper.translate('update folder') : ContentHelper.translate('new folder');
 
     return Scaffold(
       key: scaffoldKey,
@@ -68,7 +68,7 @@ class _FolderFormState extends State<FolderEditScreen> {
             child: new TextFormField(
               initialValue: _folder.folderName,
               onSaved: (val) => _folder.folderName = val,
-              decoration: new InputDecoration(labelText: "folder name", border: UnderlineInputBorder()),
+              decoration: new InputDecoration(labelText: ContentHelper.translate("folder name"), border: UnderlineInputBorder()),
             ),
           ),
           Padding(
@@ -76,7 +76,7 @@ class _FolderFormState extends State<FolderEditScreen> {
               child: Row(
                 children: <Widget>[
                   Text(
-                    'color label',
+                    ContentHelper.translate('color label'),
                   ),
                   UIHelper.formSpacer(),
                   colorLabelButton()
@@ -90,11 +90,11 @@ class _FolderFormState extends State<FolderEditScreen> {
   _submit() {
     if (_formKey.currentState.validate()) {
       _formKey.currentState.save();
-      UIHelper.showMessageOnSnackBar(globalKey: scaffoldKey, text: ContentHelper.savingFolder());
+      UIHelper.showMessageOnSnackBar(globalKey: scaffoldKey, text: ContentHelper.concatValues(['saving', 'folder']));
       FolderService(moduleId: _folder.moduleId, ownerId: _folder.owner.userId)
           .save(_folder, FolderUpdateAction.UPDATE)
           .then((updatedEntry) {
-        UIHelper.showMessageOnSnackBar(globalKey: scaffoldKey, text: ContentHelper.folderSaved());
+        UIHelper.showMessageOnSnackBar(globalKey: scaffoldKey, text: ContentHelper.concatValues(['folder', 'saved']));
         Navigator.of(context).pop(null);
       }).catchError((error) {
         UIHelper.showMessageOnSnackBar(globalKey: scaffoldKey, text: error.toString());

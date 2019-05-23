@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:np_mobile/datamodel/list_setting.dart';
 import 'package:np_mobile/datamodel/np_entry.dart';
-import 'package:np_mobile/datamodel/np_module.dart';
 import 'package:np_mobile/ui/entry_view_screen.dart';
 import 'package:np_mobile/ui/content_helper.dart';
 import 'package:np_mobile/ui/widgets/base_list.dart';
@@ -28,7 +27,7 @@ class _GroupedListState extends NPModuleListingState<NPGroupedListWidget> {
       if (loading) {
         return Center(child: buildProgressIndicator());
       } else {
-        return UIHelper.emptyContent(context, ContentHelper.getCmsValue("no_content"), 0);
+        return UIHelper.emptyContent(context, ContentHelper.getValue("no_content"), 0);
       }
     } else {
       List<dynamic> items = new List();
@@ -73,7 +72,7 @@ class _GroupedListState extends NPModuleListingState<NPGroupedListWidget> {
         children: <Widget>[
           new Expanded(
             child: new Text(
-              name == NPEntry.PINNED_GROUP_NAME ? ContentHelper.getCmsValue("favorite") : name,
+              name == NPEntry.PINNED_GROUP_NAME ? ContentHelper.getValue("favorite") : name,
               style: UIHelper.favoriteEntryTitle(context),
             ),
           ),

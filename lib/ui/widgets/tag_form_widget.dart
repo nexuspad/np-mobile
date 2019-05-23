@@ -3,6 +3,8 @@ import 'package:np_mobile/datamodel/np_entry.dart';
 import 'package:np_mobile/service/entry_service.dart';
 import 'package:np_mobile/ui/ui_helper.dart';
 
+import '../content_helper.dart';
+
 class TagForm extends StatefulWidget {
   final NPEntry _entry;
   final bool _updateOnChange;
@@ -44,7 +46,7 @@ class _TagFormState extends State<TagForm> {
                         // handles form saving when the tag form is inside the entry edit form
                         _entry.addTag(val);
                       },
-                      decoration: new InputDecoration(labelText: "add tags", border: UnderlineInputBorder()),
+                      decoration: new InputDecoration(labelText: ContentHelper.translate("add tags"), border: UnderlineInputBorder()),
                       controller: controller,
                     )),
                 IconButton(

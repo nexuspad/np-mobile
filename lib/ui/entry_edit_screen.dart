@@ -42,11 +42,11 @@ class _EntryFormState extends State<EntryEditScreen> {
   Widget build(BuildContext context) {
     _organizeBloc = ApplicationStateProvider.forOrganize(context);
 
-    String title = NPModule.entryName(_entry.folder.moduleId);
+    String title;
     if (_entry.entryId != null && _entry.entryId.isNotEmpty) {
-      title = 'update ' + title;
+      title = ContentHelper.translate("update" + NPModule.entryName(_entry.folder.moduleId));
     } else {
-      title = 'new ' + title;
+      title = ContentHelper.translate('new ' + NPModule.entryName(_entry.folder.moduleId));
     }
 
     return Scaffold(
@@ -125,7 +125,7 @@ class _EntryFormState extends State<EntryEditScreen> {
   _submit() {
     if (_formKey.currentState.validate()) {
       _formKey.currentState.save();
-      UIHelper.showMessageOnSnackBar(globalKey: scaffoldKey, text: ContentHelper.savingEntry(_entry.moduleId));
+      UIHelper.showMessageOnSnackBar(globalKey: scaffoldKey, text: ContentHelper.concatValues(['saving', _entry.moduleId.toString()]));
 
       Future<dynamic> future;
 
@@ -137,7 +137,7 @@ class _EntryFormState extends State<EntryEditScreen> {
 
       future.then((updatedEntryOrEntries) {
         _organizeBloc.sendUpdate(_entry);
-        UIHelper.showMessageOnSnackBar(globalKey: scaffoldKey, text: ContentHelper.entrySaved(_entry.moduleId));
+        UIHelper.showMessageOnSnackBar(globalKey: scaffoldKey, text: ContentHelper.concatValues(['saved', _entry.moduleId.toString()]));
         Navigator.pop(context, _entry);
       }).catchError((error) {
         UIHelper.showMessageOnSnackBar(globalKey: scaffoldKey, text: error.toString());

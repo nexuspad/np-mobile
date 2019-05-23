@@ -3,6 +3,8 @@ import 'package:np_mobile/datamodel/np_contact.dart';
 import 'package:np_mobile/ui/ui_helper.dart';
 import 'package:np_mobile/ui/widgets/tag_form_widget.dart';
 
+import '../content_helper.dart';
+
 class ContactEdit {
   static Form form(BuildContext context, GlobalKey<FormState> formKey, NPContact contact, Function setStateCallback) {
     if (contact.phones == null || contact.phones.length == 0) {
@@ -41,7 +43,7 @@ class ContactEdit {
       child: new TextFormField(
         initialValue: contact.title,
         onSaved: (val) => contact.title = val,
-        decoration: new InputDecoration(labelText: "title", border: UnderlineInputBorder()),
+        decoration: new InputDecoration(labelText: ContentHelper.getValue("title"), border: UnderlineInputBorder()),
       ),
     ));
 
@@ -76,7 +78,7 @@ class ContactEdit {
         maxLines: null,
         initialValue: contact.note,
         onSaved: (val) => contact.note = val,
-        decoration: new InputDecoration(labelText: "note", border: UnderlineInputBorder()),
+        decoration: new InputDecoration(labelText: ContentHelper.getValue("note"), border: UnderlineInputBorder()),
       ),
     ));
 
@@ -97,7 +99,7 @@ class ContactEdit {
           child: TextFormField(
             initialValue: contact.firstName,
             onSaved: (val) => contact.firstName = val,
-            decoration: new InputDecoration(labelText: "first name", border: UnderlineInputBorder()),
+            decoration: new InputDecoration(labelText: ContentHelper.translate("first name"), border: UnderlineInputBorder()),
           ),
         ),
         UIHelper.formSpacer(),
@@ -106,7 +108,7 @@ class ContactEdit {
           child: TextFormField(
             initialValue: contact.middleName,
             onSaved: (val) => contact.middleName = val,
-            decoration: new InputDecoration(labelText: "middle name", border: UnderlineInputBorder()),
+            decoration: new InputDecoration(labelText: ContentHelper.translate("mi"), border: UnderlineInputBorder()),
           ),
         ),
       ],
@@ -117,7 +119,7 @@ class ContactEdit {
           child: TextFormField(
             initialValue: contact.lastName,
             onSaved: (val) => contact.lastName = val,
-            decoration: new InputDecoration(labelText: "last name", border: UnderlineInputBorder()),
+            decoration: new InputDecoration(labelText: ContentHelper.translate("last name"), border: UnderlineInputBorder()),
           ),
         ),
       ],
@@ -128,7 +130,7 @@ class ContactEdit {
           child: TextFormField(
             initialValue: contact.businessName,
             onSaved: (val) => contact.businessName = val,
-            decoration: new InputDecoration(labelText: "company", border: UnderlineInputBorder()),
+            decoration: new InputDecoration(labelText: ContentHelper.translate("business name"), border: UnderlineInputBorder()),
           ),
         ),
       ],

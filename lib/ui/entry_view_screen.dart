@@ -151,7 +151,7 @@ class _EntryViewScreenState extends State<EntryViewScreen> {
     if (_entryList.entries.length == 1) {
       needToPop = true;
     }
-    UIHelper.showMessageOnSnackBar(globalKey: scaffoldKey, text: ContentHelper.deleting(e.moduleId));
+    UIHelper.showMessageOnSnackBar(globalKey: scaffoldKey, text: ContentHelper.getValue("deleting"));
     EntryService().delete(e).then((deletedEntry) {
       if (needToPop) {
         Navigator.of(context).pop(null);

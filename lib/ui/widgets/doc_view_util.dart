@@ -44,10 +44,10 @@ class DocView {
             children: <Widget>[
               Expanded(child: Text(upload.fileName),),
               IconButton(icon: Icon(Icons.clear), onPressed: () {
-                UIHelper.showMessageOnSnackBar(context: context, text: ContentHelper.deleting(NPModule.UPLOAD));
+                UIHelper.showMessageOnSnackBar(context: context, text: ContentHelper.getValue("deleting"));
                 EntryService().delete(upload).then((doc) {
                   setStateCallback(doc);
-                  UIHelper.showMessageOnSnackBar(context: context, text: ContentHelper.entryDeleted(NPModule.UPLOAD));
+                  UIHelper.showMessageOnSnackBar(context: context, text: ContentHelper.concatValues(['deleted', NPModule.UPLOAD.toString()]));
                 });
               })
             ],

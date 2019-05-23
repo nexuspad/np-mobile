@@ -28,7 +28,7 @@ class _GridState extends NPModuleListingState<BaseList> {
       if (loading) {
         return Center(child: buildProgressIndicator());
       } else {
-        return UIHelper.emptyContent(context, ContentHelper.getCmsValue("no_content"), 0);
+        return UIHelper.emptyContent(context, ContentHelper.getValue("no_content"), 0);
       }
     } else {
       final Orientation orientation = MediaQuery.of(context).orientation;
@@ -102,10 +102,6 @@ class GridItem extends StatelessWidget {
             child: GridTileBar(
               title: _GridTitleText(' '),
               backgroundColor: Colors.black45,
-//              leading: Icon(
-//                icon,
-//                color: Colors.white,
-//              ),
               trailing: popMenu,
             ),
           ),
@@ -121,7 +117,6 @@ class GridItem extends StatelessWidget {
             child: GridTileBar(
               backgroundColor: Colors.black45,
               title: _GridTitleText(entry.title),
-//              subtitle: _GridTitleText(entry.note),
               trailing: Icon(
                 icon,
                 color: Colors.white,

@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:np_mobile/app_manager.dart';
-import 'package:np_mobile/datamodel/account.dart';
 import 'package:np_mobile/service/np_error.dart';
 import 'package:np_mobile/service/account_service.dart';
 import 'package:np_mobile/ui/blocs/application_state_provider.dart';
 import 'package:np_mobile/ui/ui_helper.dart';
+
+import 'content_helper.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -24,7 +25,7 @@ class LoginFormState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     var loginBtn = new Container(
-      child: UIHelper.actionButton(context, "log in", () {_submit();}),
+      child: UIHelper.actionButton(context, ContentHelper.translate("log in"), () {_submit();}),
       margin: new EdgeInsets.only(top: 20.0),
     );
 
@@ -49,7 +50,7 @@ class LoginFormState extends State<LoginScreen> {
                     return null;
                   },
                   keyboardType: TextInputType.emailAddress,
-                  decoration: new InputDecoration(labelText: "email or username"),
+                  decoration: new InputDecoration(labelText: ContentHelper.translate("email")),
                 ),
               ),
               new Padding(
@@ -65,7 +66,7 @@ class LoginFormState extends State<LoginScreen> {
                     return null;
                   },
                   obscureText: true,
-                  decoration: new InputDecoration(labelText: "password"),
+                  decoration: new InputDecoration(labelText: ContentHelper.translate("password")),
                 ),
               ),
             ],
@@ -78,13 +79,13 @@ class LoginFormState extends State<LoginScreen> {
 
     return new Scaffold(
       appBar: AppBar(
-        title: Text('log in to NexusApp'),
+        title: Text(ContentHelper.translate('log in')),
         actions: <Widget>[
           FlatButton(
-            child: Text('create account'),
+            child: Text(ContentHelper.translate('create a free account')),
             textColor: Colors.white,
             onPressed: () {
-              Navigator.pushNamed(context, 'register');
+              Navigator.pushNamed(context, ContentHelper.translate('register'));
             },
           )
         ],
@@ -107,10 +108,10 @@ class LoginFormState extends State<LoginScreen> {
     if (_formKey.currentState.validate()) {
       _loading = true;
       _formKey.currentState.save();
-      UIHelper.showMessageOnSnackBar(globalKey: scaffoldKey, text: 'logging in...');
+      UIHelper.showMessageOnSnackBar(globalKey: scaffoldKey, text: ContentHelper.getValue('logging_in'));
       AccountService().login(_userName, _password).then((acct) {
         if (acct.sessionId != null) {
-          UIHelper.showMessageOnSnackBar(globalKey: scaffoldKey, text: 'you are logged in');
+          UIHelper.showMessageOnSnackBar(globalKey: scaffoldKey, text: ContentHelper.translate('you are logged in'));
           final organizeBloc = ApplicationStateProvider.forOrganize(context);
           organizeBloc.initForUser(acct);
 

@@ -3,6 +3,8 @@ import 'package:intl/intl.dart';
 import 'package:np_mobile/app_manager.dart';
 import 'package:np_mobile/ui/ui_helper.dart';
 
+import '../content_helper.dart';
+
 enum RangeMenu { today, week, month, year }
 
 class DateRangePicker extends StatefulWidget {
@@ -52,11 +54,11 @@ class _DateRangePickerState extends State<DateRangePicker> {
     List<Widget> menuItems = <Widget>[
       UIHelper.formSpacer(),
       Expanded(
-        child:_inputDropdown('from', DateFormat.yMMMd().format(_startDate)),
+        child:_inputDropdown(ContentHelper.getValue('from'), DateFormat.yMMMd().format(_startDate)),
       ),
       UIHelper.formSpacer(),
       Expanded(
-        child: _inputDropdown('to', DateFormat.yMMMd().format(_endDate)),
+        child: _inputDropdown(ContentHelper.getValue('to'), DateFormat.yMMMd().format(_endDate)),
       ),
     ];
 
@@ -69,7 +71,7 @@ class _DateRangePickerState extends State<DateRangePicker> {
                 _endDate = DateTime.now().add(Duration(days: 7));
                 widget.dateRangeSelected(<DateTime>[_startDate, _endDate]);
               },
-              child: Text('today')),
+              child: Text(ContentHelper.getValue('today'))),
         ),
       );
       menuItems.add(PopupMenuButton<RangeMenu>(
@@ -85,13 +87,13 @@ class _DateRangePickerState extends State<DateRangePicker> {
           }
         },
         itemBuilder: (BuildContext context) => <PopupMenuEntry<RangeMenu>>[
-              const PopupMenuItem<RangeMenu>(
+              PopupMenuItem<RangeMenu>(
                 value: RangeMenu.week,
-                child: Text('week'),
+                child: Text(ContentHelper.getValue("week")),
               ),
-              const PopupMenuItem<RangeMenu>(
+              PopupMenuItem<RangeMenu>(
                 value: RangeMenu.month,
-                child: Text('month'),
+                child: Text(ContentHelper.getValue('month')),
               ),
             ],
       ));
@@ -113,17 +115,17 @@ class _DateRangePickerState extends State<DateRangePicker> {
           }
         },
         itemBuilder: (BuildContext context) => <PopupMenuEntry<RangeMenu>>[
-          const PopupMenuItem<RangeMenu>(
+          PopupMenuItem<RangeMenu>(
             value: RangeMenu.today,
-            child: Text('today'),
+            child: Text(ContentHelper.getValue('today')),
           ),
-          const PopupMenuItem<RangeMenu>(
+          PopupMenuItem<RangeMenu>(
             value: RangeMenu.week,
-            child: Text('week'),
+            child: Text(ContentHelper.getValue('week')),
           ),
-          const PopupMenuItem<RangeMenu>(
+          PopupMenuItem<RangeMenu>(
             value: RangeMenu.month,
-            child: Text('month'),
+            child: Text(ContentHelper.getValue('month')),
           ),
         ],
       ));
@@ -145,7 +147,6 @@ class _DateRangePickerState extends State<DateRangePicker> {
         decoration: InputDecoration(
           labelText: labelText,
         ),
-//        baseStyle: Theme.of(context).textTheme.title,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           mainAxisSize: MainAxisSize.min,
