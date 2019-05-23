@@ -3,6 +3,8 @@ import 'package:np_mobile/datamodel/np_bookmark.dart';
 import 'package:np_mobile/ui/ui_helper.dart';
 import 'package:np_mobile/ui/widgets/tag_form_widget.dart';
 
+import '../content_helper.dart';
+
 class BookmarkEdit {
   static Form form(BuildContext context, GlobalKey<FormState> formKey, NPBookmark bookmark) {
     return new Form(
@@ -14,7 +16,7 @@ class BookmarkEdit {
             child: new TextFormField(
               initialValue: bookmark.title,
               onSaved: (val) => bookmark.title = val,
-              decoration: new InputDecoration(labelText: "title", border: UnderlineInputBorder()),
+              decoration: new InputDecoration(labelText: ContentHelper.translate("title"), border: UnderlineInputBorder()),
             ),
           ),
           new Padding(
@@ -29,7 +31,7 @@ class BookmarkEdit {
                 }
                 return null;
               },
-              decoration: new InputDecoration(labelText: "web address", border: UnderlineInputBorder()),
+              decoration: new InputDecoration(labelText: ContentHelper.translate("web address"), border: UnderlineInputBorder()),
             ),
           ),
           new Padding(
@@ -39,7 +41,7 @@ class BookmarkEdit {
               maxLines: null,
               initialValue: bookmark.note,
               onSaved: (val) => bookmark.note = val,
-              decoration: new InputDecoration(labelText: "note", border: UnderlineInputBorder()),
+              decoration: new InputDecoration(labelText: ContentHelper.translate('note'), border: UnderlineInputBorder()),
             ),
           ),
           TagForm(context, bookmark, false, true),

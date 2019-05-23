@@ -71,7 +71,7 @@ class _UploaderScreenState extends State<UploaderScreen> {
             )
           ]),
       body: _selectedFiles.length == 0
-          ? UIHelper.emptyContent(context, ContentHelper.getCmsValue("no_selection"), 0)
+          ? UIHelper.emptyContent(context, ContentHelper.getValue("no_selection"), 0)
           : _photoList(context),
       floatingActionButton: _actionMenuItems(),
     );
@@ -115,7 +115,7 @@ class _UploaderScreenState extends State<UploaderScreen> {
                     height: imageWidth,
                   )),
               Expanded(
-                child: Text(_selectedFiles[index].status.toString().split('.').last),
+                child: Text(ContentHelper.translate(_selectedFiles[index].status.toString().split('.').last)),
               ),
               actionButton
             ],

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:np_mobile/datamodel/np_folder.dart';
 
+import '../content_helper.dart';
+
 enum FolderMenu { update, delete }
 
 /*
@@ -27,13 +29,13 @@ class FolderTile extends ListTile {
         new PopupMenuButton<FolderMenu>(
           onSelected: (FolderMenu result) {},
           itemBuilder: (BuildContext context) => <PopupMenuEntry<FolderMenu>>[
-                const PopupMenuItem<FolderMenu>(
+                PopupMenuItem<FolderMenu>(
                   value: FolderMenu.update,
-                  child: Text('update'),
+                  child: Text(ContentHelper.getValue('update')),
                 ),
-                const PopupMenuItem<FolderMenu>(
+                PopupMenuItem<FolderMenu>(
                   value: FolderMenu.delete,
-                  child: Text('delete'),
+                  child: Text(ContentHelper.getValue('delete')),
                 ),
               ],
         )

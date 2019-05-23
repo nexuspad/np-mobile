@@ -4,6 +4,8 @@ import 'package:np_mobile/service/np_error.dart';
 import 'package:np_mobile/service/account_service.dart';
 import 'package:np_mobile/ui/ui_helper.dart';
 
+import 'content_helper.dart';
+
 class RegisterScreen extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
@@ -22,7 +24,7 @@ class RegisterFormState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     var registerBtn = new Container(
-      child: UIHelper.actionButton(context, "create account", () {_submit();}),
+      child: UIHelper.actionButton(context, ContentHelper.translate("create account"), () {_submit();}),
       margin: new EdgeInsets.only(top: 20.0),
     );
 
@@ -46,7 +48,7 @@ class RegisterFormState extends State<RegisterScreen> {
                     return null;
                   },
                   keyboardType: TextInputType.emailAddress,
-                  decoration: new InputDecoration(labelText: "email"),
+                  decoration: new InputDecoration(labelText: ContentHelper.translate("email")),
                 ),
               ),
               new Padding(
@@ -63,7 +65,7 @@ class RegisterFormState extends State<RegisterScreen> {
                     return null;
                   },
                   obscureText: true,
-                  decoration: new InputDecoration(labelText: "password"),
+                  decoration: new InputDecoration(labelText: ContentHelper.translate("password")),
                 ),
               ),
               new Padding(
@@ -76,7 +78,7 @@ class RegisterFormState extends State<RegisterScreen> {
                     return null;
                   },
                   obscureText: true,
-                  decoration: new InputDecoration(labelText: "confirm password"),
+                  decoration: new InputDecoration(labelText: ContentHelper.translate("confirm password")),
                 ),
               ),
             ],
@@ -109,7 +111,7 @@ class RegisterFormState extends State<RegisterScreen> {
     if (_formKey.currentState.validate()) {
       _loading = true;
       _formKey.currentState.save();
-      UIHelper.showMessageOnSnackBar(globalKey: scaffoldKey, text: 'creating account...');
+      UIHelper.showMessageOnSnackBar(globalKey: scaffoldKey, text: ContentHelper.translate('creating_account'));
       AccountService().register(_email, _password).then((dynamic result) {
         Account user = result;
         setState(() {

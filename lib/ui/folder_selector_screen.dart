@@ -115,7 +115,7 @@ class FolderSelectionState extends State<FolderSelectorScreen> {
       itemToMove = _folderToMove;
     }
 
-    dynamic title = Text(ContentHelper.folderNavigatorTitle(_currentParentFolder.moduleId));
+    dynamic title = Text(ContentHelper.entryPrefixMessage(_currentParentFolder.moduleId, 'folders'));
     if (_entryToMove != null || _folderToMove != null) {
       title = Text('move into folder');
     } else if (_entryToUpdate != null || _folderToUpdate != null) {
@@ -128,7 +128,7 @@ class FolderSelectionState extends State<FolderSelectorScreen> {
         backgroundColor: _selectorIsForMovingOrUpdating() ? UIHelper.blueCanvas() : UIHelper.blackCanvas(),
         actions: <Widget>[
           IconButton(
-            tooltip: 'search',
+            tooltip: ContentHelper.getValue('search'),
             icon: const Icon(Icons.search),
             onPressed: () async {
               final String selected = await showSearch<String>(
@@ -175,7 +175,7 @@ class FolderSelectionState extends State<FolderSelectorScreen> {
     } else {
       Widget childFolderWidget;
       if (_currentParentFolder.subFolders != null && _currentParentFolder.subFolders.length == 0) {
-        childFolderWidget = UIHelper.emptyContent(context, ContentHelper.getCmsValue("no_subfolder"), 0);
+        childFolderWidget = UIHelper.emptyContent(context, ContentHelper.getValue("no_subfolder"), 0);
       } else {
         childFolderWidget = ListView.separated(
           padding: AppManager().isSmallScreen ? UIHelper.noPadding() : UIHelper.contentPadding(),
@@ -370,21 +370,21 @@ class FolderSelectionState extends State<FolderSelectorScreen> {
           UIHelper.actionButton(context, 'move', () {
             if (_entryToMove != null) {
               UIHelper.showMessageOnSnackBar(
-                  globalKey: scaffoldKey, text: ContentHelper.movingEntry(_entryToMove.moduleId));
+                  globalKey: scaffoldKey, text: ContentHelper.concatValues(['moving', _entryToMove.moduleId.toString()]));
               EntryService().move(_entryToMove, folder).then((updatedEntry) {
                 UIHelper.showMessageOnSnackBar(
-                    globalKey: scaffoldKey, text: ContentHelper.entryMoved(_entryToMove.moduleId));
+                    globalKey: scaffoldKey, text: ContentHelper.concatValues([_entryToMove.moduleId.toString(), 'moved']));
                 Navigator.pop(context);
               }).catchError((error) {
                 UIHelper.showMessageOnSnackBar(globalKey: scaffoldKey, text: error.toString());
               });
             } else if (_folderToMove != null) {
               _folderToMove.parent = NPFolder.copy(folder);
-              UIHelper.showMessageOnSnackBar(globalKey: scaffoldKey, text: ContentHelper.movingFolder());
+              UIHelper.showMessageOnSnackBar(globalKey: scaffoldKey, text: ContentHelper.concatValues(['moving', 'folder']));
               FolderService(moduleId: _folderToMove.moduleId, ownerId: _folderToMove.owner.userId)
                   .save(_folderToMove, FolderUpdateAction.MOVE)
                   .then((updatedFolder) {
-                UIHelper.showMessageOnSnackBar(globalKey: scaffoldKey, text: ContentHelper.folderMoved());
+                UIHelper.showMessageOnSnackBar(globalKey: scaffoldKey, text: ContentHelper.concatValues(['folder', 'moved']));
                 Navigator.pop(context);
               }).catchError((error) {
                 UIHelper.showMessageOnSnackBar(globalKey: scaffoldKey, text: error.toString());
@@ -446,12 +446,12 @@ class FolderSelectionState extends State<FolderSelectorScreen> {
       builder: (BuildContext context) {
         // return object of type Dialog
         return AlertDialog(
-          title: new Text("please confirm"),
+          title: new Text(ContentHelper.translate("confirm action")),
           content: new Text("Delete the folder \"${folder.folderName}\" and all it's content?"),
           actions: <Widget>[
             // usually buttons at the bottom of the dialog
             new FlatButton(
-              child: new Text("yes"),
+              child: new Text(ContentHelper.getValue("yes")),
               onPressed: () {
                 _deleteFolder(folder);
               },
@@ -469,10 +469,10 @@ class FolderSelectionState extends State<FolderSelectorScreen> {
   }
 
   _deleteFolder(NPFolder folder) {
-    UIHelper.showMessageOnSnackBar(globalKey: scaffoldKey, text: ContentHelper.deletingFolder());
+    UIHelper.showMessageOnSnackBar(globalKey: scaffoldKey, text: ContentHelper.concatValues(['deleting', 'folder']));
     FolderService(moduleId: folder.moduleId, ownerId: folder.owner.userId).delete(folder).then((deletedFolder) {
       Navigator.of(context).pop();
-      UIHelper.showMessageOnSnackBar(globalKey: scaffoldKey, text: ContentHelper.folderDeleted());
+      UIHelper.showMessageOnSnackBar(globalKey: scaffoldKey, text: ContentHelper.concatValues(['folder', 'deleted']));
       setState(() {});
     }).catchError((error) {
       UIHelper.showMessageOnSnackBar(globalKey: scaffoldKey, text: error.toString());

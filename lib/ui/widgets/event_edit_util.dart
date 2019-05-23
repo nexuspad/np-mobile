@@ -26,14 +26,14 @@ class EventEdit {
             }
             return null;
           },
-          decoration: new InputDecoration(labelText: "title", border: UnderlineInputBorder()),
+          decoration: new InputDecoration(labelText: ContentHelper.getValue("title"), border: UnderlineInputBorder()),
         ),
       ),
       new Padding(
         padding: UIHelper.contentPadding(),
         child: DateTimePicker(
           key: Key('StartDateTimePicker'),
-          labelText: 'from',
+          labelText: ContentHelper.getValue('from'),
           initialDate: event.startDateTime,
           initialTime: event.localStartTime != null ? _fromNpLocalTime(event.localStartTime) : null,
           selectDate: (DateTime date) {
@@ -50,7 +50,7 @@ class EventEdit {
         padding: UIHelper.contentPadding(),
         child: DateTimePicker(
           key: Key('EndDateTimePicker'),
-          labelText: 'to',
+          labelText: ContentHelper.getValue('to'),
           initialDate: event.localEndDate != null ? DateTime.parse(event.localEndDate) : null,
           initialTime: event.localEndTime != null ? _fromNpLocalTime(event.localEndTime) : null,
           selectDate: (DateTime date) {
@@ -83,7 +83,7 @@ class EventEdit {
         maxLines: null,
         initialValue: event.note,
         onSaved: (val) => event.note = val,
-        decoration: new InputDecoration(labelText: "note", border: UnderlineInputBorder()),
+        decoration: new InputDecoration(labelText: ContentHelper.getValue("note"), border: UnderlineInputBorder()),
       ),
     ));
 
@@ -143,7 +143,7 @@ class EventEdit {
         padding: UIHelper.formFieldPadding(),
         child: Row(
           children: <Widget>[
-            Text('reminder'),
+            Text(ContentHelper.getValue('reminder')),
             Switch(
               value: enabled,
               onChanged: (bool value) {
@@ -231,7 +231,7 @@ class EventEdit {
                       String valueInStr = value.toString().split(".").last;
                       return new DropdownMenuItem<String>(
                         value: valueInStr,
-                        child: new Text(ContentHelper.getCmsValue(valueInStr)),
+                        child: new Text(ContentHelper.getValue(valueInStr)),
                       );
                     }).toList(),
                     value: reminder.timeUnit.toString().split('.').last,
@@ -242,7 +242,7 @@ class EventEdit {
                   ),
                 ),
               ),
-              Text('before it starts'),
+              Text(ContentHelper.translate('before it starts')),
             ],
           ),
         )
@@ -267,7 +267,7 @@ class EventEdit {
                   String valueInString = value.toString().split(".").last;
                   return new DropdownMenuItem<String>(
                     value: valueInString,
-                    child: new Text(ContentHelper.getCmsValue(valueInString)),
+                    child: new Text(ContentHelper.getValue(valueInString)),
                   );
                 }).toList(),
                 value: recurrence.pattern.toString().split('.').last,
@@ -290,7 +290,7 @@ class EventEdit {
           crossAxisAlignment: CrossAxisAlignment.end,
           children: <Widget>[
             UIHelper.formSpacer(),
-            Text('repeat'),
+            Text(ContentHelper.getValue('repeat')),
             UIHelper.formSpacer(),
             Flexible(
               child: TextFormField(
@@ -307,7 +307,7 @@ class EventEdit {
                   )),
             ),
             UIHelper.formSpacer(),
-            Text('times'),
+            Text(ContentHelper.getValue('times')),
           ],
         ),
       ));
@@ -318,7 +318,7 @@ class EventEdit {
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
             UIHelper.formSpacer(),
-            Text('or end by'),
+            Text(ContentHelper.translate('or end by')),
             UIHelper.formSpacer(),
             Flexible(
               child: InkWell(
@@ -372,7 +372,7 @@ class EventEdit {
                   return null;
                 },
                 decoration: new InputDecoration(
-                    labelText: ContentHelper.getCmsValue("quick_todo"), border: UnderlineInputBorder()),
+                    labelText: ContentHelper.getValue("quick_todo"), border: UnderlineInputBorder()),
               ),
             ),
           ),
@@ -406,10 +406,10 @@ class EventEdit {
               if (formKey.currentState.validate()) {
                 formKey.currentState.save();
 
-                UIHelper.showMessageOnSnackBar(context: context, text: ContentHelper.savingEntry(NPModule.CALENDAR));
+                UIHelper.showMessageOnSnackBar(context: context, text: ContentHelper.getValue("saving") + ' ' + ContentHelper.getValue(NPModule.CALENDAR.toString()));
 
                 EventService().saveEvent(event: blankEvent).then((updatedEntryOrEntries) {
-                  UIHelper.showMessageOnSnackBar(context: context, text: ContentHelper.entrySaved(NPModule.CALENDAR));
+                  UIHelper.showMessageOnSnackBar(context: context, text: ContentHelper.concatValues(['saved', NPModule.CALENDAR.toString()]));
                   submissionCallback();
                   formKey.currentState.reset();
                 }).catchError((error) {
@@ -433,33 +433,33 @@ class EventEdit {
 
   static Future<dynamic> confirmAndDelete(BuildContext context, NPEvent e) async {
     if (!e.isRecurring()) {
-      UIHelper.showMessageOnSnackBar(context: context, text: ContentHelper.deleting(e.moduleId));
+      UIHelper.showMessageOnSnackBar(context: context, text: ContentHelper.getValue("deleting"));
       return EventService().deleteEvent(event: e, recurUpdateOption: RecurUpdateOption.ALL);
     } else {
       switch (await showDialog<RecurUpdateOption>(
           context: context,
           builder: (BuildContext context) {
             return SimpleDialog(
-              title: const Text('this is an recurring event'),
+              title: Text(ContentHelper.translate('this is an recurring event')),
               children: <Widget>[
                 SimpleDialogOption(
                   onPressed: () { Navigator.pop(context, RecurUpdateOption.ONE); },
-                  child: const Text('delete this one only'),
+                  child: Text(ContentHelper.translate('delete this occurrence only')),
                 ),
                 SimpleDialogOption(
                   onPressed: () { Navigator.pop(context, RecurUpdateOption.ALL); },
-                  child: const Text('delete all'),
+                  child: Text(ContentHelper.translate('delete all recurring events')),
                 ),
               ],
             );
           }
       )) {
         case RecurUpdateOption.ONE:
-          UIHelper.showMessageOnSnackBar(context: context, text: ContentHelper.deleting(e.moduleId));
+          UIHelper.showMessageOnSnackBar(context: context, text: ContentHelper.getValue("deleting"));
           return EventService().deleteEvent(event: e, recurUpdateOption: RecurUpdateOption.ONE);
           break;
         case RecurUpdateOption.ALL:
-          UIHelper.showMessageOnSnackBar(context: context, text: ContentHelper.deleting(e.moduleId));
+          UIHelper.showMessageOnSnackBar(context: context, text: ContentHelper.getValue("deleting"));
           return EventService().deleteEvent(event: e, recurUpdateOption: RecurUpdateOption.ALL);
         case RecurUpdateOption.FUTURE:
           break;

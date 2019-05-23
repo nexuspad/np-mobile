@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:np_mobile/service/account_service.dart';
 import 'package:np_mobile/service/base_service.dart';
 import 'package:np_mobile/service/rest_client.dart';
 
@@ -31,15 +30,14 @@ class CmsService extends BaseService {
     return completer.future;
   }
 
-  Future<dynamic> getCmsContent() {
+  Future<dynamic> getSiteContent({language, country}) {
     var completer = new Completer();
 
     if (_cmsContent != null && !isCmsExpired()) {
       completer.complete(_cmsContent);
     }
 
-    String url = getCmsEndPoint('content');
-    RestClient().get(url, null).then((dynamic result) {
+    RestClient().get('https://nexuspad.com/i18n/site_en_us.json', null).then((dynamic result) {
       // the response should be a Map
       _cmsContent = result;
       completer.complete(result);
