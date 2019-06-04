@@ -63,6 +63,17 @@ class UIHelper {
     return _regularTitle;
   }
 
+  static listItemTileDivider(bool pinned) {
+    if (pinned) {
+      return Divider(
+        color: Colors.black54,
+      );
+    }
+    return Divider(
+      color: Colors.black12,
+    );
+  }
+
   static favoriteEntryTitle(context) {
     if (_pinnedTitle == null) init(context);
     return _pinnedTitle;

@@ -31,9 +31,9 @@ class _ListState extends NPModuleListingState<NPListWidget> {
       }
     } else {
       ListView listView = ListView.separated(
-        separatorBuilder: (context, index) => Divider(
-              color: Colors.black12,
-            ),
+        separatorBuilder: (context, index) {
+          return UIHelper.listItemTileDivider(entryList.entries[index].pinned);
+        },
         itemCount: entryList.entryCount() + 1,
         itemBuilder: (context, index) {
           if (index == entryList.entryCount()) {

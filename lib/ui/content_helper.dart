@@ -31,6 +31,7 @@ class ContentHelper {
     return completer.future;
   }
 
+  // takes a sentence, a cms key
   static String translate(String original) {
     if (_content != null && _content.containsKey(original.toLowerCase())) {
       return _content[original.toLowerCase()];

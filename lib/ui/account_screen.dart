@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:np_mobile/ui/ui_helper.dart';
 
+import 'content_helper.dart';
+
 class AccountScreen extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
@@ -13,7 +15,7 @@ class AccountState extends State<AccountScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('account'),
+        title: Text(ContentHelper.getValue('account')),
         backgroundColor: UIHelper.blackCanvas(),
       ),
       body: Center(
