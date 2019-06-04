@@ -116,7 +116,6 @@ class _FolderFormState extends State<FolderEditScreen> {
                   pickerColor: _folder.color,
                   onColorChanged: (color) {
                     _folder.color = color;
-                    print('folder color changed to ${_folder.color}');
                     setState(() {
                       _folder.color = color;
                     });
