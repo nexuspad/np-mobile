@@ -88,6 +88,9 @@ class _TagFormState extends State<TagForm> {
     if (tags != null) {
       List<String> tagList = tags.toList();
       for (int i = 0; i < tagList.length; i++) {
+        if (tagList[i] == null || tagList[i].toString().isEmpty) {
+          continue;
+        }
         chips.add(Chip(
           label: new Text(tagList[i]),
           onDeleted: () {

@@ -136,7 +136,9 @@ class _EntryFormState extends State<EntryEditScreen> {
       }
 
       future.then((updatedEntryOrEntries) {
-        _organizeBloc.sendUpdate(_entry);
+        if (updatedEntryOrEntries is NPEntry) {
+          _organizeBloc.sendUpdate(updatedEntryOrEntries);
+        }
         UIHelper.showMessageOnSnackBar(globalKey: scaffoldKey, text: ContentHelper.concatValues(['saved', _entry.moduleId.toString()]));
         Navigator.pop(context, _entry);
       }).catchError((error) {
