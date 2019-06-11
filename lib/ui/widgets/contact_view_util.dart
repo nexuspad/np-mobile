@@ -8,7 +8,8 @@ class ContactView {
     List<Widget> rowChildren = new List();
 
     if (contact.primaryPhone != null &&
-        (contact.primaryPhone['formattedValue'] != null || contact.primaryPhone['value'] != null)) {
+        (contact.primaryPhone['formattedValue'] != null ||
+            contact.primaryPhone['value'] != null)) {
       rowChildren.add(new Expanded(
           child: Align(
               alignment: Alignment.topLeft,
@@ -18,7 +19,8 @@ class ContactView {
                   },
                   textColor: ThemeData().primaryColor,
                   child: new Text(
-                    contact.primaryPhone['formattedValue'] ?? contact.primaryPhone['value'],
+                    contact.primaryPhone['formattedValue'] ??
+                        contact.primaryPhone['value'],
                     textAlign: TextAlign.left,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -72,11 +74,15 @@ class ContactView {
   static ListView fullPage(NPContact contact, BuildContext context) {
     List<Widget> contactContent = new List();
 
-    contactContent.add(Text(contact.title, style: Theme.of(context).textTheme.headline));
+    contactContent
+        .add(Text(contact.title, style: Theme.of(context).textTheme.headline));
     contactContent.add(UIHelper.divider());
 
-    if (contact.fullName != null && contact.fullName.isNotEmpty && contact.fullName != contact.title) {
-      contactContent.add(Text(contact.fullName, style: Theme.of(context).textTheme.headline));
+    if (contact.fullName != null &&
+        contact.fullName.isNotEmpty &&
+        contact.fullName != contact.title) {
+      contactContent.add(
+          Text(contact.fullName, style: Theme.of(context).textTheme.headline));
     }
 
     if (contact.businessName != null && contact.businessName.isNotEmpty) {
@@ -146,7 +152,9 @@ class ContactView {
                         },
                         textColor: ThemeData().primaryColor,
                         child: new Text(
-                          item['formattedValue'] == null ? item['value'] : item['formattedValue'],
+                          item['formattedValue'] == null
+                              ? item['value']
+                              : item['formattedValue'],
                           textAlign: TextAlign.left,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
@@ -165,6 +173,131 @@ class ContactView {
 
     contactContent.add(TagForm(context, contact, true, false));
 
-    return ListView(padding: UIHelper.contentPadding(), children: contactContent);
+    return ListView(
+        padding: UIHelper.contentPadding(), children: contactContent);
+  }
+
+  static Widget fullPage1(NPContact contact, BuildContext context) {
+    List<Widget> contactContent = new List();
+
+    String subTitle;
+    if (contact.fullName != null &&
+        contact.fullName.isNotEmpty &&
+        contact.fullName != contact.title) {
+      subTitle = contact.fullName;
+    }
+
+    if (contact.businessName != null && contact.businessName.isNotEmpty) {
+      if (subTitle == null) {
+        subTitle = contact.businessName;
+      }
+    }
+
+    if (subTitle == null) {
+      subTitle = '';
+    }
+    ListTile title = ListTile(
+      leading: Icon(Icons.person),
+      title: Text(contact.title, style: Theme.of(context).textTheme.headline),
+      subtitle: Text(subTitle),
+    );
+
+    contactContent.add(title);
+
+    if (contact.address != null &&
+        contact.address['addressStr'] != null &&
+        contact.address['addressStr'].toString().isNotEmpty) {
+      contactContent.add(Row(children: <Widget>[
+        Expanded(
+            child: Align(
+                alignment: Alignment.topLeft,
+                child: FlatButton(
+                    onPressed: () {
+                      UIHelper.launchUrl(
+                          "https://www.google.com/maps/search/?api=1&query=${contact.address['addressStr']}");
+                    },
+                    textColor: ThemeData().primaryColor,
+                    child: new Text(
+                      contact.address['addressStr'],
+                      textAlign: TextAlign.left,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ))))
+      ]));
+    }
+
+    if (contact.emails != null && contact.emails.length > 0) {
+      List<Widget> rows = new List();
+      for (var item in contact.emails) {
+        if (item['value'] != null) {
+          rows.add(Row(children: <Widget>[
+            Expanded(
+                child: Align(
+                    alignment: Alignment.topLeft,
+                    child: new FlatButton(
+                        onPressed: () {
+                          UIHelper.launchUrl("email:${item['value']}");
+                        },
+                        textColor: ThemeData().primaryColor,
+                        child: new Text(
+                          item['value'],
+                          textAlign: TextAlign.left,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ))))
+          ]));
+        }
+      }
+      contactContent.add(Column(
+        children: rows,
+      ));
+    }
+
+    if (contact.phones != null && contact.phones.length > 0) {
+      List<Widget> rows = new List();
+      for (var item in contact.phones) {
+        if (item['value'] != null) {
+          rows.add(Row(children: <Widget>[
+            Expanded(
+                child: Align(
+                    alignment: Alignment.topLeft,
+                    child: new FlatButton(
+                        onPressed: () {
+                          UIHelper.launchUrl("tel:${item['value']}");
+                        },
+                        textColor: ThemeData().primaryColor,
+                        child: new Text(
+                          item['formattedValue'] == null
+                              ? item['value']
+                              : item['formattedValue'],
+                          textAlign: TextAlign.left,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ))))
+          ]));
+        }
+      }
+      contactContent.add(Column(
+        children: rows,
+      ));
+    }
+
+    if (contact.note != null) {
+      contactContent.add(Row(children: <Widget>[
+        Expanded(
+            child:
+                Padding(
+                  padding: UIHelper.contentPadding(),
+                  child: Text(contact.note)))
+      ]));
+    }
+
+    contactContent.add(TagForm(context, contact, true, false));
+
+    //return ListView(padding: UIHelper.contentPadding(), children: contactContent);
+    return Column(
+        mainAxisSize: MainAxisSize.min,
+        children: contactContent,
+      );
   }
 }
