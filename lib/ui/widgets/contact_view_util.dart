@@ -301,10 +301,11 @@ class ContactView {
 
     contactContent.add(TagForm(context, contact, true, false));
 
-    //return ListView(padding: UIHelper.contentPadding(), children: contactContent);
-    return Column(
-        mainAxisSize: MainAxisSize.min,
-        children: contactContent,
-      );
+    return ListView(children: contactContent);
+    
+    //return Column(
+    //    mainAxisSize: MainAxisSize.min,
+    //    children: contactContent,
+    //  );
   }
 }
