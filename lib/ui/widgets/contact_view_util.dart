@@ -190,17 +190,24 @@ class ContactView {
     if (contact.businessName != null && contact.businessName.isNotEmpty) {
       if (subTitle == null) {
         subTitle = contact.businessName;
+      } else {
+        subTitle += ' (' + contact.businessName + ')';
       }
     }
 
+    ListTile title;
     if (subTitle == null) {
-      subTitle = '';
+      title = ListTile(
+        leading: Icon(Icons.person),
+        title: Text(contact.title, style: Theme.of(context).textTheme.headline),
+      );
+    } else {
+      title = ListTile(
+        leading: Icon(Icons.person),
+        title: Text(contact.title, style: Theme.of(context).textTheme.headline),
+        subtitle: Text(subTitle),
+      );
     }
-    ListTile title = ListTile(
-      leading: Icon(Icons.person),
-      title: Text(contact.title, style: Theme.of(context).textTheme.headline),
-      subtitle: Text(subTitle),
-    );
 
     contactContent.add(title);
 
