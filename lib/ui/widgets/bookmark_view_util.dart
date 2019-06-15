@@ -38,11 +38,15 @@ class BookmarkView {
     );
   }
 
-  static ListView fullPage(NPBookmark bookmark, BuildContext context) {
+  static Widget fullPage(NPBookmark bookmark, BuildContext context) {
     List<Widget> bookmarkContent = new List();
 
-    bookmarkContent.add(Text(bookmark.title, style: Theme.of(context).textTheme.headline));
-    bookmarkContent.add(UIHelper.divider());
+    ListTile title = ListTile(
+      leading: Icon(Icons.bookmark),
+      title: Text(bookmark.title, style: Theme.of(context).textTheme.headline),
+    );
+
+    bookmarkContent.add(title);
 
     bookmarkContent.add(Row(children: <Widget>[
       Expanded(
@@ -62,11 +66,13 @@ class BookmarkView {
     ]));
 
     if (bookmark.note != null) {
-      bookmarkContent.add(SingleChildScrollView(child: new Text(bookmark.note)));
+      bookmarkContent.add(UIHelper.displayNote(bookmark.note, context));
     }
 
     bookmarkContent.add(TagForm(context, bookmark, true, false));
 
-    return ListView(shrinkWrap: true, padding: UIHelper.contentPadding(), children: bookmarkContent);
+    return SafeArea(child: ListView(
+        shrinkWrap: true,
+        children: bookmarkContent));
   }
 }

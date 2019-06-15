@@ -25,10 +25,11 @@ class EntryViewUtil {
     return UIHelper.emptySpace();
   }
 
-  static dynamic fullPage(NPEntry entry, BuildContext context, Function setStateCallback) {
+  static dynamic fullPage(
+      NPEntry entry, BuildContext context, Function setStateCallback) {
     switch (entry.moduleId) {
       case NPModule.CONTACT:
-        return ContactView.fullPage1(entry, context);
+        return ContactView.fullPage(entry, context);
       case NPModule.CALENDAR:
         return EventView.fullPage(entry, context);
       case NPModule.DOC:

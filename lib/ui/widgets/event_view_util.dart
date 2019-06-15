@@ -18,7 +18,8 @@ class EventView {
             ))));
 
     if (range(event)) {
-      if (event.localStartDate == event.localEndDate || event.localEndDate == null) {
+      if (event.localStartDate == event.localEndDate ||
+          event.localEndDate == null) {
         // the event's duration is in the same date
         timeDisplay.add(Expanded(
             child: Align(
@@ -27,7 +28,6 @@ class EventView {
                   timeInfo(event.endDateTime, context),
                   textAlign: TextAlign.left,
                 ))));
-
       } else {
         timeDisplay.add(Expanded(
             child: Align(
@@ -54,20 +54,30 @@ class EventView {
 
   static SafeArea fullPage(NPEvent event, BuildContext context) {
     List<Widget> eventContent = _eventContent(context, event);
-    eventContent.insert(0, Text(event.title, style: Theme.of(context).textTheme.headline));
+
+    ListTile title = ListTile(
+      leading: Icon(Icons.event),
+      title: Text(event.title, style: Theme.of(context).textTheme.headline),
+    );
+
+    eventContent.insert(0, title);
 
     if (event.note != null) {
-      eventContent.add(SingleChildScrollView(child: new Text(event.note)));
+      eventContent.add(UIHelper.displayNote(event.note, context));
     }
 
-    return SafeArea(child: ListView(shrinkWrap: true, padding: UIHelper.contentPadding(), children: eventContent));
+    return SafeArea(
+        child: ListView(
+            shrinkWrap: true,
+            children: eventContent));
   }
 
   static List<Widget> _eventContent(context, NPEvent event) {
     List<Widget> eventContent = new List();
 
     if (range(event)) {
-      if (event.localStartDate == event.localEndDate || event.localEndDate == null) {
+      if (event.localStartDate == event.localEndDate ||
+          event.localEndDate == null) {
         // the event's duration is in the same date
         // show the date
         eventContent.add(ListTile(
@@ -154,10 +164,11 @@ class EventView {
     if (event.localStartTime != null) {
       eventContent.add(ListTile(
           title: Row(children: [
-            Text('timezone:'),
-            UIHelper.formSpacer(),
-            Text(PreferenceService().activeTimezone, style: TextStyle(fontWeight: FontWeight.bold))
-          ])));
+        Text('timezone:'),
+        UIHelper.formSpacer(),
+        Text(PreferenceService().activeTimezone,
+            style: TextStyle(fontWeight: FontWeight.bold))
+      ])));
     }
 
     eventContent.add(TagForm(context, event, true, false));
@@ -166,12 +177,14 @@ class EventView {
   }
 
   static String dateInfo(DateTime dt, BuildContext context) {
-    return DateFormat.yMMMd(Localizations.localeOf(context).toString()).format(dt.toLocal());
+    return DateFormat.yMMMd(Localizations.localeOf(context).toString())
+        .format(dt.toLocal());
   }
 
   static String timeInfo(DateTime dt, BuildContext context) {
     if (dt != null) {
-      return DateFormat.jm(Localizations.localeOf(context).toString()).format(dt.toLocal());
+      return DateFormat.jm(Localizations.localeOf(context).toString())
+          .format(dt.toLocal());
     }
     return "";
   }
@@ -186,7 +199,8 @@ class EventView {
           .add_jm()
           .format(event.startDateTime.toLocal());
     } else {
-      return DateFormat.yMMMd(Localizations.localeOf(context).toString()).format(event.startDateTime.toLocal());
+      return DateFormat.yMMMd(Localizations.localeOf(context).toString())
+          .format(event.startDateTime.toLocal());
     }
   }
 
@@ -195,14 +209,18 @@ class EventView {
       return "";
     }
     if (event.localEndTime != null) {
-      return DateFormat.yMMMd(Localizations.localeOf(context).toString()).add_jm().format(event.endDateTime.toLocal());
+      return DateFormat.yMMMd(Localizations.localeOf(context).toString())
+          .add_jm()
+          .format(event.endDateTime.toLocal());
     } else {
-      return DateFormat.yMMMd(Localizations.localeOf(context).toString()).format(event.endDateTime.toLocal());
+      return DateFormat.yMMMd(Localizations.localeOf(context).toString())
+          .format(event.endDateTime.toLocal());
     }
   }
 
   static bool range(NPEvent event) {
-    if (event.localEndDate != null && event.localEndDate != event.localStartDate) {
+    if (event.localEndDate != null &&
+        event.localEndDate != event.localStartDate) {
       return true;
     } else if (event.localStartTime != null &&
         event.localEndTime != null &&

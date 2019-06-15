@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-//import 'package:flutter_html_view/flutter_html_view.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:np_mobile/datamodel/np_doc.dart';
 import 'package:np_mobile/datamodel/np_module.dart';
@@ -13,26 +12,35 @@ class DocView {
   static Widget subTitleInList(NPDoc doc, BuildContext context) {
     if (doc.description != null && doc.description.length > 0) {
       return new Text(doc.description,
-          maxLines: 2, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.subhead);
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+          style: Theme.of(context).textTheme.subhead);
     } else {
       return new Container(width: 0.0, height: 0.0);
     }
   }
 
-  static ListView fullPage(NPDoc doc, BuildContext context, setStateCallback) {
+  static Widget fullPage(NPDoc doc, BuildContext context, setStateCallback) {
     List<Widget> docContent = new List();
-    docContent.add(Text(doc.title, style: Theme.of(context).textTheme.headline));
-    docContent.add(UIHelper.divider());
+
+    ListTile title = ListTile(
+      leading: Icon(Icons.note),
+      title: Text(doc.title, style: Theme.of(context).textTheme.headline),
+    );
+
+    docContent.add(title);
+
     if (doc.note != null && doc.note.length > 0) {
       if (doc.format == TextFormat.html) {
         docContent.add(SingleChildScrollView(
+          padding: UIHelper.contentPadding(),
             child: new Html(
                 data: doc.note,
                 onLinkTap: (url) {
                   UIHelper.launchUrl(url);
                 })));
       } else {
-        docContent.add(SingleChildScrollView(child: new Text(doc.note, style: UIHelper.bodyFont(context))));
+        docContent.add(UIHelper.displayNote(doc.note, context));
       }
     }
 
@@ -42,14 +50,23 @@ class DocView {
           leading: Icon(Icons.attachment),
           title: Row(
             children: <Widget>[
-              Expanded(child: Text(upload.fileName),),
-              IconButton(icon: Icon(Icons.clear), onPressed: () {
-                UIHelper.showMessageOnSnackBar(context: context, text: ContentHelper.getValue("deleting"));
-                EntryService().delete(upload).then((doc) {
-                  setStateCallback(doc);
-                  UIHelper.showMessageOnSnackBar(context: context, text: ContentHelper.concatValues(['deleted', NPModule.UPLOAD.toString()]));
-                });
-              })
+              Expanded(
+                child: Text(upload.fileName),
+              ),
+              IconButton(
+                  icon: Icon(Icons.clear),
+                  onPressed: () {
+                    UIHelper.showMessageOnSnackBar(
+                        context: context,
+                        text: ContentHelper.getValue("deleting"));
+                    EntryService().delete(upload).then((doc) {
+                      setStateCallback(doc);
+                      UIHelper.showMessageOnSnackBar(
+                          context: context,
+                          text: ContentHelper.concatValues(
+                              ['deleted', NPModule.UPLOAD.toString()]));
+                    });
+                  })
             ],
           ),
           onTap: () {
@@ -61,6 +78,6 @@ class DocView {
     }
 
     docContent.add(TagForm(context, doc, true, false));
-    return ListView(padding: UIHelper.contentPadding(), children: docContent);
+    return SafeArea(child: ListView(shrinkWrap: true, children: docContent));
   }
 }

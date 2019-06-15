@@ -141,6 +141,12 @@ class UIHelper {
     }
   }
 
+  static dynamic displayNote(String note, BuildContext context) {
+    return SingleChildScrollView(
+        padding: UIHelper.contentPadding(),
+        child: new Text(note, style: UIHelper.bodyFont(context)));
+  }
+
   static String npDateStr(DateTime dateTime) {
     return npDateFormatter.format(dateTime);
   }
