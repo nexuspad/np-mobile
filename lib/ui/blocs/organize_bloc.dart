@@ -11,7 +11,13 @@ import 'package:rxdart/rxdart.dart';
 /// if UI needs to refresh the content, it's set to current time + 30 minutes to expire the entryList in ListService.
 /// if it's set to null, it means UI don't care. just use whatever matches in ListService.
 class OrganizeBloc {
-  static List<int> modules = [NPModule.CONTACT, NPModule.CALENDAR, NPModule.DOC, NPModule.BOOKMARK, NPModule.PHOTO];
+  static List<int> modules = [
+    NPModule.CONTACT,
+    NPModule.CALENDAR,
+    NPModule.DOC,
+    NPModule.BOOKMARK,
+    NPModule.PHOTO
+  ];
 
   final _organizeSubject = BehaviorSubject<OrganizerSetting>();
   final _updateSubject = BehaviorSubject<NPObject>();
@@ -36,7 +42,8 @@ class OrganizeBloc {
 
   initForUser(Account acct) {
     _currentSetting.listSetting.ownerId = acct.userId;
-    if (acct.preference.activeModules != null && acct.preference.activeModules.length > 0) {
+    if (acct.preference.activeModules != null &&
+        acct.preference.activeModules.length > 0) {
       setActiveModules(acct.preference.activeModules);
     }
     changeModule(acct.preference.lasAccessedModule);
@@ -51,8 +58,7 @@ class OrganizeBloc {
   }
 
   setActiveModules(List<int> modules) {
-    if (modules != null && modules.length > 0)
-      OrganizeBloc.modules = modules;
+    if (modules != null && modules.length > 0) OrganizeBloc.modules = modules;
   }
 
   changeModule(moduleId) {
@@ -73,7 +79,8 @@ class OrganizeBloc {
     if (moduleId == NPModule.CALENDAR) {
       DateTime today = DateTime.now();
       _currentSetting.listSetting.startDate = UIHelper.npDateStr(today);
-      _currentSetting.listSetting.endDate = UIHelper.npDateStr(today.add(Duration(days: 7)));
+      _currentSetting.listSetting.endDate =
+          UIHelper.npDateStr(today.add(Duration(days: 7)));
     } else {
       _currentSetting.listSetting.startDate = null;
       _currentSetting.listSetting.endDate = null;
@@ -105,7 +112,7 @@ class OrganizeBloc {
   /// somehow sink.add is not needed
   refreshBloc() {
     _currentSetting._refreshRequested = true;
-//    _organizeSubject.sink.add(_currentListSetting);
+    _organizeSubject.sink.add(_currentSetting);
   }
 
   refreshRequested() {
@@ -121,11 +128,13 @@ class OrganizeBloc {
   }
 
   NPFolder getFolder() {
-    return new NPFolder(_currentSetting.listSetting.moduleId, _currentSetting.listSetting.folderId, AccountService().acctOwner);
+    return new NPFolder(_currentSetting.listSetting.moduleId,
+        _currentSetting.listSetting.folderId, AccountService().acctOwner);
   }
 
   NPFolder getRootFolder() {
-    return new NPFolder(_currentSetting.listSetting.moduleId, NPFolder.ROOT, AccountService().acctOwner);
+    return new NPFolder(_currentSetting.listSetting.moduleId, NPFolder.ROOT,
+        AccountService().acctOwner);
   }
 
   int getOwnerId() {
@@ -166,7 +175,8 @@ class OrganizerSetting {
 
   OrganizerSetting() {
     _listSetting = new ListSetting();
-    if (_listSetting.moduleId == null || _listSetting.moduleId == NPModule.UNASSIGNED) {
+    if (_listSetting.moduleId == null ||
+        _listSetting.moduleId == NPModule.UNASSIGNED) {
       _listSetting.moduleId = NPModule.BOOKMARK;
     }
   }

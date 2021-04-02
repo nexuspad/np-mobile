@@ -27,7 +27,8 @@ class _ListState extends NPModuleListingState<NPListWidget> {
       if (loading) {
         return Center(child: buildProgressIndicator());
       } else {
-        return UIHelper.emptyContent(context, ContentHelper.getValue("no_content"), 0);
+        return UIHelper.emptyContent(
+            context, ContentHelper.getValue("no_content"), 0);
       }
     } else {
       ListView listView = ListView.separated(
@@ -44,7 +45,7 @@ class _ListState extends NPModuleListingState<NPListWidget> {
           }
         },
         controller: scrollController,
-        physics: const AlwaysScrollableScrollPhysics(),
+        // physics: const AlwaysScrollableScrollPhysics(),
       );
       return listView;
     }
@@ -59,7 +60,9 @@ class _ListState extends NPModuleListingState<NPListWidget> {
               e.title ?? 'no title',
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: e.pinned ? UIHelper.favoriteEntryTitle(context) : UIHelper.regularEntryTitle(context),
+              style: e.pinned
+                  ? UIHelper.favoriteEntryTitle(context)
+                  : UIHelper.regularEntryTitle(context),
             ),
           ),
           entryPopMenu(context, e),
@@ -67,10 +70,11 @@ class _ListState extends NPModuleListingState<NPListWidget> {
       ),
       subtitle: EntryViewUtil.inList(e, context),
       onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => EntryViewScreen(entryList, index)),
-          );
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => EntryViewScreen(entryList, index)),
+        );
       },
       enabled: true,
     );

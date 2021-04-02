@@ -11,8 +11,11 @@ class RestClient {
   factory RestClient() => _instance;
 
   Future<dynamic> get(String url, String sessionId, {timezone, locale}) {
-    print('RestClient: make API get call at: $url, sessionId: $sessionId, timezone: $timezone');
-    return http.get(url, headers: _headers(sessionId, timezone: timezone)).then((http.Response response) {
+    print(
+        'RestClient: make API get call at: $url, sessionId: $sessionId, timezone: $timezone');
+    return http
+        .get(Uri.parse(url), headers: _headers(sessionId, timezone: timezone))
+        .then((http.Response response) {
       final String res = response.body;
       final int statusCode = response.statusCode;
 
@@ -24,14 +27,17 @@ class RestClient {
     });
   }
 
-  Future<dynamic> postJson(String url, body, sessionId, uuid, {timezone, locale}) {
-    print('RestClient: make API post call at: $url, sessionId: $sessionId, uuid: $uuid');
+  Future<dynamic> postJson(String url, body, sessionId, uuid,
+      {timezone, locale}) {
+    print(
+        'RestClient: make API post call at: $url, sessionId: $sessionId, uuid: $uuid');
     print('RestClient: request payload: $body');
 
     Map headers = _headers(sessionId, timezone: timezone);
 
     return http
-        .post(url, body: body, headers: headers, encoding: Encoding.getByName("utf-8"))
+        .post(Uri.parse(url),
+            body: body, headers: headers, encoding: Encoding.getByName("utf-8"))
         .then((http.Response response) {
       final String res = response.body;
       final int statusCode = response.statusCode;
@@ -46,7 +52,9 @@ class RestClient {
 
   Future<dynamic> delete(String url, sessionId, uuid) {
     print('RestClient: make API delete call at: $url');
-    return http.delete(url, headers: _headers(sessionId)).then((http.Response response) {
+    return http
+        .delete(Uri.parse(url), headers: _headers(sessionId))
+        .then((http.Response response) {
       final String res = response.body;
       final int statusCode = response.statusCode;
 

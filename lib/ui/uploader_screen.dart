@@ -71,7 +71,8 @@ class _UploaderScreenState extends State<UploaderScreen> {
             )
           ]),
       body: _selectedFiles.length == 0
-          ? UIHelper.emptyContent(context, ContentHelper.getValue("no_selection"), 0)
+          ? UIHelper.emptyContent(
+              context, ContentHelper.getValue("no_selection"), 0)
           : _photoList(context),
       floatingActionButton: _actionMenuItems(),
     );
@@ -83,8 +84,8 @@ class _UploaderScreenState extends State<UploaderScreen> {
     return ListView.separated(
       padding: UIHelper.contentPadding(),
       separatorBuilder: (context, index) => Divider(
-            color: Colors.black12,
-          ),
+        color: Colors.black12,
+      ),
       itemCount: _selectedFiles.length,
       itemBuilder: (context, index) {
         File file = _selectedFiles[index].file;
@@ -115,7 +116,8 @@ class _UploaderScreenState extends State<UploaderScreen> {
                     height: imageWidth,
                   )),
               Expanded(
-                child: Text(ContentHelper.translate(_selectedFiles[index].status.toString().split('.').last)),
+                child: Text(ContentHelper.translate(
+                    _selectedFiles[index].status.toString().split('.').last)),
               ),
               actionButton
             ],
@@ -129,16 +131,17 @@ class _UploaderScreenState extends State<UploaderScreen> {
 
   void _onSelectImageButtonPressed(ImageSource source) {
     setState(() {
+      final picker = ImagePicker();
       if (isVideo) {
-        ImagePicker.pickVideo(source: source).then((File file) {
-          if (file != null && mounted) {
+        picker.getVideo(source: source).then((PickedFile pickedFile) {
+          if (pickedFile != null && mounted) {
             setState(() {});
           }
         });
       } else {
-        ImagePicker.pickImage(source: source).then((imageFile) {
+        picker.getImage(source: source).then((pickedFile) {
           setState(() {
-            _selectedFiles.add(UploadFileWrapper(imageFile));
+            _selectedFiles.add(UploadFileWrapper(new File(pickedFile.path)));
           });
         });
       }
@@ -157,7 +160,7 @@ class _UploaderScreenState extends State<UploaderScreen> {
               progressCallback: (UploadFileWrapper uploadedFileWrapper) {
                 setState(() {
                   // update the uploading status shown in the table
-                  for (int i = 0; i<_selectedFiles.length; i++) {
+                  for (int i = 0; i < _selectedFiles.length; i++) {
                     if (_selectedFiles[i].path == uploadedFileWrapper.path) {
                       _selectedFiles[i].status = uploadedFileWrapper.status;
                     }
@@ -165,9 +168,11 @@ class _UploaderScreenState extends State<UploaderScreen> {
                 });
                 if (uploadedFileWrapper.parentEntry != null) {
                   ListService.activeServicesForModule(
-                          uploadedFileWrapper.parentEntry.moduleId, uploadedFileWrapper.parentEntry.owner.userId)
+                          uploadedFileWrapper.parentEntry.moduleId,
+                          uploadedFileWrapper.parentEntry.owner.userId)
                       .forEach((service) => service.updateEntries(
-                          List.filled(1, uploadedFileWrapper.parentEntry), UpdateReason.ADDED_OR_UPDATED));
+                          List.filled(1, uploadedFileWrapper.parentEntry),
+                          UpdateReason.ADDED_OR_UPDATED));
 
                   // attaching uploads to a doc
                   if (widget._parentEntry != null) {
@@ -202,7 +207,8 @@ class _UploaderScreenState extends State<UploaderScreen> {
     return FutureBuilder<File>(
         future: _imageFile,
         builder: (BuildContext context, AsyncSnapshot<File> snapshot) {
-          if (snapshot.connectionState == ConnectionState.done && snapshot.data != null) {
+          if (snapshot.connectionState == ConnectionState.done &&
+              snapshot.data != null) {
             return Image.file(snapshot.data);
           } else if (snapshot.error != null) {
             return const Text(

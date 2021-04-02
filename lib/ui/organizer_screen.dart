@@ -94,8 +94,10 @@ class OrganizerScreen extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) =>
-                          EntryEditScreen(context, EntryFactory.newInFolder(NPFolder.copy(organizeBloc.getFolder()))),
+                      builder: (context) => EntryEditScreen(
+                          context,
+                          EntryFactory.newInFolder(
+                              NPFolder.copy(organizeBloc.getFolder()))),
                     ),
                   );
                 });
@@ -112,7 +114,8 @@ class OrganizerScreen extends StatelessWidget {
       stream: organizeBloc.stateStream,
       builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
         if (snapshot.data != null) {
-          if (snapshot.data.listSetting.moduleId == NPModule.PHOTO || snapshot.data.listSetting.moduleId == NPModule.DOC) {
+          if (snapshot.data.listSetting.moduleId == NPModule.PHOTO ||
+              snapshot.data.listSetting.moduleId == NPModule.DOC) {
             return IconButton(
               tooltip: 'upload',
               icon: const Icon(Icons.file_upload),
@@ -120,8 +123,11 @@ class OrganizerScreen extends StatelessWidget {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) =>
-                          UploaderScreen(context, ApplicationStateProvider.forOrganize(context).getFolder(), null),
+                      builder: (context) => UploaderScreen(
+                          context,
+                          ApplicationStateProvider.forOrganize(context)
+                              .getFolder(),
+                          null),
                     ));
               },
             );
@@ -142,12 +148,14 @@ class OrganizerScreen extends StatelessWidget {
         // anytime the builder sees new data in the stateStream, it will re-render the list widget
         if (snapshot.data != null) {
           ListSetting listSetting = snapshot.data.listSetting;
-          FolderService folderService = FolderService(moduleId: listSetting.moduleId, ownerId: listSetting.ownerId);
+          FolderService folderService = FolderService(
+              moduleId: listSetting.moduleId, ownerId: listSetting.ownerId);
           NPFolder folder = folderService.folderDetail(listSetting.folderId);
           if (folder != null) {
             return Text(folder.folderName);
           } else {
-            return Text(ContentHelper.getValue('m' + listSetting.moduleId.toString() + 's'));
+            return Text(ContentHelper.getValue(
+                'm' + listSetting.moduleId.toString() + 's'));
           }
         } else {
           // todo - a blank screen of loading
@@ -166,9 +174,10 @@ class OrganizerScreen extends StatelessWidget {
           ListSetting listSetting = snapshot.data.listSetting;
           if (listSetting.folderId != 0) {
             return UIHelper.goUpIconButton(() {
-              FolderService folderService =
-              FolderService(moduleId: listSetting.moduleId, ownerId: listSetting.ownerId);
-              NPFolder folder = folderService.folderDetail(listSetting.folderId);
+              FolderService folderService = FolderService(
+                  moduleId: listSetting.moduleId, ownerId: listSetting.ownerId);
+              NPFolder folder =
+                  folderService.folderDetail(listSetting.folderId);
               if (folder != null && folder.parent != null) {
                 organizeBloc.changeFolder(folder.parent.folderId);
               }
@@ -195,7 +204,8 @@ class OrganizerScreen extends StatelessWidget {
         // anytime the builder sees new data in the stateStream, it will re-render the list widget
         if (snapshot.data != null) {
           ListSetting listSetting = snapshot.data.listSetting;
-          print('OrganizerScreen >>>>>>>>>>>>>>>> stream data received $listSetting');
+          print(
+              'OrganizerScreen >>>>>>>>>>>>>>>> stream data received $listSetting');
           if (listSetting.moduleId == NPModule.CONTACT) {
             return new NPGroupedListWidget(listSetting);
           } else if (listSetting.moduleId == NPModule.PHOTO) {
@@ -217,12 +227,15 @@ class OrganizerScreen extends StatelessWidget {
       builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
         if (snapshot.data != null) {
           ListSetting listSetting = snapshot.data.listSetting;
-          FolderService folderService = FolderService(moduleId: listSetting.moduleId, ownerId: listSetting.ownerId);
+          FolderService folderService = FolderService(
+              moduleId: listSetting.moduleId, ownerId: listSetting.ownerId);
           NPFolder folder = folderService.folderDetail(listSetting.folderId);
 
           return FloatingActionButton(
             child: const Icon(Icons.folder),
-            foregroundColor: folder != null && folder.color != null? folder.color : Colors.blue,
+            foregroundColor: folder != null && folder.color != null
+                ? folder.color
+                : Colors.blue,
             backgroundColor: Colors.white,
             onPressed: () {
               Navigator.push(
@@ -249,13 +262,15 @@ class OrganizerScreen extends StatelessWidget {
         if (OrganizeBloc.modules.contains(NPModule.CONTACT)) {
           navBarItems.add(new BottomNavigationBarItem(
             icon: Icon(Icons.person),
-            title: Text(ContentHelper.getValue('m' + NPModule.CONTACT.toString())),
+            title:
+                Text(ContentHelper.getValue('m' + NPModule.CONTACT.toString())),
           ));
         }
         if (OrganizeBloc.modules.contains(NPModule.CALENDAR)) {
           navBarItems.add(new BottomNavigationBarItem(
             icon: Icon(Icons.event),
-            title: Text(ContentHelper.getValue('m' + NPModule.CALENDAR.toString())),
+            title: Text(
+                ContentHelper.getValue('m' + NPModule.CALENDAR.toString())),
           ));
         }
         if (OrganizeBloc.modules.contains(NPModule.DOC)) {
@@ -267,13 +282,15 @@ class OrganizerScreen extends StatelessWidget {
         if (OrganizeBloc.modules.contains(NPModule.BOOKMARK)) {
           navBarItems.add(new BottomNavigationBarItem(
             icon: Icon(Icons.bookmark),
-            title: Text(ContentHelper.getValue('m' + NPModule.BOOKMARK.toString())),
+            title: Text(
+                ContentHelper.getValue('m' + NPModule.BOOKMARK.toString())),
           ));
         }
         if (OrganizeBloc.modules.contains(NPModule.PHOTO)) {
           navBarItems.add(new BottomNavigationBarItem(
             icon: Icon(Icons.photo),
-            title: Text(ContentHelper.getValue('m' + NPModule.PHOTO.toString())),
+            title:
+                Text(ContentHelper.getValue('m' + NPModule.PHOTO.toString())),
           ));
         }
 
@@ -303,7 +320,9 @@ class OrganizerScreen extends StatelessWidget {
     if (timezones.length > 1) {
       timezoneTile = ListTile(
         title: Text(timezones[0]),
-        subtitle: Text(ContentHelper.getValue('account_timezone_setting') + ': ' + timezones[1]),
+        subtitle: Text(ContentHelper.getValue('account_timezone_setting') +
+            ': ' +
+            timezones[1]),
         onTap: () {},
       );
     }
@@ -317,7 +336,8 @@ class OrganizerScreen extends StatelessWidget {
         padding: EdgeInsets.zero,
         children: <Widget>[
           DrawerHeader(
-            child: Text(AccountService().acctOwner.email, style: new TextStyle(color: Colors.white)),
+            child: Text(AccountService().acctOwner.email,
+                style: new TextStyle(color: Colors.white)),
             decoration: BoxDecoration(
               color: Colors.blue,
             ),
@@ -327,7 +347,8 @@ class OrganizerScreen extends StatelessWidget {
             onTap: () {},
           ),
           timezoneTile,
-          UIHelper.actionButton(context, ContentHelper.translate("log out"), () {
+          UIHelper.actionButton(context, ContentHelper.translate("log out"),
+              () {
             AppManager().logout(context);
           }),
         ],
