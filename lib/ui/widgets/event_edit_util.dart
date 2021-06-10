@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:np_mobile/datamodel/np_event.dart';
@@ -13,7 +14,8 @@ import 'package:np_mobile/ui/widgets/date_time_picker.dart';
 import 'package:np_mobile/ui/widgets/tag_form_widget.dart';
 
 class EventEdit {
-  static Form form(BuildContext context, GlobalKey<FormState> formKey, NPEvent event, Function setStateCallback) {
+  static Form form(BuildContext context, GlobalKey<FormState> formKey,
+      NPEvent event, Function setStateCallback) {
     List<Widget> formFields = <Widget>[
       new Padding(
         padding: UIHelper.contentPadding(),
@@ -26,7 +28,9 @@ class EventEdit {
             }
             return null;
           },
-          decoration: new InputDecoration(labelText: ContentHelper.getValue("title"), border: UnderlineInputBorder()),
+          decoration: new InputDecoration(
+              labelText: ContentHelper.getValue("title"),
+              border: UnderlineInputBorder()),
         ),
       ),
       new Padding(
@@ -35,7 +39,9 @@ class EventEdit {
           key: Key('StartDateTimePicker'),
           labelText: ContentHelper.getValue('from'),
           initialDate: event.startDateTime,
-          initialTime: event.localStartTime != null ? _fromNpLocalTime(event.localStartTime) : null,
+          initialTime: event.localStartTime != null
+              ? _fromNpLocalTime(event.localStartTime)
+              : null,
           selectDate: (DateTime date) {
             event.localStartDate = UIHelper.npDateStr(date);
             setStateCallback(event);
@@ -51,8 +57,12 @@ class EventEdit {
         child: DateTimePicker(
           key: Key('EndDateTimePicker'),
           labelText: ContentHelper.getValue('to'),
-          initialDate: event.localEndDate != null ? DateTime.parse(event.localEndDate) : null,
-          initialTime: event.localEndTime != null ? _fromNpLocalTime(event.localEndTime) : null,
+          initialDate: event.localEndDate != null
+              ? DateTime.parse(event.localEndDate)
+              : null,
+          initialTime: event.localEndTime != null
+              ? _fromNpLocalTime(event.localEndTime)
+              : null,
           selectDate: (DateTime date) {
             event.localEndDate = UIHelper.npDateStr(date);
             setStateCallback(event);
@@ -73,7 +83,8 @@ class EventEdit {
       formFields.add(tzField);
     }
 
-    formFields.addAll(_reminder(context, event.reminder, event.owner, setStateCallback));
+    formFields.addAll(
+        _reminder(context, event.reminder, event.owner, setStateCallback));
     formFields.addAll(_recurrence(context, event.recurrence, setStateCallback));
 
     formFields.add(new Padding(
@@ -83,11 +94,15 @@ class EventEdit {
         maxLines: null,
         initialValue: event.note,
         onSaved: (val) => event.note = val,
-        decoration: new InputDecoration(labelText: ContentHelper.getValue("note"), border: UnderlineInputBorder()),
+        decoration: new InputDecoration(
+            labelText: ContentHelper.getValue("note"),
+            border: UnderlineInputBorder()),
       ),
     ));
 
-    formFields.add(TagForm(context, event, false, true),);
+    formFields.add(
+      TagForm(context, event, false, true),
+    );
 
     return new Form(
       key: formKey,
@@ -97,7 +112,8 @@ class EventEdit {
     );
   }
 
-  static Widget _timezone(BuildContext context, NPEvent event, Function setStateCallback) {
+  static Widget _timezone(
+      BuildContext context, NPEvent event, Function setStateCallback) {
     List<String> timezones = PreferenceService().timezones();
     if (event.localStartTime != null && timezones.length > 1) {
       if (timezones.indexOf(event.timezone) == -1) {
@@ -135,7 +151,8 @@ class EventEdit {
     return null;
   }
 
-  static List<Widget> _reminder(BuildContext context, Reminder reminder, NPUser owner, Function setStateCallback) {
+  static List<Widget> _reminder(BuildContext context, Reminder reminder,
+      NPUser owner, Function setStateCallback) {
     bool enabled = reminder != null && reminder.deliverType != null;
 
     List<Widget> reminderFields = <Widget>[
@@ -169,7 +186,7 @@ class EventEdit {
     ];
 
     if (enabled) {
-      List<int> reminderTimeValues = new List();
+      List<int> reminderTimeValues = [];
       if (reminder.timeUnit == ReminderTimeUnit.MINUTE) {
         reminderTimeValues.addAll([15, 30, 45]);
       } else {
@@ -193,7 +210,9 @@ class EventEdit {
                     keyboardType: TextInputType.emailAddress,
                     initialValue: reminder.deliverAddress,
                     onSaved: (val) => reminder.deliverAddress = val,
-                    decoration: new InputDecoration(labelText: "reminder email", border: UnderlineInputBorder())),
+                    decoration: new InputDecoration(
+                        labelText: "reminder email",
+                        border: UnderlineInputBorder())),
               ),
             ],
           ),
@@ -227,7 +246,8 @@ class EventEdit {
                 child: Padding(
                   padding: const EdgeInsets.only(right: 0.0),
                   child: DropdownButton<String>(
-                    items: ReminderTimeUnit.values.map((ReminderTimeUnit value) {
+                    items:
+                        ReminderTimeUnit.values.map((ReminderTimeUnit value) {
                       String valueInStr = value.toString().split(".").last;
                       return new DropdownMenuItem<String>(
                         value: valueInStr,
@@ -252,7 +272,8 @@ class EventEdit {
     return reminderFields;
   }
 
-  static List<Widget> _recurrence(BuildContext context, Recurrence recurrence, Function setStateCallback) {
+  static List<Widget> _recurrence(
+      BuildContext context, Recurrence recurrence, Function setStateCallback) {
     if (recurrence == null) {
       recurrence = new Recurrence();
     }
@@ -298,12 +319,15 @@ class EventEdit {
                   inputFormatters: [
                     new LengthLimitingTextInputFormatter(2),
                   ],
-                  initialValue: recurrence.recurrenceTimes == null ? '' : recurrence.recurrenceTimes.toString(),
+                  initialValue: recurrence.recurrenceTimes == null
+                      ? ''
+                      : recurrence.recurrenceTimes.toString(),
                   onSaved: (val) => recurrence.recurrenceTimes = int.parse(val),
                   decoration: new InputDecoration(
                     labelText: "",
                     border: UnderlineInputBorder(),
-                    contentPadding: new EdgeInsets.symmetric(vertical: 0.0, horizontal: 5.0),
+                    contentPadding: new EdgeInsets.symmetric(
+                        vertical: 0.0, horizontal: 5.0),
                   )),
             ),
             UIHelper.formSpacer(),
@@ -349,8 +373,8 @@ class EventEdit {
     return recurrenceFields;
   }
 
-  static Widget quickTodo(
-      BuildContext context, GlobalKey<FormState> formKey, NPEvent blankEvent, Function submissionCallback) {
+  static Widget quickTodo(BuildContext context, GlobalKey<FormState> formKey,
+      NPEvent blankEvent, Function submissionCallback) {
     return Form(
       key: formKey,
       child: Row(
@@ -372,7 +396,8 @@ class EventEdit {
                   return null;
                 },
                 decoration: new InputDecoration(
-                    labelText: ContentHelper.getValue("quick_todo"), border: UnderlineInputBorder()),
+                    labelText: ContentHelper.getValue("quick_todo"),
+                    border: UnderlineInputBorder()),
               ),
             ),
           ),
@@ -406,10 +431,19 @@ class EventEdit {
               if (formKey.currentState.validate()) {
                 formKey.currentState.save();
 
-                UIHelper.showMessageOnSnackBar(context: context, text: ContentHelper.getValue("saving") + ' ' + ContentHelper.getValue(NPModule.CALENDAR.toString()));
+                UIHelper.showMessageOnSnackBar(
+                    context: context,
+                    text: ContentHelper.getValue("saving") +
+                        ' ' +
+                        ContentHelper.getValue(NPModule.CALENDAR.toString()));
 
-                EventService().saveEvent(event: blankEvent).then((updatedEntryOrEntries) {
-                  UIHelper.showMessageOnSnackBar(context: context, text: ContentHelper.concatValues(['saved', NPModule.CALENDAR.toString()]));
+                EventService()
+                    .saveEvent(event: blankEvent)
+                    .then((updatedEntryOrEntries) {
+                  UIHelper.showMessageOnSnackBar(
+                      context: context,
+                      text: ContentHelper.concatValues(
+                          ['saved', NPModule.CALENDAR.toString()]));
                   submissionCallback();
                   formKey.currentState.reset();
                 }).catchError((error) {
@@ -423,44 +457,57 @@ class EventEdit {
     );
   }
 
-  static TimeOfDay _fromNpLocalTime(String HHmm) {
-    if (HHmm != null) {
-      List<String> parts = HHmm.split(":");
+  static TimeOfDay _fromNpLocalTime(String hhmm) {
+    if (hhmm != null) {
+      List<String> parts = hhmm.split(":");
       return TimeOfDay(hour: int.parse(parts[0]), minute: int.parse(parts[1]));
     }
     return null;
   }
 
-  static Future<dynamic> confirmAndDelete(BuildContext context, NPEvent e) async {
+  static Future<dynamic> confirmAndDelete(
+      BuildContext context, NPEvent e) async {
     if (!e.isRecurring()) {
-      UIHelper.showMessageOnSnackBar(context: context, text: ContentHelper.getValue("deleting"));
-      return EventService().deleteEvent(event: e, recurUpdateOption: RecurUpdateOption.ALL);
+      UIHelper.showMessageOnSnackBar(
+          context: context, text: ContentHelper.getValue("deleting"));
+      return EventService()
+          .deleteEvent(event: e, recurUpdateOption: RecurUpdateOption.ALL);
     } else {
       switch (await showDialog<RecurUpdateOption>(
           context: context,
           builder: (BuildContext context) {
             return SimpleDialog(
-              title: Text(ContentHelper.translate('this is an recurring event')),
+              title:
+                  Text(ContentHelper.translate('this is an recurring event')),
               children: <Widget>[
                 SimpleDialogOption(
-                  onPressed: () { Navigator.pop(context, RecurUpdateOption.ONE); },
-                  child: Text(ContentHelper.translate('delete this occurrence only')),
+                  onPressed: () {
+                    Navigator.pop(context, RecurUpdateOption.ONE);
+                  },
+                  child: Text(
+                      ContentHelper.translate('delete this occurrence only')),
                 ),
                 SimpleDialogOption(
-                  onPressed: () { Navigator.pop(context, RecurUpdateOption.ALL); },
-                  child: Text(ContentHelper.translate('delete all recurring events')),
+                  onPressed: () {
+                    Navigator.pop(context, RecurUpdateOption.ALL);
+                  },
+                  child: Text(
+                      ContentHelper.translate('delete all recurring events')),
                 ),
               ],
             );
-          }
-      )) {
+          })) {
         case RecurUpdateOption.ONE:
-          UIHelper.showMessageOnSnackBar(context: context, text: ContentHelper.getValue("deleting"));
-          return EventService().deleteEvent(event: e, recurUpdateOption: RecurUpdateOption.ONE);
+          UIHelper.showMessageOnSnackBar(
+              context: context, text: ContentHelper.getValue("deleting"));
+          return EventService()
+              .deleteEvent(event: e, recurUpdateOption: RecurUpdateOption.ONE);
           break;
         case RecurUpdateOption.ALL:
-          UIHelper.showMessageOnSnackBar(context: context, text: ContentHelper.getValue("deleting"));
-          return EventService().deleteEvent(event: e, recurUpdateOption: RecurUpdateOption.ALL);
+          UIHelper.showMessageOnSnackBar(
+              context: context, text: ContentHelper.getValue("deleting"));
+          return EventService()
+              .deleteEvent(event: e, recurUpdateOption: RecurUpdateOption.ALL);
         case RecurUpdateOption.FUTURE:
           break;
       }

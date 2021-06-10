@@ -39,11 +39,10 @@ class BookmarkView {
   }
 
   static Widget fullPage(NPBookmark bookmark, BuildContext context) {
-    List<Widget> bookmarkContent = new List();
+    List<Widget> bookmarkContent = [];
 
     ListTile title = ListTile(
-      leading: Icon(Icons.bookmark),
-      title: Text(bookmark.title, style: Theme.of(context).textTheme.headline),
+      title: Text(bookmark.title, style: Theme.of(context).textTheme.headline4),
     );
 
     bookmarkContent.add(title);
@@ -52,11 +51,10 @@ class BookmarkView {
       Expanded(
           child: Align(
               alignment: Alignment.topLeft,
-              child: new FlatButton(
+              child: new TextButton(
                   onPressed: () {
                     UIHelper.launchUrl(bookmark.webAddress);
                   },
-                  textColor: ThemeData().primaryColor,
                   child: new Text(
                     bookmark.webAddress,
                     textAlign: TextAlign.left,
@@ -71,8 +69,7 @@ class BookmarkView {
 
     bookmarkContent.add(TagForm(context, bookmark, true, false));
 
-    return SafeArea(child: ListView(
-        shrinkWrap: true,
-        children: bookmarkContent));
+    return SafeArea(
+        child: ListView(shrinkWrap: true, children: bookmarkContent));
   }
 }

@@ -28,7 +28,8 @@ class _GridState extends NPModuleListingState<BaseList> {
       if (loading) {
         return Center(child: buildProgressIndicator());
       } else {
-        return UIHelper.emptyContent(context, ContentHelper.getValue("no_content"), 0);
+        return UIHelper.emptyContent(
+            context, ContentHelper.getValue("no_content"), 0);
       }
     } else {
       final Orientation orientation = MediaQuery.of(context).orientation;
@@ -47,14 +48,15 @@ class _GridState extends NPModuleListingState<BaseList> {
   }
 
   List<Widget> _gridItems(List entries) {
-    List<Widget> items = new List();
+    List<Widget> items = [];
     int len = entryList.entries.length;
     for (int i = 0; i < len; i++) {
       items.add(GestureDetector(
           onTap: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => EntryViewScreen(entryList, i)),
+              MaterialPageRoute(
+                  builder: (context) => EntryViewScreen(entryList, i)),
             );
           },
           child: GridItem(
@@ -77,17 +79,25 @@ typedef BannerTapCallback = void Function(NPPhoto photo);
 
 class GridItem extends StatelessWidget {
   GridItem(
-      {Key key, @required this.entry, @required this.tileStyle, @required this.onBannerTap, @required this.popMenu})
+      {Key key,
+      @required this.entry,
+      @required this.tileStyle,
+      @required this.onBannerTap,
+      @required this.popMenu})
       : super(key: key);
 
   final NPEntry entry;
   final PopupMenuButton popMenu;
   final GridTileStyle tileStyle;
-  final BannerTapCallback onBannerTap; // User taps on the photo's header or footer.
+  final BannerTapCallback
+      onBannerTap; // User taps on the photo's header or footer.
 
   @override
   Widget build(BuildContext context) {
-    final Widget image = Hero(key: Key(entry.entryId), tag: entry.entryId, child: EntryViewUtil.inList(entry, context));
+    final Widget image = Hero(
+        key: Key(entry.entryId),
+        tag: entry.entryId,
+        child: EntryViewUtil.inList(entry, context));
 
     final IconData icon = entry.pinned ? Icons.star : Icons.star_border;
 

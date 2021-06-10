@@ -21,10 +21,13 @@ class UIHelper {
   static double mediumFontSize = 20.0;
 
   static init(context) {
-    _grayedTitle =
-        Theme.of(context).textTheme.title.copyWith(fontWeight: FontWeight.normal, fontSize: 19, color: Colors.grey);
-    _regularTitle = Theme.of(context).textTheme.title.copyWith(fontWeight: FontWeight.normal, fontSize: 19);
-    _pinnedTitle = Theme.of(context).textTheme.title;
+    _grayedTitle = Theme.of(context).textTheme.headline6.copyWith(
+        fontWeight: FontWeight.normal, fontSize: 19, color: Colors.grey);
+    _regularTitle = Theme.of(context)
+        .textTheme
+        .headline6
+        .copyWith(fontWeight: FontWeight.normal, fontSize: 19);
+    _pinnedTitle = Theme.of(context).textTheme.headline6;
   }
 
   static Color codeToColor(String colorCode) {
@@ -33,7 +36,8 @@ class UIHelper {
 
   /// See https://stackoverflow.com/questions/596216/formula-to-determine-brightness-of-rgb-color
   static bool isDark(Color color) {
-    final lum = (0.2126 * color.red + 0.7152 * color.green + 0.0722 * color.blue);
+    final lum =
+        (0.2126 * color.red + 0.7152 * color.green + 0.0722 * color.blue);
     return lum < 150;
   }
 
@@ -102,13 +106,17 @@ class UIHelper {
     return ListView(
       padding: EdgeInsets.only(top: topPosition),
       children: <Widget>[
-        Center(child: Text(text, textAlign: TextAlign.center, style: TextStyle(fontSize: mediumFontSize))),
+        Center(
+            child: Text(text,
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: mediumFontSize))),
       ],
     );
   }
 
   static Widget loadingContent(context, String text) {
-    return Center(child: Text(text, style: TextStyle(fontSize: mediumFontSize)));
+    return Center(
+        child: Text(text, style: TextStyle(fontSize: mediumFontSize)));
   }
 
   static Widget progressIndicator() {
@@ -130,7 +138,9 @@ class UIHelper {
   }
 
   static Widget divider() {
-    return new Padding(padding: EdgeInsets.only(left: 0, right: 0, top: 4.0, bottom: 8), child: new Divider());
+    return new Padding(
+        padding: EdgeInsets.only(left: 0, right: 0, top: 4.0, bottom: 8),
+        child: new Divider());
   }
 
   static launchUrl(String url) async {
@@ -155,7 +165,8 @@ class UIHelper {
     if (dateTime == null) {
       return ContentHelper.translate("select a date");
     }
-    return DateFormat.yMMMd(Localizations.localeOf(context).toString()).format(dateTime.toLocal());
+    return DateFormat.yMMMd(Localizations.localeOf(context).toString())
+        .format(dateTime.toLocal());
   }
 
   static String npTimeStr(TimeOfDay timeOfDay) {
@@ -165,7 +176,9 @@ class UIHelper {
     } else {
       hour = timeOfDay.hour;
     }
-    return hour.toString().padLeft(2, '0') + ':' + timeOfDay.minute.toString().padLeft(2, '0');
+    return hour.toString().padLeft(2, '0') +
+        ':' +
+        timeOfDay.minute.toString().padLeft(2, '0');
   }
 
   static String npTimeStrFromDateTime(DateTime dateTimeObj) {
@@ -173,11 +186,14 @@ class UIHelper {
   }
 
   static String localDateTimeDisplay(context, DateTime dateTime) {
-    return DateFormat.yMMMd(Localizations.localeOf(context).toString()).add_Hm().format(dateTime.toLocal());
+    return DateFormat.yMMMd(Localizations.localeOf(context).toString())
+        .add_Hm()
+        .format(dateTime.toLocal());
   }
 
-  static RaisedButton actionButton(BuildContext context, String text, Function onSubmit) {
-    return RaisedButton(
+  static ElevatedButton actionButton(
+      BuildContext context, String text, Function onSubmit) {
+    return ElevatedButton(
       onPressed: () {
         onSubmit();
       },
@@ -185,16 +201,14 @@ class UIHelper {
         ContentHelper.translate(text),
         style: new TextStyle(color: Colors.white),
       ),
-      color: Theme.of(context).accentColor,
     );
   }
 
-  static FlatButton cancelButton(BuildContext context, Function onSubmit) {
-    return FlatButton(
+  static TextButton cancelButton(BuildContext context, Function onSubmit) {
+    return TextButton(
       onPressed: () {
         onSubmit();
       },
-      textColor: ThemeData().primaryColor,
       child: new Text(
         ContentHelper.getValue('cancel'),
       ),
@@ -222,40 +236,41 @@ class UIHelper {
     List<String> parts = text.split(regExp);
     if (parts.length > 1) {
       return Text.rich(
-        TextSpan(
-            children: <TextSpan>[
-              TextSpan(text: parts[0]),
-              TextSpan(text: highlight, style: TextStyle(fontWeight: FontWeight.bold)),
-              TextSpan(text: parts[1]),
-            ]
-        ),
+        TextSpan(children: <TextSpan>[
+          TextSpan(text: parts[0]),
+          TextSpan(
+              text: highlight, style: TextStyle(fontWeight: FontWeight.bold)),
+          TextSpan(text: parts[1]),
+        ]),
       );
     } else {
       if (text.startsWith(regExp)) {
         return Text.rich(
-          TextSpan(
-              children: <TextSpan>[
-                TextSpan(text: highlight, style: TextStyle(fontWeight: FontWeight.bold)),
-                TextSpan(text: parts[0]),
-              ]
-          ),
+          TextSpan(children: <TextSpan>[
+            TextSpan(
+                text: highlight, style: TextStyle(fontWeight: FontWeight.bold)),
+            TextSpan(text: parts[0]),
+          ]),
         );
       } else {
         return Text.rich(
-          TextSpan(
-              children: <TextSpan>[
-                TextSpan(text: parts[0]),
-                TextSpan(text: highlight, style: TextStyle(fontWeight: FontWeight.bold)),
-              ]
-          ),
+          TextSpan(children: <TextSpan>[
+            TextSpan(text: parts[0]),
+            TextSpan(
+                text: highlight, style: TextStyle(fontWeight: FontWeight.bold)),
+          ]),
         );
       }
     }
-
   }
 
   static folderTreeNode() {
-    return Transform.rotate(angle: -math.pi / 4, child: Icon(FontAwesomeIcons.chevronLeft, size: 28,));
+    return Transform.rotate(
+        angle: -math.pi / 4,
+        child: Icon(
+          FontAwesomeIcons.chevronLeft,
+          size: 28,
+        ));
   }
 
   static goUpIconButton(onPressedFunction) {
@@ -271,7 +286,8 @@ class UIHelper {
     );
   }
 
-  static DateTime firstDayOfWeek({DateTime aDate, int startOfWeek: DateTime.sunday}) {
+  static DateTime firstDayOfWeek(
+      {DateTime aDate, int startOfWeek: DateTime.sunday}) {
     if (aDate.weekday == startOfWeek) {
       return aDate;
     } else {
@@ -284,14 +300,17 @@ class UIHelper {
     return DateTime.parse(ymd.substring(0, 8) + '01');
   }
 
-  static void showMessageOnSnackBar({BuildContext context, GlobalKey<ScaffoldState> globalKey, String text}) {
+  static void showMessageOnSnackBar(
+      {BuildContext context, GlobalKey<ScaffoldState> globalKey, String text}) {
     if (context != null) {
       try {
         print(context);
         var currentState = Scaffold.of(context);
         if (currentState != null) {
           currentState.hideCurrentSnackBar();
-          currentState.showSnackBar(new SnackBar(content: new Text(text), duration: Duration(seconds: snackBarMessageDuration)));
+          currentState.showSnackBar(new SnackBar(
+              content: new Text(text),
+              duration: Duration(seconds: snackBarMessageDuration)));
         }
       } catch (error) {
         // nothing to do here.
@@ -307,6 +326,7 @@ class UIHelper {
   }
 
   static void goToLogin(BuildContext context) {
-    Navigator.pushNamedAndRemoveUntil(context, 'login', (Route<dynamic> route) => false);
+    Navigator.pushNamedAndRemoveUntil(
+        context, 'login', (Route<dynamic> route) => false);
   }
 }

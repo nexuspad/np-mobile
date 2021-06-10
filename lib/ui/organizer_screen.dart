@@ -258,39 +258,35 @@ class OrganizerScreen extends StatelessWidget {
     return StreamBuilder(
       stream: organizeBloc.stateStream,
       builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-        List navBarItems = new List<BottomNavigationBarItem>();
+        List<BottomNavigationBarItem> navBarItems = [];
         if (OrganizeBloc.modules.contains(NPModule.CONTACT)) {
           navBarItems.add(new BottomNavigationBarItem(
             icon: Icon(Icons.person),
-            title:
-                Text(ContentHelper.getValue('m' + NPModule.CONTACT.toString())),
+            label: ContentHelper.getValue('m' + NPModule.CONTACT.toString()),
           ));
         }
         if (OrganizeBloc.modules.contains(NPModule.CALENDAR)) {
           navBarItems.add(new BottomNavigationBarItem(
             icon: Icon(Icons.event),
-            title: Text(
-                ContentHelper.getValue('m' + NPModule.CALENDAR.toString())),
+            label: ContentHelper.getValue('m' + NPModule.CALENDAR.toString()),
           ));
         }
         if (OrganizeBloc.modules.contains(NPModule.DOC)) {
           navBarItems.add(new BottomNavigationBarItem(
             icon: Icon(Icons.note),
-            title: Text(ContentHelper.getValue('m' + NPModule.DOC.toString())),
+            label: ContentHelper.getValue('m' + NPModule.DOC.toString()),
           ));
         }
         if (OrganizeBloc.modules.contains(NPModule.BOOKMARK)) {
           navBarItems.add(new BottomNavigationBarItem(
             icon: Icon(Icons.bookmark),
-            title: Text(
-                ContentHelper.getValue('m' + NPModule.BOOKMARK.toString())),
+            label: ContentHelper.getValue('m' + NPModule.BOOKMARK.toString()),
           ));
         }
         if (OrganizeBloc.modules.contains(NPModule.PHOTO)) {
           navBarItems.add(new BottomNavigationBarItem(
             icon: Icon(Icons.photo),
-            title:
-                Text(ContentHelper.getValue('m' + NPModule.PHOTO.toString())),
+            label: ContentHelper.getValue('m' + NPModule.PHOTO.toString()),
           ));
         }
 

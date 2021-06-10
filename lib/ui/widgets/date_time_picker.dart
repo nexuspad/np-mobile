@@ -1,10 +1,16 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:np_mobile/ui/widgets/input_dropdown.dart';
 
 class DateTimePicker extends StatefulWidget {
   const DateTimePicker(
-      {Key key, this.labelText, this.initialDate, this.initialTime, this.selectDate, this.selectTime})
+      {Key key,
+      this.labelText,
+      this.initialDate,
+      this.initialTime,
+      this.selectDate,
+      this.selectTime})
       : super(key: key);
 
   final String labelText;
@@ -29,7 +35,7 @@ class _DateTimePickerState extends State<DateTimePicker> {
   }
 
   DateTime _initialDateInPicker() {
-    return _theDate != null? _theDate : DateTime.now();
+    return _theDate != null ? _theDate : DateTime.now();
   }
 
   TimeOfDay _initialTimeInPicker() {
@@ -47,7 +53,10 @@ class _DateTimePickerState extends State<DateTimePicker> {
 
   Future<void> _bringUpDatePicker(BuildContext context) async {
     final DateTime picked = await showDatePicker(
-        context: context, initialDate: _initialDateInPicker(), firstDate: DateTime(2015, 8), lastDate: DateTime(2101));
+        context: context,
+        initialDate: _initialDateInPicker(),
+        firstDate: DateTime(2015, 8),
+        lastDate: DateTime(2101));
 
     if (picked != null) {
       setState(() {
@@ -59,7 +68,8 @@ class _DateTimePickerState extends State<DateTimePicker> {
   }
 
   Future<void> _bringUpTimePicker(BuildContext context) async {
-    final TimeOfDay picked = await showTimePicker(context: context, initialTime: _initialTimeInPicker());
+    final TimeOfDay picked = await showTimePicker(
+        context: context, initialTime: _initialTimeInPicker());
     if (picked != null) {
       setState(() {
         _theTime = picked;
@@ -70,7 +80,7 @@ class _DateTimePickerState extends State<DateTimePicker> {
 
   @override
   Widget build(BuildContext context) {
-    final TextStyle valueStyle = Theme.of(context).textTheme.title;
+    final TextStyle valueStyle = Theme.of(context).textTheme.headline6;
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.end,
@@ -79,7 +89,8 @@ class _DateTimePickerState extends State<DateTimePicker> {
           flex: 4,
           child: InputDropdown(
             labelText: widget.labelText,
-            valueText: _theDate != null? DateFormat.yMMMd().format(_theDate) : '',
+            valueText:
+                _theDate != null ? DateFormat.yMMMd().format(_theDate) : '',
             valueStyle: valueStyle,
             onPressed: () {
               _bringUpDatePicker(context);
@@ -90,7 +101,7 @@ class _DateTimePickerState extends State<DateTimePicker> {
         Expanded(
           flex: 3,
           child: InputDropdown(
-            valueText: _theTime != null? _theTime.format(context) : '',
+            valueText: _theTime != null ? _theTime.format(context) : '',
             valueStyle: valueStyle,
             onPressed: () {
               _bringUpTimePicker(context);

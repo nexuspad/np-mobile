@@ -10,7 +10,7 @@ import 'package:np_mobile/datamodel/np_module.dart';
 import 'package:np_mobile/datamodel/np_photo.dart';
 import 'package:np_mobile/ui/ui_helper.dart';
 
-enum UpdateReason {ADDED_OR_UPDATED, DELETED, MOVED, PINNED, UNPINNED}
+enum UpdateReason { ADDED_OR_UPDATED, DELETED, MOVED, PINNED, UNPINNED }
 
 class EntryList<T extends NPEntry> {
   ListSetting _listSetting;
@@ -24,7 +24,7 @@ class EntryList<T extends NPEntry> {
 
   EntryList.fromJson(Map<String, dynamic> data) {
     _listSetting = ListSetting.fromJson(data['listSetting']);
-    _entries = new List<T>();
+    _entries = [];
     if (data['folder'] != null) {
       _folder = NPFolder.fromJson(data['folder']);
     }
@@ -89,7 +89,7 @@ class EntryList<T extends NPEntry> {
 
   _addOrUpdateEntry(NPEntry entry, UpdateReason reason) {
     if (_entries == null) {
-      _entries = new List();
+      _entries = [];
     }
 
     bool okToProceed = true;
@@ -97,7 +97,8 @@ class EntryList<T extends NPEntry> {
     switch (reason) {
       case UpdateReason.ADDED_OR_UPDATED:
         if (entry.folder.folderId != _folder.folderId) {
-          if (_folder.folderId == NPFolder.ROOT && _listSetting.includeEntriesInAllFolders == true) {
+          if (_folder.folderId == NPFolder.ROOT &&
+              _listSetting.includeEntriesInAllFolders == true) {
             okToProceed = true;
           } else {
             okToProceed = false;
@@ -107,8 +108,7 @@ class EntryList<T extends NPEntry> {
       case UpdateReason.PINNED:
         // make sure if folder Ids don't match, only update list for ROOT, since the pin affects ROOT
         if (entry.folder.folderId != _folder.folderId) {
-          if (_folder.folderId == NPFolder.ROOT)
-            okToProceed = true;
+          if (_folder.folderId == NPFolder.ROOT) okToProceed = true;
         } else {
           // when the folder does match, it's ok to proceed.
           okToProceed = true;
@@ -150,7 +150,7 @@ class EntryList<T extends NPEntry> {
 
       int len = _entries.length;
       bool updated = false;
-      for (int i=0; i<len; i++) {
+      for (int i = 0; i < len; i++) {
         if (entry.keyMatches(_entries[i])) {
           _entries[i] = moduleObj;
           updated = true;
@@ -211,7 +211,7 @@ class EntryList<T extends NPEntry> {
     if (okToProceed) {
       int len = _entries.length;
       int idxToRemove = -1;
-      for (int i=0; i<len; i++) {
+      for (int i = 0; i < len; i++) {
         if (entry.keyMatches(_entries[i])) {
           idxToRemove = i;
           break;
@@ -219,7 +219,7 @@ class EntryList<T extends NPEntry> {
       }
       if (idxToRemove != -1) {
         _entries.removeAt(idxToRemove);
-        _listSetting.totalCount --;
+        _listSetting.totalCount--;
       }
     }
   }
@@ -235,8 +235,8 @@ class EntryList<T extends NPEntry> {
       allDates.sort();
       _listSetting.startDate = UIHelper.npDateStr(allDates[0]);
       _listSetting.endDate = UIHelper.npDateStr(allDates[3]);
-
-    } else if (_listSetting.pages.length > 0 && anotherList._listSetting.pages.length > 0) {
+    } else if (_listSetting.pages.length > 0 &&
+        anotherList._listSetting.pages.length > 0) {
       // merge the pages
       anotherList.listSetting.pages.forEach((p) {
         if (_listSetting.pages.indexOf(p) == -1) {
@@ -292,14 +292,16 @@ class EntryList<T extends NPEntry> {
         return 1;
       }
 
-      return (a.updateTime.isBefore(b.updateTime) ? 1 : (a.updateTime.isAfter(b.updateTime) ? -1 : 0));
+      return (a.updateTime.isBefore(b.updateTime)
+          ? 1
+          : (a.updateTime.isAfter(b.updateTime) ? -1 : 0));
     });
   }
 
   _sortEntriesByKey() {
     bool hasPinned = false;
     bool hasInvalidSortKey = false;
-    _groupNamesByKey = new List();
+    _groupNamesByKey = [];
 
     _entries.sort((NPEntry a, NPEntry b) {
       if (a.pinned && !b.pinned) {

@@ -10,7 +10,8 @@ import 'package:np_mobile/ui/widgets/np_module_listing_state.dart';
 
 class NPGroupedListWidget extends BaseList {
   NPGroupedListWidget(ListSetting setting) : super(setting) {
-    print('====> new NPGroupedListWidget construction for setting [$listSetting]');
+    print(
+        '====> new NPGroupedListWidget construction for setting [$listSetting]');
   }
 
   @override
@@ -27,17 +28,18 @@ class _GroupedListState extends NPModuleListingState<NPGroupedListWidget> {
       if (loading) {
         return Center(child: buildProgressIndicator());
       } else {
-        return UIHelper.emptyContent(context, ContentHelper.getValue("no_content"), 0);
+        return UIHelper.emptyContent(
+            context, ContentHelper.getValue("no_content"), 0);
       }
     } else {
-      List<dynamic> items = new List();
+      List<dynamic> items = [];
 
       int startingIndex = 0;
       int length = entryList.entries.length;
 
       for (String name in entryList.groupNamesByKey) {
         items.add(name);
-        for (int i = startingIndex; i<length; i++) {
+        for (int i = startingIndex; i < length; i++) {
           if (entryList.entries[i].groupName == name) {
             items.add(i);
           } else {
@@ -49,8 +51,8 @@ class _GroupedListState extends NPModuleListingState<NPGroupedListWidget> {
 
       ListView listView = ListView.separated(
         separatorBuilder: (context, index) => Divider(
-              color: Colors.black12,
-            ),
+          color: Colors.black12,
+        ),
         itemCount: items.length,
         itemBuilder: (context, index) {
           if (items[index] is String) {
@@ -72,7 +74,9 @@ class _GroupedListState extends NPModuleListingState<NPGroupedListWidget> {
         children: <Widget>[
           new Expanded(
             child: new Text(
-              name == NPEntry.PINNED_GROUP_NAME ? ContentHelper.getValue("favorite") : name,
+              name == NPEntry.PINNED_GROUP_NAME
+                  ? ContentHelper.getValue("favorite")
+                  : name,
               style: UIHelper.favoriteEntryTitle(context),
             ),
           ),
@@ -99,10 +103,11 @@ class _GroupedListState extends NPModuleListingState<NPGroupedListWidget> {
       ),
       subtitle: EntryViewUtil.inList(e, context),
       onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => EntryViewScreen(entryList, index)),
-          );
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => EntryViewScreen(entryList, index)),
+        );
       },
       enabled: true,
     );

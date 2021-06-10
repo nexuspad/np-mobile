@@ -78,10 +78,11 @@ class NPEvent extends NPEntry {
       }
       _endDateTime = DateTime.parse(endDateTimeISO8601);
     } else if (_localEndTime != null) {
-      String endDateTimeISO8601 = _localStartDate + 'T' + _localEndTime + _timezoneOffset;
+      String endDateTimeISO8601 =
+          _localStartDate + 'T' + _localEndTime + _timezoneOffset;
       _endDateTime = DateTime.parse(endDateTimeISO8601);
     }
-    
+
     if (data['recurrence'] != null) {
       _recurrence = Recurrence.fromJson(data['recurrence']);
     }
@@ -116,7 +117,7 @@ class NPEvent extends NPEntry {
     }
 
     if (_reminder != null) {
-      List<dynamic> reminders = new List();
+      List<dynamic> reminders = [];
       reminders.add(_reminder.toJson());
       data['eventReminders'] = reminders;
     }

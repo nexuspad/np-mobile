@@ -14,18 +14,17 @@ class DocView {
       return new Text(doc.description,
           maxLines: 2,
           overflow: TextOverflow.ellipsis,
-          style: Theme.of(context).textTheme.subhead);
+          style: Theme.of(context).textTheme.subtitle1);
     } else {
       return new Container(width: 0.0, height: 0.0);
     }
   }
 
   static Widget fullPage(NPDoc doc, BuildContext context, setStateCallback) {
-    List<Widget> docContent = new List();
+    List<Widget> docContent = [];
 
     ListTile title = ListTile(
-      leading: Icon(Icons.note),
-      title: Text(doc.title, style: Theme.of(context).textTheme.headline),
+      title: Text(doc.title, style: Theme.of(context).textTheme.headline4),
     );
 
     docContent.add(title);
@@ -33,7 +32,7 @@ class DocView {
     if (doc.note != null && doc.note.length > 0) {
       if (doc.format == TextFormat.html) {
         docContent.add(SingleChildScrollView(
-          padding: UIHelper.contentPadding(),
+            padding: UIHelper.contentPadding(),
             child: new Html(
                 data: doc.note,
                 onLinkTap: (url) {

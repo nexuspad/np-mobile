@@ -3,7 +3,7 @@ import 'package:np_mobile/datamodel/np_folder.dart';
 import 'package:np_mobile/datamodel/np_module.dart';
 import 'package:np_mobile/datamodel/np_upload.dart';
 
-enum TextFormat {plain, html}
+enum TextFormat { plain, html }
 
 class NPDoc extends NPEntry {
   TextFormat _format;
@@ -35,7 +35,7 @@ class NPDoc extends NPEntry {
     _description = data['description'];
 
     if (data['attachments'] != null) {
-      _attachments = new List<NPUpload>();
+      _attachments = [];
       for (var data in data['attachments']) {
         _attachments.add(new NPUpload.fromJson(data));
       }

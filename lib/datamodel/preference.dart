@@ -5,12 +5,13 @@ class Preference {
   String _locale;
   String _timezone;
   String _timezoneAlias;
-  List<int> _activeModules = new List();
+  List<int> _activeModules = [];
 
   Preference();
 
   Preference.fromJson(Map<String, dynamic> data) {
-    if (data['viewPreferences'] != null && data['viewPreferences']['lastVisit'] != null) {
+    if (data['viewPreferences'] != null &&
+        data['viewPreferences']['lastVisit'] != null) {
       _lastAccessedModule = data['viewPreferences']['lastVisit']['moduleId'];
     }
     _locale = data['locale'];
@@ -19,22 +20,24 @@ class Preference {
 
     dynamic moduleSettings = data['moduleSettings'];
     if (moduleSettings != null) {
-      if (moduleSettings['contact'] != null && moduleSettings['contact'] != false) {
+      if (moduleSettings['contact'] != null &&
+          moduleSettings['contact'] != false) {
         _activeModules.add(NPModule.CONTACT);
       }
-      if (moduleSettings['calendar'] != null && moduleSettings['calendar'] != false) {
+      if (moduleSettings['calendar'] != null &&
+          moduleSettings['calendar'] != false) {
         _activeModules.add(NPModule.CALENDAR);
       }
       if (moduleSettings['doc'] != null && moduleSettings['doc'] != false) {
         _activeModules.add(NPModule.DOC);
       }
-      if (moduleSettings['bookmark'] != null && moduleSettings['bookmark'] != false) {
+      if (moduleSettings['bookmark'] != null &&
+          moduleSettings['bookmark'] != false) {
         _activeModules.add(NPModule.BOOKMARK);
       }
       if (moduleSettings['photo'] != null && moduleSettings['photo'] != false) {
         _activeModules.add(NPModule.PHOTO);
       }
-
     } else {
       _activeModules.add(NPModule.CONTACT);
       _activeModules.add(NPModule.CALENDAR);
@@ -53,7 +56,7 @@ class Preference {
     return data;
   }
 
-  int get lasAccessedModule => _lastAccessedModule;
+  int get lastAccessedModule => _lastAccessedModule;
   set lastAccessModule(value) => _lastAccessedModule = value;
   String get locale => _locale;
   set locale(value) => _locale = value;

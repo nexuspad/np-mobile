@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:np_mobile/ui/widgets/input_dropdown.dart';
@@ -13,13 +14,16 @@ class DatePicker extends StatelessWidget {
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime picked = await showDatePicker(
-        context: context, initialDate: selectedDate, firstDate: DateTime(2015, 8), lastDate: DateTime(2101));
+        context: context,
+        initialDate: selectedDate,
+        firstDate: DateTime(2015, 8),
+        lastDate: DateTime(2101));
     if (picked != null && picked != selectedDate) selectDate(picked);
   }
 
   @override
   Widget build(BuildContext context) {
-    final TextStyle valueStyle = Theme.of(context).textTheme.title;
+    final TextStyle valueStyle = Theme.of(context).textTheme.headline6;
     return Row(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: <Widget>[

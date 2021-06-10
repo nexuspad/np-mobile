@@ -27,7 +27,7 @@ class UploaderScreen extends StatefulWidget {
 
 class _UploaderScreenState extends State<UploaderScreen> {
   Future<File> _imageFile;
-  List<UploadFileWrapper> _selectedFiles = new List();
+  List<UploadFileWrapper> _selectedFiles = [];
   bool isVideo = false;
   NPEntry _updatedEntry;
 

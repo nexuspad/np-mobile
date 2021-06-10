@@ -40,7 +40,10 @@ class _CalendarWidgetState extends NPModuleListingState<NPTimelineWidget> {
       // This makes each child fill the full width of the screen
       crossAxisAlignment: CrossAxisAlignment.stretch,
       mainAxisSize: MainAxisSize.min,
-      children: <Widget>[_timeAndInputBar(organizeBloc), Expanded(child: _eventListView())],
+      children: <Widget>[
+        _timeAndInputBar(organizeBloc),
+        Expanded(child: _eventListView())
+      ],
     );
   }
 
@@ -56,7 +59,7 @@ class _CalendarWidgetState extends NPModuleListingState<NPTimelineWidget> {
           endYmd = snapshot.data.listSetting.endDate;
         }
 
-        List<Widget> widgets = new List();
+        List<Widget> widgets = [];
         widgets.add(DateRangePicker(
           startDate: DateTime.parse(startYmd),
           endDate: DateTime.parse(endYmd),
@@ -69,13 +72,16 @@ class _CalendarWidgetState extends NPModuleListingState<NPTimelineWidget> {
         // re-create the event object when the state is updated.
         // however, we do need to make sure when folder is changed, the event object is updated.
         // so yeah, the logic is quirky here.
-        if (_quickToDoEvent == null || _quickToDoEvent.folder.folderId != organizeBloc.getFolder().folderId) {
-          _quickToDoEvent = NPEvent.newInFolder(NPFolder.copy(organizeBloc.getFolder()));
+        if (_quickToDoEvent == null ||
+            _quickToDoEvent.folder.folderId !=
+                organizeBloc.getFolder().folderId) {
+          _quickToDoEvent =
+              NPEvent.newInFolder(NPFolder.copy(organizeBloc.getFolder()));
         }
 
-        widgets.add(EventEdit.quickTodo(context, todoFormKey, _quickToDoEvent, () {
-          setState(() {
-          });
+        widgets
+            .add(EventEdit.quickTodo(context, todoFormKey, _quickToDoEvent, () {
+          setState(() {});
         }));
         return Column(
           children: widgets,
@@ -91,21 +97,23 @@ class _CalendarWidgetState extends NPModuleListingState<NPTimelineWidget> {
     List<NPEntry> entriesInRange;
 
     if (entryList != null && entryList.entryCount() > 0) {
-      entriesInRange = entryList.entries.where((e) => e.timelineKey.isInRange(start, end)).toList();
+      entriesInRange = entryList.entries
+          .where((e) => e.timelineKey.isInRange(start, end))
+          .toList();
     }
 
     if (entriesInRange == null || entriesInRange.length == 0) {
       if (loading) {
         return Center(child: buildProgressIndicator());
       } else {
-        return UIHelper.emptyContent(context, ContentHelper.getValue("no_event"), 40.0);
+        return UIHelper.emptyContent(
+            context, ContentHelper.getValue("no_event"), 40.0);
       }
     } else {
-
       ListView listView = ListView.separated(
         separatorBuilder: (context, index) => Divider(
-              color: Colors.black12,
-            ),
+          color: Colors.black12,
+        ),
         itemCount: entriesInRange.length + 1,
         itemBuilder: (context, index) {
           if (index == entriesInRange.length) {
@@ -132,16 +140,13 @@ class _CalendarWidgetState extends NPModuleListingState<NPTimelineWidget> {
         } else {
           titleStyle = UIHelper.grayedEntryTitle(context);
         }
-
       } else if (event.startDateTime.difference(DateTime.now()).inHours < 8) {
         titleStyle = UIHelper.favoriteEntryTitle(context);
-
       } else {
         titleStyle = UIHelper.regularEntryTitle(context);
       }
     } else {
-      if (e.pinned == true) {
-      }
+      if (e.pinned == true) {}
     }
     return new ListTile(
 //      leading: leadingIcon,
@@ -161,13 +166,16 @@ class _CalendarWidgetState extends NPModuleListingState<NPTimelineWidget> {
       subtitle: EntryViewUtil.inList(e, context),
       onTap: () {
         if (e.note == null || e.note.isEmpty) {
-          showDialog(context: context, builder: (BuildContext context) {
-            return EventView.dialog(context, e);
-          });
+          showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return EventView.dialog(context, e);
+              });
         } else {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => EntryViewScreen(entryList, index)),
+            MaterialPageRoute(
+                builder: (context) => EntryViewScreen(entryList, index)),
           );
         }
       },

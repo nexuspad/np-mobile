@@ -31,8 +31,10 @@ class EntrySearchDelegate extends SearchDelegate<String> {
 
   @override
   Widget buildSuggestions(BuildContext context) {
-    _data = new List();
-    final Iterable<String> suggestions = query.isEmpty ? _history : _data.where((String s) => s.startsWith(query));
+    _data = [];
+    final Iterable<String> suggestions = query.isEmpty
+        ? _history
+        : _data.where((String s) => s.startsWith(query));
 
     return _SuggestionList(_listSetting.moduleId, query, (String suggestion) {
       query = suggestion;
@@ -42,11 +44,14 @@ class EntrySearchDelegate extends SearchDelegate<String> {
 
   @override
   Widget buildResults(BuildContext context) {
-    SearchSuggestionHelper.saveQuery(SearchType.ENTRY, _listSetting.moduleId, query);
+    SearchSuggestionHelper.saveQuery(
+        SearchType.ENTRY, _listSetting.moduleId, query);
     if (_listSetting.moduleId != NPModule.PHOTO) {
-      return NPListWidget(ListSetting.forSearchModule(_listSetting.moduleId, query));
+      return NPListWidget(
+          ListSetting.forSearchModule(_listSetting.moduleId, query));
     } else {
-      return NPGridWidget(ListSetting.forSearchModule(_listSetting.moduleId, query));
+      return NPGridWidget(
+          ListSetting.forSearchModule(_listSetting.moduleId, query));
     }
   }
 
@@ -78,7 +83,10 @@ class _SuggestionList extends StatefulWidget {
   final String _query;
   final ValueChanged<String> _onSelected;
 
-  _SuggestionList(moduleId, query, onSelected) : _moduleId = moduleId, _query = query, _onSelected = onSelected;
+  _SuggestionList(moduleId, query, onSelected)
+      : _moduleId = moduleId,
+        _query = query,
+        _onSelected = onSelected;
 
   @override
   State<StatefulWidget> createState() {
@@ -90,7 +98,8 @@ class _SuggestionListState extends State<_SuggestionList> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<dynamic>(
-      future: SearchSuggestionHelper.searchHistory(SearchType.ENTRY, widget._moduleId),
+      future: SearchSuggestionHelper.searchHistory(
+          SearchType.ENTRY, widget._moduleId),
       builder: (context, snapshot) {
         if (snapshot.hasError) print(snapshot.error);
         if (snapshot.hasData) {

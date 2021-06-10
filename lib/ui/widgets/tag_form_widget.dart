@@ -10,7 +10,8 @@ class TagForm extends StatefulWidget {
   final bool _updateOnChange;
   final bool _enableAdd;
 
-  TagForm(BuildContext context, NPEntry entry, bool updateOnChange, bool enableAdd)
+  TagForm(
+      BuildContext context, NPEntry entry, bool updateOnChange, bool enableAdd)
       : _entry = entry,
         _updateOnChange = updateOnChange,
         _enableAdd = enableAdd;
@@ -46,7 +47,9 @@ class _TagFormState extends State<TagForm> {
                         // handles form saving when the tag form is inside the entry edit form
                         _entry.addTag(val);
                       },
-                      decoration: new InputDecoration(labelText: ContentHelper.translate("add tags"), border: UnderlineInputBorder()),
+                      decoration: new InputDecoration(
+                          labelText: ContentHelper.translate("add tags"),
+                          border: UnderlineInputBorder()),
                       controller: controller,
                     )),
                 IconButton(
@@ -83,7 +86,7 @@ class _TagFormState extends State<TagForm> {
   }
 
   Widget tagChips(Set<String> tags) {
-    List<Chip> chips = new List();
+    List<Chip> chips = [];
 
     if (tags != null) {
       List<String> tagList = tags.toList();

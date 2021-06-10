@@ -9,9 +9,9 @@ class EventList extends EntryList {
     }
 
     int len = entries.length;
-    List<int> idxToRemove = new List();
+    List<int> idxToRemove = [];
 
-    for (int i=0; i<len; i++) {
+    for (int i = 0; i < len; i++) {
       if (entryId == entries[i].entryId) {
         idxToRemove.add(i);
       }

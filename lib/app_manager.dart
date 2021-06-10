@@ -103,8 +103,8 @@ class DeviceId {
     int max = all.length - 1;
 
     var random = new Random();
-    List<String> randomChars = new List();
-    for (int i = 0; i< length; i++) {
+    List<String> randomChars = [];
+    for (int i = 0; i < length; i++) {
       randomChars.add(all[random.nextInt(max)]);
     }
 

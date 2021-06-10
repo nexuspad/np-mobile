@@ -11,10 +11,17 @@ import 'package:np_mobile/service/preference_service.dart';
 import 'package:np_mobile/service/rest_client.dart';
 
 class ListService extends BaseService {
-  static final Map<String, ListService> _listServiceMap = <String, ListService>{};
+  static final Map<String, ListService> _listServiceMap =
+      <String, ListService>{};
 
   factory ListService(
-      {moduleId, folderId, ownerId = 0, startDate = '', endDate = '', String keyword = '', bool refresh = false}) {
+      {moduleId,
+      folderId,
+      ownerId = 0,
+      startDate = '',
+      endDate = '',
+      String keyword = '',
+      bool refresh = false}) {
     if (keyword == null || keyword.length == 0) {
       keyword = '';
     }
@@ -35,7 +42,12 @@ class ListService extends BaseService {
   }
 
   static String _key(moduleId, folderId, ownerId, keyword) {
-    String k = moduleId.toString() + '_' + folderId.toString() + '_' + ownerId.toString() + '_';
+    String k = moduleId.toString() +
+        '_' +
+        folderId.toString() +
+        '_' +
+        ownerId.toString() +
+        '_';
     if (keyword.length > 0) {
       k += keyword;
     }
@@ -43,7 +55,7 @@ class ListService extends BaseService {
   }
 
   static List<ListService> activeServicesForModule(int moduleId, int ownerId) {
-    List<ListService> services = new List();
+    List<ListService> services = [];
     if (_listServiceMap != null) {
       _listServiceMap.forEach((k, v) {
         if (v._moduleId == moduleId && v._ownerId == ownerId) {
@@ -62,7 +74,13 @@ class ListService extends BaseService {
 
   EntryList get entryList => _entryList ?? EntryList();
 
-  ListService._internal({moduleId, folderId, ownerId = 0, startDate = '', endDate = '', keyword = ''}) {
+  ListService._internal(
+      {moduleId,
+      folderId,
+      ownerId = 0,
+      startDate = '',
+      endDate = '',
+      keyword = ''}) {
     _moduleId = moduleId;
     _folderId = folderId;
     _ownerId = ownerId;
@@ -73,15 +91,18 @@ class ListService extends BaseService {
     var completer = new Completer();
 
     if (_entryList != null) {
-      print('compare the existing list [${_entryList.listSetting.toString()}] with query parameters [${listQuery
-          .toString()}]');
+      print(
+          'compare the existing list [${_entryList.listSetting.toString()}] with query parameters [${listQuery.toString()}]');
       if (_entryList.isExpired()) {
         print('the list expired... ${_entryList.expiration}');
       }
     }
 
-    if (_entryList != null && _entryList.isExpired() == false && _entryList.listSetting.isSuperSetOf(listQuery)) {
-      print('use the existing list(expiration: ${_entryList.expiration}) [${_entryList.listSetting.toString()}] for query parameters [${listQuery.toString()}]');
+    if (_entryList != null &&
+        _entryList.isExpired() == false &&
+        _entryList.listSetting.isSuperSetOf(listQuery)) {
+      print(
+          'use the existing list(expiration: ${_entryList.expiration}) [${_entryList.listSetting.toString()}] for query parameters [${listQuery.toString()}]');
       completer.complete(_entryList);
     } else {
       String url = getListEndPoint(
@@ -94,16 +115,23 @@ class ListService extends BaseService {
           ownerId: _ownerId);
 
       if (listQuery.hasSearchQuery()) {
-        url = getSearchEndPoint(moduleId: _moduleId, folderId: _folderId, keyword: _keyword, ownerId: _ownerId);
+        url = getSearchEndPoint(
+            moduleId: _moduleId,
+            folderId: _folderId,
+            keyword: _keyword,
+            ownerId: _ownerId);
       }
 
       String timezone = PreferenceService().activeTimezone;
 
-      RestClient().get(url, AccountService().sessionId, timezone: timezone).then((dynamic result) {
+      RestClient()
+          .get(url, AccountService().sessionId, timezone: timezone)
+          .then((dynamic result) {
         if (_entryList == null) {
           _entryList = EntryListFactory.initFromJson(result['entryList']);
         } else {
-          EntryList entryListNewPage = EntryListFactory.initFromJson(result['entryList']);
+          EntryList entryListNewPage =
+              EntryListFactory.initFromJson(result['entryList']);
           _entryList.mergeList(entryListNewPage);
         }
         _entryList.set30MinutesExpiration();

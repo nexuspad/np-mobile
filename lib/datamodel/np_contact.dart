@@ -23,12 +23,9 @@ class NPContact extends NPEntry {
     _middleName = contact.middleName;
     _fullName = contact.fullName;
     _businessName = contact.businessName;
-    if (contact.address != null)
-      _address = new Map.from(contact.address);
-    if (contact.emails != null)
-      _emails = new List.from(contact.emails);
-    if (contact.phones != null)
-      _phones = new List.from(contact.phones);
+    if (contact.address != null) _address = new Map.from(contact.address);
+    if (contact.emails != null) _emails = new List.from(contact.emails);
+    if (contact.phones != null) _phones = new List.from(contact.phones);
   }
 
   NPContact.fromJson(Map<String, dynamic> data) : super.fromJson(data) {
@@ -43,7 +40,7 @@ class NPContact extends NPEntry {
     }
 
     if (data['emails'] != null && data['emails'] is List) {
-      _emails = new List();
+      _emails = [];
       for (var item in data['emails']) {
         if (item['value'] != null && item['value'].isNotEmpty) {
           _emails.add(Map.from(item));
@@ -52,7 +49,7 @@ class NPContact extends NPEntry {
     }
 
     if (data['phones'] != null && data['phones'] is List) {
-      _phones = new List();
+      _phones = [];
       for (var item in data['phones']) {
         if (item['value'] != null && item['value'].isNotEmpty) {
           _phones.add(Map.from(item));

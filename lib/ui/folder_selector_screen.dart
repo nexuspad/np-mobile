@@ -27,13 +27,16 @@ class FolderSelectorScreen extends StatefulWidget {
   final dynamic _itemToMove;
   final dynamic _itemToUpdate;
 
-  FolderSelectorScreen({BuildContext context, dynamic itemToMove, dynamic itemToUpdate})
-      : _startingFolder = ApplicationStateProvider.forOrganize(context).getFolder(),
+  FolderSelectorScreen(
+      {BuildContext context, dynamic itemToMove, dynamic itemToUpdate})
+      : _startingFolder =
+            ApplicationStateProvider.forOrganize(context).getFolder(),
         _itemToMove = itemToMove,
         _itemToUpdate = itemToUpdate;
 
   @override
-  State<StatefulWidget> createState() => FolderSelectionState(_startingFolder, _itemToMove, _itemToUpdate);
+  State<StatefulWidget> createState() =>
+      FolderSelectionState(_startingFolder, _itemToMove, _itemToUpdate);
 }
 
 class FolderSelectionState extends State<FolderSelectorScreen> {
@@ -56,7 +59,8 @@ class FolderSelectionState extends State<FolderSelectorScreen> {
 
   OrganizeBloc organizeBloc;
 
-  FolderSelectionState(NPFolder startingFolder, dynamic itemToMove, dynamic itemToUpdate) {
+  FolderSelectionState(
+      NPFolder startingFolder, dynamic itemToMove, dynamic itemToUpdate) {
     _currentParentFolder = startingFolder;
     if (itemToMove is NPEntry) {
       _entryToMove = itemToMove;
@@ -82,13 +86,16 @@ class FolderSelectionState extends State<FolderSelectorScreen> {
         'calling folder service for module ${_currentParentFolder.moduleId} for owner: ${_currentParentFolder.owner.userId}');
     _loading = true;
 
-    _folderService = new FolderService(moduleId: _currentParentFolder.moduleId, ownerId: _currentParentFolder.owner.userId);
+    _folderService = new FolderService(
+        moduleId: _currentParentFolder.moduleId,
+        ownerId: _currentParentFolder.owner.userId);
     _folderService.get(refresh: refresh).then((dynamic result) {
       _folderTree = result;
       setState(() {
         _loading = false;
         // the _currentRootFolder now have sub-folders
-        _currentParentFolder = _folderTree.searchNode(_currentParentFolder.folderId);
+        _currentParentFolder =
+            _folderTree.searchNode(_currentParentFolder.folderId);
       });
     }).catchError((error) {
       setState(() {
@@ -99,7 +106,10 @@ class FolderSelectionState extends State<FolderSelectorScreen> {
   }
 
   bool _selectorIsForMovingOrUpdating() {
-    return _folderToMove != null || _entryToMove != null || _entryToUpdate != null || _folderToUpdate != null
+    return _folderToMove != null ||
+            _entryToMove != null ||
+            _entryToUpdate != null ||
+            _folderToUpdate != null
         ? true
         : false;
   }
@@ -115,7 +125,8 @@ class FolderSelectionState extends State<FolderSelectorScreen> {
       itemToMove = _folderToMove;
     }
 
-    dynamic title = Text(ContentHelper.entryPrefixMessage(_currentParentFolder.moduleId, 'folders'));
+    dynamic title = Text(ContentHelper.entryPrefixMessage(
+        _currentParentFolder.moduleId, 'folders'));
     if (_entryToMove != null || _folderToMove != null) {
       title = Text('move into folder');
     } else if (_entryToUpdate != null || _folderToUpdate != null) {
@@ -125,7 +136,9 @@ class FolderSelectionState extends State<FolderSelectorScreen> {
       key: scaffoldKey,
       appBar: AppBar(
         title: title,
-        backgroundColor: _selectorIsForMovingOrUpdating() ? UIHelper.blueCanvas() : UIHelper.blackCanvas(),
+        backgroundColor: _selectorIsForMovingOrUpdating()
+            ? UIHelper.blueCanvas()
+            : UIHelper.blackCanvas(),
         actions: <Widget>[
           IconButton(
             tooltip: ContentHelper.getValue('search'),
@@ -133,8 +146,10 @@ class FolderSelectionState extends State<FolderSelectorScreen> {
             onPressed: () async {
               final String selected = await showSearch<String>(
                 context: context,
-                delegate:
-                    new FolderSearchDelegate(_currentParentFolder.moduleId, _currentParentFolder.owner.userId, itemToMove),
+                delegate: new FolderSearchDelegate(
+                    _currentParentFolder.moduleId,
+                    _currentParentFolder.owner.userId,
+                    itemToMove),
               );
               if (selected != null) {}
             },
@@ -146,8 +161,8 @@ class FolderSelectionState extends State<FolderSelectorScreen> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) =>
-                      FolderEditScreen(NPFolder.newFolder(_currentParentFolder, _currentParentFolder.owner)),
+                  builder: (context) => FolderEditScreen(NPFolder.newFolder(
+                      _currentParentFolder, _currentParentFolder.owner)),
                 ),
               );
             },
@@ -174,15 +189,21 @@ class FolderSelectionState extends State<FolderSelectorScreen> {
       return Center(child: buildProgressIndicator());
     } else {
       Widget childFolderWidget;
-      if (_currentParentFolder.subFolders != null && _currentParentFolder.subFolders.length == 0) {
-        childFolderWidget = UIHelper.emptyContent(context, ContentHelper.getValue("no_subfolder"), 0);
+      if (_currentParentFolder.subFolders != null &&
+          _currentParentFolder.subFolders.length == 0) {
+        childFolderWidget = UIHelper.emptyContent(
+            context, ContentHelper.getValue("no_subfolder"), 0);
       } else {
         childFolderWidget = ListView.separated(
-          padding: AppManager().isSmallScreen ? UIHelper.noPadding() : UIHelper.contentPadding(),
+          padding: AppManager().isSmallScreen
+              ? UIHelper.noPadding()
+              : UIHelper.contentPadding(),
           separatorBuilder: (context, index) => Divider(
-                color: Colors.black12,
-              ),
-          itemCount: _currentParentFolder.subFolders != null ? _currentParentFolder.subFolders.length : 0,
+            color: Colors.black12,
+          ),
+          itemCount: _currentParentFolder.subFolders != null
+              ? _currentParentFolder.subFolders.length
+              : 0,
           itemBuilder: (context, index) {
             return _childFolderRow(_currentParentFolder.subFolders[index]);
           },
@@ -210,7 +231,8 @@ class FolderSelectionState extends State<FolderSelectorScreen> {
       lead = UIHelper.goUpIconButton(() {
         setState(() {
           // refresh the folder selector
-          _currentParentFolder = _folderTree.searchNode(_currentParentFolder.parent.folderId);
+          _currentParentFolder =
+              _folderTree.searchNode(_currentParentFolder.parent.folderId);
         });
       });
     }
@@ -228,26 +250,32 @@ class FolderSelectionState extends State<FolderSelectorScreen> {
               organizeBloc.changeFolder(_currentParentFolder.folderId);
               Navigator.pop(context);
             }
-
           },
           child: _folderTitle(_currentParentFolder),
         ),
       )
     ];
 
-    if (_updateDestinationFolder != null && _updateDestinationFolder.folderId == _currentParentFolder.folderId) {
+    if (_updateDestinationFolder != null &&
+        _updateDestinationFolder.folderId == _currentParentFolder.folderId) {
       // show the action buttons
       topWidget = Stack(
         alignment: AlignmentDirectional.centerStart,
-        children: <Widget>[Row(children: rowItems), _updateDestinationFolderActionButtons(_currentParentFolder)],
+        children: <Widget>[
+          Row(children: rowItems),
+          _updateDestinationFolderActionButtons(_currentParentFolder)
+        ],
       );
     } else {
-      topWidget = Row(children: _titleAndActionItems(rowItems, _currentParentFolder));
+      topWidget =
+          Row(children: _titleAndActionItems(rowItems, _currentParentFolder));
     }
 
-    var padding = EdgeInsets.only(top: 10.0, bottom: 10.0, left: 25.0, right: 20.0);
+    var padding =
+        EdgeInsets.only(top: 10.0, bottom: 10.0, left: 25.0, right: 20.0);
     if (AppManager().isSmallScreen) {
-      padding = EdgeInsets.only(top: 10.0, bottom: 10.0, left: 10.0, right: 20.0);
+      padding =
+          EdgeInsets.only(top: 10.0, bottom: 10.0, left: 10.0, right: 20.0);
     }
 
     return Container(
@@ -265,7 +293,8 @@ class FolderSelectionState extends State<FolderSelectorScreen> {
     ];
 
     Widget folderTile;
-    if (_updateDestinationFolder != null && _updateDestinationFolder.folderId == folder.folderId) {
+    if (_updateDestinationFolder != null &&
+        _updateDestinationFolder.folderId == folder.folderId) {
       // move has been initiated
       Row row = Row(
         children: rowItems,
@@ -314,7 +343,8 @@ class FolderSelectionState extends State<FolderSelectorScreen> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => FolderSelectorScreen(context: context, itemToMove: folder),
+                  builder: (context) => FolderSelectorScreen(
+                      context: context, itemToMove: folder),
                 ),
               );
             } else if (selection == FolderMenu.delete) {
@@ -370,24 +400,36 @@ class FolderSelectionState extends State<FolderSelectorScreen> {
           UIHelper.actionButton(context, 'move', () {
             if (_entryToMove != null) {
               UIHelper.showMessageOnSnackBar(
-                  globalKey: scaffoldKey, text: ContentHelper.concatValues(['moving', _entryToMove.moduleId.toString()]));
+                  globalKey: scaffoldKey,
+                  text: ContentHelper.concatValues(
+                      ['moving', _entryToMove.moduleId.toString()]));
               EntryService().move(_entryToMove, folder).then((updatedEntry) {
                 UIHelper.showMessageOnSnackBar(
-                    globalKey: scaffoldKey, text: ContentHelper.concatValues([_entryToMove.moduleId.toString(), 'moved']));
+                    globalKey: scaffoldKey,
+                    text: ContentHelper.concatValues(
+                        [_entryToMove.moduleId.toString(), 'moved']));
                 Navigator.pop(context);
               }).catchError((error) {
-                UIHelper.showMessageOnSnackBar(globalKey: scaffoldKey, text: error.toString());
+                UIHelper.showMessageOnSnackBar(
+                    globalKey: scaffoldKey, text: error.toString());
               });
             } else if (_folderToMove != null) {
               _folderToMove.parent = NPFolder.copy(folder);
-              UIHelper.showMessageOnSnackBar(globalKey: scaffoldKey, text: ContentHelper.concatValues(['moving', 'folder']));
-              FolderService(moduleId: _folderToMove.moduleId, ownerId: _folderToMove.owner.userId)
+              UIHelper.showMessageOnSnackBar(
+                  globalKey: scaffoldKey,
+                  text: ContentHelper.concatValues(['moving', 'folder']));
+              FolderService(
+                      moduleId: _folderToMove.moduleId,
+                      ownerId: _folderToMove.owner.userId)
                   .save(_folderToMove, FolderUpdateAction.MOVE)
                   .then((updatedFolder) {
-                UIHelper.showMessageOnSnackBar(globalKey: scaffoldKey, text: ContentHelper.concatValues(['folder', 'moved']));
+                UIHelper.showMessageOnSnackBar(
+                    globalKey: scaffoldKey,
+                    text: ContentHelper.concatValues(['folder', 'moved']));
                 Navigator.pop(context);
               }).catchError((error) {
-                UIHelper.showMessageOnSnackBar(globalKey: scaffoldKey, text: error.toString());
+                UIHelper.showMessageOnSnackBar(
+                    globalKey: scaffoldKey, text: error.toString());
               });
             }
           }),
@@ -418,12 +460,16 @@ class FolderSelectionState extends State<FolderSelectorScreen> {
 
   Text _folderTitle(NPFolder folder) {
     if (folder.folderId == _currentParentFolder.folderId) {
-      return Text(folder.folderName.toUpperCase(), style: Theme.of(context).textTheme.title);
+      return Text(folder.folderName.toUpperCase(),
+          style: Theme.of(context).textTheme.headline6);
     } else {
       return Text(folder.folderName,
           style: _folderEnabled(folder)
-              ? Theme.of(context).textTheme.title
-              : Theme.of(context).textTheme.title.copyWith(color: Theme.of(context).disabledColor));
+              ? Theme.of(context).textTheme.headline6
+              : Theme.of(context)
+                  .textTheme
+                  .headline6
+                  .copyWith(color: Theme.of(context).disabledColor));
     }
   }
 
@@ -431,9 +477,11 @@ class FolderSelectionState extends State<FolderSelectorScreen> {
     if (!_selectorIsForMovingOrUpdating()) {
       return true;
     } else {
-      if (_entryToMove != null && _entryToMove.folder.folderId == folder.folderId) {
+      if (_entryToMove != null &&
+          _entryToMove.folder.folderId == folder.folderId) {
         return false;
-      } else if (_folderToMove != null && _folderToMove.folderId == folder.folderId) {
+      } else if (_folderToMove != null &&
+          _folderToMove.folderId == folder.folderId) {
         return false;
       }
       return true;
@@ -447,7 +495,8 @@ class FolderSelectionState extends State<FolderSelectorScreen> {
         // return object of type Dialog
         return AlertDialog(
           title: new Text(ContentHelper.translate("confirm action")),
-          content: new Text("Delete the folder \"${folder.folderName}\" and all it's content?"),
+          content: new Text(
+              "Delete the folder \"${folder.folderName}\" and all it's content?"),
           actions: <Widget>[
             // usually buttons at the bottom of the dialog
             new FlatButton(
@@ -469,13 +518,20 @@ class FolderSelectionState extends State<FolderSelectorScreen> {
   }
 
   _deleteFolder(NPFolder folder) {
-    UIHelper.showMessageOnSnackBar(globalKey: scaffoldKey, text: ContentHelper.concatValues(['deleting', 'folder']));
-    FolderService(moduleId: folder.moduleId, ownerId: folder.owner.userId).delete(folder).then((deletedFolder) {
+    UIHelper.showMessageOnSnackBar(
+        globalKey: scaffoldKey,
+        text: ContentHelper.concatValues(['deleting', 'folder']));
+    FolderService(moduleId: folder.moduleId, ownerId: folder.owner.userId)
+        .delete(folder)
+        .then((deletedFolder) {
       Navigator.of(context).pop();
-      UIHelper.showMessageOnSnackBar(globalKey: scaffoldKey, text: ContentHelper.concatValues(['folder', 'deleted']));
+      UIHelper.showMessageOnSnackBar(
+          globalKey: scaffoldKey,
+          text: ContentHelper.concatValues(['folder', 'deleted']));
       setState(() {});
     }).catchError((error) {
-      UIHelper.showMessageOnSnackBar(globalKey: scaffoldKey, text: error.toString());
+      UIHelper.showMessageOnSnackBar(
+          globalKey: scaffoldKey, text: error.toString());
     });
   }
 

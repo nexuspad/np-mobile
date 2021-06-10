@@ -1,5 +1,6 @@
-enum DeliverType {EMAIL}
-enum ReminderTimeUnit {DAY, HOUR, MINUTE}
+enum DeliverType { EMAIL }
+enum ReminderTimeUnit { DAY, HOUR, MINUTE }
+
 class Reminder {
   String _eventId;
   int _reminderId;
@@ -9,7 +10,7 @@ class Reminder {
   ReminderTimeUnit _timeUnit;
   int _timeValue;
 
-  Reminder() {}
+  Reminder();
 
   Reminder.emailReminder(email) {
     _deliverAddress = email;
@@ -19,17 +20,21 @@ class Reminder {
   }
 
   Reminder.fromJson(Map<String, dynamic> data) {
-    if (data['deliverType'] != null && data['deliverAddress'] != null && data['unit'] != null) {
+    if (data['deliverType'] != null &&
+        data['deliverAddress'] != null &&
+        data['unit'] != null) {
       _eventId = data['eventId'];
       _reminderId = data['reminderId'];
 
       String type = data['deliverType'];
-      _deliverType = DeliverType.values.firstWhere((e) => e.toString().split(".").last == type.toUpperCase());
+      _deliverType = DeliverType.values.firstWhere(
+          (e) => e.toString().split(".").last == type.toUpperCase());
 
       _deliverAddress = data['deliverAddress'];
 
       String unit = data['unit'];
-      _timeUnit = ReminderTimeUnit.values.firstWhere((e) => e.toString().split(".").last == unit.toUpperCase());
+      _timeUnit = ReminderTimeUnit.values.firstWhere(
+          (e) => e.toString().split(".").last == unit.toUpperCase());
 
       _timeValue = data['unitCount'];
     }
@@ -72,7 +77,8 @@ class Reminder {
   void setTimeUnit(String value) {
     if (value.toLowerCase() == 'minute' || value.toLowerCase() == 'minutes') {
       _timeUnit = ReminderTimeUnit.MINUTE;
-    } else if (value.toLowerCase() == 'hour' || value.toLowerCase() == 'hours') {
+    } else if (value.toLowerCase() == 'hour' ||
+        value.toLowerCase() == 'hours') {
       _timeUnit = ReminderTimeUnit.HOUR;
     } else if (value.toLowerCase() == 'day' || value.toLowerCase() == 'days') {
       _timeUnit = ReminderTimeUnit.DAY;

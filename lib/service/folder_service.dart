@@ -10,7 +10,8 @@ import 'package:np_mobile/datamodel/np_folder.dart';
 import 'package:np_mobile/datamodel/folder_tree.dart';
 
 class FolderService extends BaseService {
-  static final Map<String, FolderService> _serviceMap = <String, FolderService>{};
+  static final Map<String, FolderService> _serviceMap =
+      <String, FolderService>{};
 
   factory FolderService({int moduleId, int ownerId}) {
     if (_serviceMap.containsKey(_key(moduleId, ownerId))) {
@@ -45,13 +46,15 @@ class FolderService extends BaseService {
       completer.complete(_folderTree);
     } else {
       RestClient()
-          .get(getFolderServiceEndPoint(_moduleId, _folderId, _ownerId), AccountService().sessionId)
+          .get(getFolderServiceEndPoint(_moduleId, _folderId, _ownerId),
+              AccountService().sessionId)
           .then((dynamic result) {
-        List<NPFolder> folders = new List();
+        List<NPFolder> folders = [];
         for (var f in result['folders']) {
           folders.add(NPFolder.fromJson(f));
         }
-        _folderTree = FolderTree.fromFolders(_moduleId, folders, AccountService().acctOwner);
+        _folderTree = FolderTree.fromFolders(
+            _moduleId, folders, AccountService().acctOwner);
         completer.complete(_folderTree);
       }).catchError((error) {
         completer.completeError(error);
@@ -81,7 +84,8 @@ class FolderService extends BaseService {
     String url = getFolderDetailEndPoint(folder.moduleId, folder.folderId);
 
     RestClient()
-        .postJson(url, json.encode(FolderServiceData(folder, action)), AccountService().sessionId, AppManager().deviceId)
+        .postJson(url, json.encode(FolderServiceData(folder, action)),
+            AccountService().sessionId, AppManager().deviceId)
         .then((dynamic result) {
       if (result['errorCode'] != null) {
         completer.completeError(new NPError(cause: result['errorCode']));
@@ -104,7 +108,9 @@ class FolderService extends BaseService {
 
     String url = getFolderDetailEndPoint(folder.moduleId, folder.folderId);
 
-    RestClient().delete(url, AccountService().sessionId, AppManager().deviceId).then((dynamic result) {
+    RestClient()
+        .delete(url, AccountService().sessionId, AppManager().deviceId)
+        .then((dynamic result) {
       if (result['errorCode'] != null) {
         completer.completeError(new NPError(cause: result['errorCode']));
       } else {

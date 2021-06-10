@@ -7,7 +7,7 @@ import 'package:np_mobile/ui/widgets/tag_form_widget.dart';
 
 class EventView {
   static Row subTitleInList(NPEvent event, BuildContext context) {
-    List<Widget> timeDisplay = new List();
+    List<Widget> timeDisplay = [];
     // show the start date time
     timeDisplay.add(Expanded(
         child: Align(
@@ -56,8 +56,7 @@ class EventView {
     List<Widget> eventContent = _eventContent(context, event);
 
     ListTile title = ListTile(
-      leading: Icon(Icons.event),
-      title: Text(event.title, style: Theme.of(context).textTheme.headline),
+      title: Text(event.title, style: Theme.of(context).textTheme.headline4),
     );
 
     eventContent.insert(0, title);
@@ -66,14 +65,11 @@ class EventView {
       eventContent.add(UIHelper.displayNote(event.note, context));
     }
 
-    return SafeArea(
-        child: ListView(
-            shrinkWrap: true,
-            children: eventContent));
+    return SafeArea(child: ListView(shrinkWrap: true, children: eventContent));
   }
 
   static List<Widget> _eventContent(context, NPEvent event) {
-    List<Widget> eventContent = new List();
+    List<Widget> eventContent = [];
 
     if (range(event)) {
       if (event.localStartDate == event.localEndDate ||

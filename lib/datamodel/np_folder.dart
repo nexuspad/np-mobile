@@ -19,11 +19,12 @@ class NPFolder extends NPObject {
     _moduleId = moduleId;
     _folderId = folderId;
     _folderName = "root";
-    _subFolders = new List<NPFolder>();
+    _subFolders = [];
     _color = new Color(0xff336699);
   }
 
-  NPFolder.newFolder(NPFolder parent, NPUser owner) : _owner = NPUser.copy(owner) {
+  NPFolder.newFolder(NPFolder parent, NPUser owner)
+      : _owner = NPUser.copy(owner) {
     _moduleId = parent._moduleId;
     _folderId = -1;
     _parent = NPFolder.copy(parent);
@@ -35,7 +36,8 @@ class NPFolder extends NPObject {
     _folderId = otherFolder.folderId;
     _folderName = otherFolder.folderName;
     if (otherFolder.color != null) {
-      _color = Color.fromARGB(otherFolder.color.alpha, otherFolder.color.red, otherFolder.color.green, otherFolder.color.blue);
+      _color = Color.fromARGB(otherFolder.color.alpha, otherFolder.color.red,
+          otherFolder.color.green, otherFolder.color.blue);
     }
     if (otherFolder.parent != null) _parent = NPFolder.copy(otherFolder.parent);
   }
@@ -48,7 +50,7 @@ class NPFolder extends NPObject {
     if (data['parent'] != null) {
       _parent = NPFolder.fromJson(data['parent']);
     }
-    _subFolders = new List<NPFolder>();
+    _subFolders = [];
     if (data['subFolders'] != null) {
       for (var elem in data['subFolders']) {
         _subFolders.add(NPFolder.fromJson(elem));
@@ -97,7 +99,7 @@ class NPFolder extends NPObject {
 
   addChild(NPFolder f) {
     if (_subFolders == null) {
-      _subFolders = new List<NPFolder>();
+      _subFolders = [];
     }
     _subFolders.add(f);
   }
@@ -118,6 +120,7 @@ class NPFolder extends NPObject {
       return Color(0xff336699);
     }
   }
+
   set color(value) {
     _color = value;
   }

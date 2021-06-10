@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:np_mobile/app_manager.dart';
@@ -8,7 +9,9 @@ import '../content_helper.dart';
 enum RangeMenu { today, week, month, year }
 
 class DateRangePicker extends StatefulWidget {
-  const DateRangePicker({Key key, this.startDate, this.endDate, this.dateRangeSelected}) : super(key: key);
+  const DateRangePicker(
+      {Key key, this.startDate, this.endDate, this.dateRangeSelected})
+      : super(key: key);
 
   final DateTime startDate;
   final DateTime endDate;
@@ -26,7 +29,10 @@ class _DateRangePickerState extends State<DateRangePicker> {
 
   Future<void> _pickStartDate(BuildContext context) async {
     final DateTime picked = await showDatePicker(
-        context: context, initialDate: _startDate, firstDate: DateTime(2015, 8), lastDate: DateTime(2050));
+        context: context,
+        initialDate: _startDate,
+        firstDate: DateTime(2015, 8),
+        lastDate: DateTime(2050));
     if (picked != null && picked != _startDate) {
       _startDate = picked;
       if (_startDate.isBefore(_endDate)) {
@@ -36,8 +42,11 @@ class _DateRangePickerState extends State<DateRangePicker> {
   }
 
   Future<void> _pickEndDate(BuildContext context) async {
-    final DateTime picked =
-        await showDatePicker(context: context, initialDate: _endDate, firstDate: _startDate, lastDate: DateTime(2050));
+    final DateTime picked = await showDatePicker(
+        context: context,
+        initialDate: _endDate,
+        firstDate: _startDate,
+        lastDate: DateTime(2050));
     if (picked != null && picked != _endDate) {
       _endDate = picked;
       if (_startDate.isBefore(_endDate)) {
@@ -54,11 +63,13 @@ class _DateRangePickerState extends State<DateRangePicker> {
     List<Widget> menuItems = <Widget>[
       UIHelper.formSpacer(),
       Expanded(
-        child:_inputDropdown(ContentHelper.getValue('from'), DateFormat.yMMMd().format(_startDate)),
+        child: _inputDropdown(ContentHelper.getValue('from'),
+            DateFormat.yMMMd().format(_startDate)),
       ),
       UIHelper.formSpacer(),
       Expanded(
-        child: _inputDropdown(ContentHelper.getValue('to'), DateFormat.yMMMd().format(_endDate)),
+        child: _inputDropdown(
+            ContentHelper.getValue('to'), DateFormat.yMMMd().format(_endDate)),
       ),
     ];
 
@@ -87,15 +98,15 @@ class _DateRangePickerState extends State<DateRangePicker> {
           }
         },
         itemBuilder: (BuildContext context) => <PopupMenuEntry<RangeMenu>>[
-              PopupMenuItem<RangeMenu>(
-                value: RangeMenu.week,
-                child: Text(ContentHelper.getValue("week")),
-              ),
-              PopupMenuItem<RangeMenu>(
-                value: RangeMenu.month,
-                child: Text(ContentHelper.getValue('month')),
-              ),
-            ],
+          PopupMenuItem<RangeMenu>(
+            value: RangeMenu.week,
+            child: Text(ContentHelper.getValue("week")),
+          ),
+          PopupMenuItem<RangeMenu>(
+            value: RangeMenu.month,
+            child: Text(ContentHelper.getValue('month')),
+          ),
+        ],
       ));
     } else {
       menuItems.add(PopupMenuButton<RangeMenu>(
@@ -153,7 +164,9 @@ class _DateRangePickerState extends State<DateRangePicker> {
           children: <Widget>[
             Text(valueText),
             Icon(Icons.arrow_drop_down,
-                color: Theme.of(context).brightness == Brightness.light ? Colors.grey.shade700 : Colors.white70),
+                color: Theme.of(context).brightness == Brightness.light
+                    ? Colors.grey.shade700
+                    : Colors.white70),
           ],
         ),
       ),

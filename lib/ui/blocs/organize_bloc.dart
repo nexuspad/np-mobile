@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:np_mobile/datamodel/NPObject.dart';
 import 'package:np_mobile/datamodel/account.dart';
 import 'package:np_mobile/datamodel/list_setting.dart';
@@ -16,7 +17,7 @@ class OrganizeBloc {
     NPModule.CALENDAR,
     NPModule.DOC,
     NPModule.BOOKMARK,
-    NPModule.PHOTO
+    // NPModule.PHOTO
   ];
 
   final _organizeSubject = BehaviorSubject<OrganizerSetting>();
@@ -46,7 +47,13 @@ class OrganizeBloc {
         acct.preference.activeModules.length > 0) {
       setActiveModules(acct.preference.activeModules);
     }
-    changeModule(acct.preference.lasAccessedModule);
+
+    if (acct.preference.lastAccessedModule != NPModule.PHOTO) {
+      changeModule(acct.preference.lastAccessedModule);
+    } else {
+      changeModule(NPModule.DOC);
+    }
+
     _currentSetting.listSetting.totalCount = 0;
     _organizeSubject.sink.add(_currentSetting);
   }

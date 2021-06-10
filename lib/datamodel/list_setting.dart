@@ -19,7 +19,7 @@ class ListSetting {
     _moduleId = NPModule.UNASSIGNED; // just to avoid a null value
     _folderId = 0;
     _pageId = 1;
-    _pages = new List<int>();
+    _pages = [];
     _totalCount = 0;
   }
 
@@ -48,7 +48,7 @@ class ListSetting {
     _keyword = data['keyword'];
     _totalCount = data['totalCount'];
     _countPerPage = data['countPerPage'];
-    _pages = new List();
+    _pages = [];
     if (data['pages'] != null) {
       data['pages'].forEach((p) {
         _pages.add(p);
@@ -69,7 +69,8 @@ class ListSetting {
     _totalCount = otherSetting.totalCount;
   }
 
-  ListSetting.forPageQuery(int moduleId, int folderId, bool includeEntriesInAllFolders, int ownerId, int pageId) {
+  ListSetting.forPageQuery(int moduleId, int folderId,
+      bool includeEntriesInAllFolders, int ownerId, int pageId) {
     _moduleId = moduleId;
     _folderId = folderId;
     _includeEntriesInAllFolders = includeEntriesInAllFolders;
@@ -78,7 +79,13 @@ class ListSetting {
     _totalCount = 0;
   }
 
-  ListSetting.forTimelineQuery(int moduleId, int folderId, bool includeEntriesInAllFolders, int ownerId, String startYmd, String endYmd) {
+  ListSetting.forTimelineQuery(
+      int moduleId,
+      int folderId,
+      bool includeEntriesInAllFolders,
+      int ownerId,
+      String startYmd,
+      String endYmd) {
     _moduleId = moduleId;
     _folderId = folderId;
     _includeEntriesInAllFolders = includeEntriesInAllFolders;
@@ -144,7 +151,8 @@ class ListSetting {
       if (_moduleId == queryParams._moduleId &&
           _folderId == queryParams._folderId &&
           _ownerId == queryParams._ownerId &&
-          (myStart.isBefore(otherStart) || myStart.isAtSameMomentAs(otherStart)) &&
+          (myStart.isBefore(otherStart) ||
+              myStart.isAtSameMomentAs(otherStart)) &&
           (myEnd.isAfter(otherEnd) || myEnd.isAtSameMomentAs(otherEnd))) {
         return true;
       }

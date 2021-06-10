@@ -5,7 +5,7 @@ import 'package:np_mobile/ui/widgets/tag_form_widget.dart';
 
 class ContactView {
   static Row subTitleInList(NPContact contact, BuildContext context) {
-    List<Widget> rowChildren = new List();
+    List<Widget> rowChildren = [];
 
     if (contact.primaryPhone != null &&
         (contact.primaryPhone['formattedValue'] != null ||
@@ -13,11 +13,10 @@ class ContactView {
       rowChildren.add(new Expanded(
           child: Align(
               alignment: Alignment.topLeft,
-              child: new FlatButton(
+              child: new TextButton(
                   onPressed: () {
                     UIHelper.launchUrl("tel:${contact.primaryPhone['value']}");
                   },
-                  textColor: ThemeData().primaryColor,
                   child: new Text(
                     contact.primaryPhone['formattedValue'] ??
                         contact.primaryPhone['value'],
@@ -30,8 +29,8 @@ class ContactView {
     if (contact.address != null &&
         contact.address['addressStr'] != null &&
         contact.address['addressStr'].toString().isNotEmpty) {
-
-      String url = "https://www.google.com/maps/search/?api=1&query=${contact.address['addressStr']}";
+      String url =
+          "https://www.google.com/maps/search/?api=1&query=${contact.address['addressStr']}";
       rowChildren.add(new Expanded(
           child: Align(
               alignment: Alignment.topLeft,
@@ -73,7 +72,7 @@ class ContactView {
   }
 
   static Widget fullPage(NPContact contact, BuildContext context) {
-    List<Widget> contactContent = new List();
+    List<Widget> contactContent = [];
 
     String subTitle;
     if (contact.fullName != null &&
@@ -93,13 +92,13 @@ class ContactView {
     ListTile title;
     if (subTitle == null) {
       title = ListTile(
-        leading: Icon(Icons.person),
-        title: Text(contact.title, style: Theme.of(context).textTheme.headline),
+        title:
+            Text(contact.title, style: Theme.of(context).textTheme.headline4),
       );
     } else {
       title = ListTile(
-        leading: Icon(Icons.person),
-        title: Text(contact.title, style: Theme.of(context).textTheme.headline),
+        title:
+            Text(contact.title, style: Theme.of(context).textTheme.headline4),
         subtitle: Text(subTitle),
       );
     }
@@ -109,7 +108,7 @@ class ContactView {
     if (contact.address != null &&
         contact.address['addressStr'] != null &&
         contact.address['addressStr'].toString().isNotEmpty) {
-      List<Widget> addressRows = List();
+      List<Widget> addressRows = [];
       Row firstRow;
       if (contact.address['streetAddress'] != null) {
         firstRow = Row(
@@ -130,7 +129,7 @@ class ContactView {
       if (contact.address['city'] != null ||
           contact.address['province'] != null ||
           contact.address['postalCode'] != null) {
-        List<Widget> secondRowItems = new List();
+        List<Widget> secondRowItems = [];
         if (contact.address['city'] != null) {
           secondRowItems.add(Padding(
               padding: EdgeInsets.only(right: 10.0),
@@ -159,7 +158,8 @@ class ContactView {
       }
 
       if (addressRows.length > 0) {
-        String url = "https://www.google.com/maps/search/?api=1&query=${contact.address['addressStr']}";
+        String url =
+            "https://www.google.com/maps/search/?api=1&query=${contact.address['addressStr']}";
         contactContent.add(SingleChildScrollView(
             padding: UIHelper.contentPadding(),
             child: InkWell(
@@ -173,18 +173,17 @@ class ContactView {
     }
 
     if (contact.emails != null && contact.emails.length > 0) {
-      List<Widget> rows = new List();
+      List<Widget> rows = [];
       for (var item in contact.emails) {
         if (item['value'] != null) {
           rows.add(Row(children: <Widget>[
             Expanded(
                 child: Align(
                     alignment: Alignment.topLeft,
-                    child: new FlatButton(
+                    child: new TextButton(
                         onPressed: () {
                           UIHelper.launchUrl("mailto:${item['value']}");
                         },
-                        textColor: ThemeData().primaryColor,
                         child: new Text(
                           item['value'],
                           textAlign: TextAlign.left,
@@ -200,18 +199,17 @@ class ContactView {
     }
 
     if (contact.phones != null && contact.phones.length > 0) {
-      List<Widget> rows = new List();
+      List<Widget> rows = [];
       for (var item in contact.phones) {
         if (item['value'] != null) {
           rows.add(Row(children: <Widget>[
             Expanded(
                 child: Align(
                     alignment: Alignment.topLeft,
-                    child: new FlatButton(
+                    child: new TextButton(
                         onPressed: () {
                           UIHelper.launchUrl("tel:${item['value']}");
                         },
-                        textColor: ThemeData().primaryColor,
                         child: new Text(
                           item['formattedValue'] == null
                               ? item['value']

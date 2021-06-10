@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:np_mobile/app_manager.dart';
 import 'package:np_mobile/datamodel/np_entry.dart';
@@ -44,9 +45,11 @@ class _EntryFormState extends State<EntryEditScreen> {
 
     String title;
     if (_entry.entryId != null && _entry.entryId.isNotEmpty) {
-      title = ContentHelper.translate("update" + NPModule.entryName(_entry.folder.moduleId));
+      title = ContentHelper.translate(
+          "update" + NPModule.entryName(_entry.folder.moduleId));
     } else {
-      title = ContentHelper.translate('new ' + NPModule.entryName(_entry.folder.moduleId));
+      title = ContentHelper.translate(
+          'new ' + NPModule.entryName(_entry.folder.moduleId));
     }
 
     return Scaffold(
@@ -60,7 +63,9 @@ class _EntryFormState extends State<EntryEditScreen> {
             onPressed: () {
               _selectDestinationFolder().then((selectedFolder) {
                 _entry.folder = NPFolder.copy(selectedFolder);
-                UIHelper.showMessageOnSnackBar(globalKey: scaffoldKey, text: 'folder updated to ${_entry.folder.folderName}');
+                UIHelper.showMessageOnSnackBar(
+                    globalKey: scaffoldKey,
+                    text: 'folder updated to ${_entry.folder.folderName}');
               });
             },
           ),
@@ -117,7 +122,10 @@ class _EntryFormState extends State<EntryEditScreen> {
     return await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => FolderSelectorScreen(context: context, itemToUpdate: _entry,),
+        builder: (context) => FolderSelectorScreen(
+          context: context,
+          itemToUpdate: _entry,
+        ),
       ),
     );
   }
@@ -125,7 +133,10 @@ class _EntryFormState extends State<EntryEditScreen> {
   _submit() {
     if (_formKey.currentState.validate()) {
       _formKey.currentState.save();
-      UIHelper.showMessageOnSnackBar(globalKey: scaffoldKey, text: ContentHelper.concatValues(['saving', _entry.moduleId.toString()]));
+      UIHelper.showMessageOnSnackBar(
+          globalKey: scaffoldKey,
+          text: ContentHelper.concatValues(
+              ['saving', _entry.moduleId.toString()]));
 
       Future<dynamic> future;
 
@@ -139,10 +150,14 @@ class _EntryFormState extends State<EntryEditScreen> {
         if (updatedEntryOrEntries is NPEntry) {
           _organizeBloc.sendUpdate(updatedEntryOrEntries);
         }
-        UIHelper.showMessageOnSnackBar(globalKey: scaffoldKey, text: ContentHelper.concatValues(['saved', _entry.moduleId.toString()]));
+        UIHelper.showMessageOnSnackBar(
+            globalKey: scaffoldKey,
+            text: ContentHelper.concatValues(
+                ['saved', _entry.moduleId.toString()]));
         Navigator.pop(context, _entry);
       }).catchError((error) {
-        UIHelper.showMessageOnSnackBar(globalKey: scaffoldKey, text: error.toString());
+        UIHelper.showMessageOnSnackBar(
+            globalKey: scaffoldKey, text: error.toString());
         print('error saving entry: $error');
         if (error is NPError && error.errorCode == NPError.INVALID_SESSION) {
           AppManager().logout(context);

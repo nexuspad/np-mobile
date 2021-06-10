@@ -6,14 +6,16 @@ import 'package:np_mobile/ui/widgets/tag_form_widget.dart';
 import '../content_helper.dart';
 
 class ContactEdit {
-  static Form form(BuildContext context, GlobalKey<FormState> formKey, NPContact contact, Function setStateCallback) {
+  static Form form(BuildContext context, GlobalKey<FormState> formKey,
+      NPContact contact, Function setStateCallback) {
     if (contact.phones == null || contact.phones.length == 0) {
-      contact.phones = new List<Map>();
+      contact.phones = [];
       contact.phones.add(new Map());
     } else {
       // remove all the invalid entries
       for (int i = contact.phones.length - 1; i >= 0; i--) {
-        if (contact.phones[i]['value'] == null || contact.phones[i]['value'].isEmpty) {
+        if (contact.phones[i]['value'] == null ||
+            contact.phones[i]['value'].isEmpty) {
           contact.phones.removeAt(i);
         }
       }
@@ -21,12 +23,13 @@ class ContactEdit {
       contact.phones.add(new Map());
     }
     if (contact.emails == null || contact.emails.length == 0) {
-      contact.emails = new List<Map>();
+      contact.emails = [];
       contact.emails.add(new Map());
     } else {
       // remove all the invalid entries
       for (int i = contact.emails.length - 1; i >= 0; i--) {
-        if (contact.emails[i]['value'] == null || contact.emails[i]['value'].isEmpty) {
+        if (contact.emails[i]['value'] == null ||
+            contact.emails[i]['value'].isEmpty) {
           contact.emails.removeAt(i);
         }
       }
@@ -36,14 +39,16 @@ class ContactEdit {
       contact.address = new Map();
     }
 
-    List<Widget> formFields = new List();
+    List<Widget> formFields = [];
 
     formFields.add(Padding(
       padding: UIHelper.contentPadding(),
       child: new TextFormField(
         initialValue: contact.title,
         onSaved: (val) => contact.title = val,
-        decoration: new InputDecoration(labelText: ContentHelper.getValue("title"), border: UnderlineInputBorder()),
+        decoration: new InputDecoration(
+            labelText: ContentHelper.getValue("title"),
+            border: UnderlineInputBorder()),
       ),
     ));
 
@@ -78,11 +83,15 @@ class ContactEdit {
         maxLines: null,
         initialValue: contact.note,
         onSaved: (val) => contact.note = val,
-        decoration: new InputDecoration(labelText: ContentHelper.getValue("note"), border: UnderlineInputBorder()),
+        decoration: new InputDecoration(
+            labelText: ContentHelper.getValue("note"),
+            border: UnderlineInputBorder()),
       ),
     ));
 
-    formFields.add(TagForm(context, contact, false, true),);
+    formFields.add(
+      TagForm(context, contact, false, true),
+    );
 
     return Form(
       key: formKey,
@@ -91,7 +100,7 @@ class ContactEdit {
   }
 
   static _names(NPContact contact) {
-    List<Row> widgets = new List();
+    List<Row> widgets = [];
     widgets.add(Row(
       children: <Widget>[
         Expanded(
@@ -99,7 +108,9 @@ class ContactEdit {
           child: TextFormField(
             initialValue: contact.firstName,
             onSaved: (val) => contact.firstName = val,
-            decoration: new InputDecoration(labelText: ContentHelper.translate("first name"), border: UnderlineInputBorder()),
+            decoration: new InputDecoration(
+                labelText: ContentHelper.translate("first name"),
+                border: UnderlineInputBorder()),
           ),
         ),
         UIHelper.formSpacer(),
@@ -108,7 +119,9 @@ class ContactEdit {
           child: TextFormField(
             initialValue: contact.middleName,
             onSaved: (val) => contact.middleName = val,
-            decoration: new InputDecoration(labelText: ContentHelper.translate("mi"), border: UnderlineInputBorder()),
+            decoration: new InputDecoration(
+                labelText: ContentHelper.translate("mi"),
+                border: UnderlineInputBorder()),
           ),
         ),
       ],
@@ -119,7 +132,9 @@ class ContactEdit {
           child: TextFormField(
             initialValue: contact.lastName,
             onSaved: (val) => contact.lastName = val,
-            decoration: new InputDecoration(labelText: ContentHelper.translate("last name"), border: UnderlineInputBorder()),
+            decoration: new InputDecoration(
+                labelText: ContentHelper.translate("last name"),
+                border: UnderlineInputBorder()),
           ),
         ),
       ],
@@ -130,7 +145,9 @@ class ContactEdit {
           child: TextFormField(
             initialValue: contact.businessName,
             onSaved: (val) => contact.businessName = val,
-            decoration: new InputDecoration(labelText: ContentHelper.translate("business name"), border: UnderlineInputBorder()),
+            decoration: new InputDecoration(
+                labelText: ContentHelper.translate("business name"),
+                border: UnderlineInputBorder()),
           ),
         ),
       ],
@@ -139,17 +156,19 @@ class ContactEdit {
   }
 
   static _phones(NPContact contact, Function setStateCallback) {
-    List<Row> widgets = new List();
+    List<Row> widgets = [];
     List<Map> phones = contact.phones;
     int indexForPrimary = 0;
     for (int index = 0; index < phones.length; index++) {
-      if (phones[index]['primary'] != null && phones[index]['primary'] == true) {
+      if (phones[index]['primary'] != null &&
+          phones[index]['primary'] == true) {
         indexForPrimary = index;
       }
     }
     for (int index = 0; index < phones.length; index++) {
       String phoneNumber = phones[index]['value'];
-      final TextEditingController controller = TextEditingController(text: phoneNumber);
+      final TextEditingController controller =
+          TextEditingController(text: phoneNumber);
       widgets.add(Row(
         children: <Widget>[
           Icon(Icons.phone),
@@ -183,10 +202,14 @@ class ContactEdit {
                     setStateCallback();
                   })
               : IconButton(
-                  icon: Icon(Icons.add, color: Colors.blue,),
+                  icon: Icon(
+                    Icons.add,
+                    color: Colors.blue,
+                  ),
                   onPressed: () {
                     if (controller.value.text.isNotEmpty) {
-                      phones.insert(phones.length - 1, {'value': controller.value.text});
+                      phones.insert(
+                          phones.length - 1, {'value': controller.value.text});
                       setStateCallback();
                     }
                   })
@@ -218,11 +241,12 @@ class ContactEdit {
   }
 
   static _emails(NPContact contact, Function setStateCallback) {
-    List<Row> widgets = new List();
+    List<Row> widgets = [];
     List<Map> emails = contact.emails;
     for (int index = 0; index < emails.length; index++) {
       String emailAddress = emails[index]['value'];
-      final TextEditingController controller = TextEditingController(text: emailAddress);
+      final TextEditingController controller =
+          TextEditingController(text: emailAddress);
       widgets.add(Row(
         children: <Widget>[
           Icon(Icons.email),
@@ -246,10 +270,14 @@ class ContactEdit {
                     setStateCallback();
                   })
               : IconButton(
-                  icon: Icon(Icons.add, color: Colors.blue,),
+                  icon: Icon(
+                    Icons.add,
+                    color: Colors.blue,
+                  ),
                   onPressed: () {
                     if (controller.value.text.isNotEmpty) {
-                      emails.insert(emails.length - 1, {'value': controller.value.text});
+                      emails.insert(
+                          emails.length - 1, {'value': controller.value.text});
                       setStateCallback();
                     }
                   })
@@ -271,7 +299,7 @@ class ContactEdit {
   }
 
   static _address(Map address) {
-    List<Row> widgets = new List();
+    List<Row> widgets = [];
     widgets.add(Row(
       children: <Widget>[
         Icon(Icons.add_location),
@@ -279,7 +307,8 @@ class ContactEdit {
           child: TextFormField(
             initialValue: address['streetAddress'],
             onSaved: (val) => address['streetAddress'] = val,
-            decoration: new InputDecoration(labelText: "street address", border: UnderlineInputBorder()),
+            decoration: new InputDecoration(
+                labelText: "street address", border: UnderlineInputBorder()),
           ),
         ),
       ],
@@ -293,21 +322,24 @@ class ContactEdit {
           child: TextFormField(
             initialValue: address['city'],
             onSaved: (val) => address['city'] = val,
-            decoration: new InputDecoration(labelText: "city", border: UnderlineInputBorder()),
+            decoration: new InputDecoration(
+                labelText: "city", border: UnderlineInputBorder()),
           ),
         ),
         Expanded(
           child: TextFormField(
             initialValue: address['postalCode'],
             onSaved: (val) => address['postalCode'] = val,
-            decoration: new InputDecoration(labelText: "postal code", border: UnderlineInputBorder()),
+            decoration: new InputDecoration(
+                labelText: "postal code", border: UnderlineInputBorder()),
           ),
         ),
         Expanded(
           child: TextFormField(
             initialValue: address['province'],
             onSaved: (val) => address['province'] = val,
-            decoration: new InputDecoration(labelText: "state/province", border: UnderlineInputBorder()),
+            decoration: new InputDecoration(
+                labelText: "state/province", border: UnderlineInputBorder()),
           ),
         ),
       ],
